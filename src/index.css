@@ -15,13 +15,27 @@
   --text-dim: #A0A0A0;
 }
 
+[data-theme='light'] {
+  color-scheme: light;
+  --bg: #F5F5F7;
+  --accent: #0088CC;
+  --glass: rgba(0, 0, 0, 0.03);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --text-dim: #666666;
+}
+
 body {
   background-color: var(--bg);
-  background-image: radial-gradient(circle at 50% -20%, #1a1a2e 0%, var(--bg) 70%);
+  background-image: radial-gradient(circle at 50% -20%, var(--bg-grad, #1a1a2e) 0%, var(--bg) 70%);
   background-attachment: fixed;
-  color: #FFFFFF;
+  color: var(--text-main, #FFFFFF);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme='light'] body {
+  --bg-grad: #e5e5f7;
+  --text-main: #1D1D1F;
 }
 
 /* Custom Scrollbar */
@@ -46,6 +60,27 @@ body {
   background: var(--glass);
   backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
+}
+
+.footer-btn {
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.footer-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: transparent !important;
+}
+
+[data-theme='light'] .footer-btn {
+  color: #1D1D1F;
+}
+
+[data-theme='light'] .footer-btn:hover {
+  border-color: transparent;
+  background: rgba(0,0,0,0.05) !important;
+  color: #000000;
 }
 
 .sleek-card-hover {
