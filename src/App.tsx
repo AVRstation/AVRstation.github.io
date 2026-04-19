@@ -162,6 +162,38 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
     links: []
   },
   {
+    title: "Deadhook",
+    description: lang === 'cn'
+      ? "疯狂的 VR Roguelike 射击游戏。"
+      : lang === 'ru' 
+        ? "Безумный VR Roguelike шутер."
+        : "Frantic VR Roguelike shooter.",
+    stack: ["VR Roguelike", "Action", "Design"],
+    youtubeId: "GB5ERsLVf6I",
+    links: [
+      { name: "Meta Quest", url: "https://www.meta.com/experiences/dead-hook/8896303273744663/" },
+      { name: "Steam", url: "https://store.steampowered.com/app/2342360/Dead_Hook/" },
+      { name: "PlayStation", url: "https://store.playstation.com/concept/10009531" },
+      { name: "Pico", url: "https://store-global.picoxr.com/gb/detail/1/7309044953793970182" }
+    ]
+  },
+  {
+    title: "STRIDE: Fates",
+    description: lang === 'cn'
+      ? "剧情驱动的 VR 跑酷冒险游戏。探索反乌托邦大都市，体验极致的动作自由。"
+      : lang === 'ru'
+        ? "Сюжетный VR-паркур боевик. Исследуйте антиутопичный мегаполис с полной свободой движений."
+        : "Story-driven VR parkour action. Explore a dystopian metropolis with complete freedom of movement.",
+    stack: ["Parkour Action", "Story-driven", "VR"],
+    youtubeId: "LVMTZguRlKo",
+    links: [
+      { name: "Meta Quest", url: "https://www.meta.com/en-gb/experiences/5968439973240748/" },
+      { name: "Steam", url: "https://store.steampowered.com/app/2597880/STRIDE_Fates/" },
+      { name: "PlayStation", url: "https://store.playstation.com/en-us/concept/10010312" },
+      { name: "Pico", url: "https://store-global.picoxr.com/gb/detail/1/7378790057861382150" }
+    ]
+  },
+  {
     title: "STRIDE Multiplayer",
     description: lang === 'cn'
       ? "多人 VR 跑酷射击游戏。负责网络机制开发和游戏平衡设计。"
@@ -171,8 +203,10 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
     stack: ["Unreal Engine", "VR", "Singleplayer", "Multiplayer"],
     youtubeId: "83n7jWFOBE0",
     links: [
-      { name: "Oculus", url: "https://www.oculus.com/experiences/quest/4901911359882668" },
-      { name: "Steam", url: "https://store.steampowered.com/app/1292040/STRIDE" }
+      { name: "Meta Quest", url: "https://www.oculus.com/experiences/quest/4901911359882668" },
+      { name: "Steam", url: "https://store.steampowered.com/app/1292040/STRIDE" },
+      { name: "PlayStation", url: "https://store.playstation.com/en-us/product/UP6195-CUSA25130_00-6556661881407173" },
+      { name: "Pico", url: "https://store-global.picoxr.com/gb/detail/1/4029" }
     ]
   },
   {
@@ -185,7 +219,8 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
     stack: ["OpenVR", "Physics-based", "Action"],
     youtubeId: "RAJVJAjBX8c",
     links: [
-      { name: "Meta Quest", url: "https://www.meta.com/experiences/stack/5366874313435765" }
+      { name: "Meta Quest", url: "https://www.meta.com/experiences/stack/5366874313435765" },
+      { name: "Pico", url: "https://store-global.picoxr.com/global/detail/1/7339799345019273268" }
     ]
   },
   {
@@ -198,8 +233,20 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
     stack: ["Editor Tooling", "Unity SDK", "User Generated Content"],
     youtubeId: "48VhkwMV80Y",
     links: [
-      { name: "Steam", url: "https://store.steampowered.com/app/1584840/AGAINST" }
+      { name: "Steam", url: "https://store.steampowered.com/app/1584840/AGAINST" },
+      { name: "Pico", url: "https://store-global.picoxr.com/ru/detail/1/3744" }
     ]
+  },
+  {
+    title: lang === 'ru' ? "Проектирование квартиры" : "Apartment Design VR",
+    description: lang === 'cn'
+      ? "为房地产开发商客户提供的虚拟和增强现实解决方案。"
+      : lang === 'ru'
+        ? "Решения для клиентов застройщика в виртуальной и дополненной реальности."
+        : "VR and AR solutions for real estate developer clients.",
+    stack: ["Real Estate", "VR/AR", "Architecture"],
+    youtubeId: "VK1YTMYuse0",
+    links: []
   },
   {
     title: "Fencer VR",
@@ -211,7 +258,7 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
     stack: ["Physics Engine", "Precision Tracking", "Sports Sim"],
     youtubeId: "4DZVP613WoQ",
     links: [
-      { name: "Quest Store", url: "https://www.oculus.com/experiences/quest/4007385822625371/" }
+      { name: "Meta Quest", url: "https://www.oculus.com/experiences/quest/4007385822625371/" }
     ]
   },
   {
