@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+:root {
+  color-scheme: dark;
+  --bg: #050505;
+  --accent: #00F0FF;
+  --glass: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --text-dim: #A0A0A0;
+}
+
+body {
+  background-color: var(--bg);
+  background-image: radial-gradient(circle at 50% -20%, #1a1a2e 0%, var(--bg) 70%);
+  background-attachment: fixed;
+  color: #FFFFFF;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+.sleek-glass {
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
+
+.sleek-card-hover {
+  transition: all 0.3s ease;
+}
+
+.sleek-card-hover:hover {
+  border-color: rgba(0, 240, 255, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 240, 255, 0.1);
+  transform: translateY(-4px);
+}
+
+.status-pill {
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid var(--accent);
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.tag {
+  font-size: 11px;
+  background: rgba(255,255,255,0.08);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all 0.3s;
+  color: var(--text-dim);
+}
+
+.tag:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
