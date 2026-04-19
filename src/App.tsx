@@ -21,12 +21,12 @@ const TRANSLATIONS = {
     status: "Доступен для проектов",
     experience_title: "ОПЫТ",
     experience: [
-      { highlight: "27+ лет", text: "опыта как игрока" },
-      { highlight: "12+ лет", text: "в индустрии VR/AR" },
-      { highlight: "12+ лет", text: "в геймификации и геймдизайне" },
-      { highlight: "9+ лет", text: "в управлении продуктами" },
-      { highlight: "8+ лет", text: "в разработке и руководстве творческими командами" },
-      { highlight: "5+ лет", text: "в создании и сопровождении проектов в области Искусственного Интеллекта" }
+      { highlight: "27+ лет", text: "глубокой насмотренности и экспертизы в игровом домене" },
+      { highlight: "12+ лет", text: "в индустрии VR/AR технологий" },
+      { highlight: "12+ лет", text: "в геймификации и проектировании игровых систем" },
+      { highlight: "9+ лет", text: "стратегического управления IT-продуктами" },
+      { highlight: "8+ лет", text: "руководства командами разработки и креативного продакшена" },
+      { highlight: "5+ лет", text: "запуска и интеграции решений на базе Искусственного Интеллекта" }
     ],
     projects_title: "Проекты и Кейсы",
     footer_location: "г. Москва, Россия — GMT+3",
@@ -45,12 +45,12 @@ const TRANSLATIONS = {
     status: "Available for projects",
     experience_title: "EXPERIENCE",
     experience: [
-      { highlight: "27+ years", text: "of experience as a game player" },
-      { highlight: "12+ years", text: "in VR AR Industry" },
-      { highlight: "12+ years", text: "in Gamification and Game Design" },
-      { highlight: "9+ years", text: "in Product Management" },
-      { highlight: "8+ years", text: "in Development and leading creative teams" },
-      { highlight: "5+ years", text: "in creating and following Artificial Intelligence projects" }
+      { highlight: "27+ years", text: "of deep gaming domain expertise and analysis" },
+      { highlight: "12+ years", text: "pioneering in VR/AR Industry" },
+      { highlight: "12+ years", text: "in gamification and game systems design" },
+      { highlight: "9+ years", text: "of strategic product management" },
+      { highlight: "8+ years", text: "leading development & creative clusters" },
+      { highlight: "5+ years", text: "shipping and integrating AI-driven solutions" }
     ],
     projects_title: "Projects & Cases",
     footer_location: "Moscow, Russia — GMT+3",
@@ -68,22 +68,22 @@ const GET_SKILLS = (lang: 'ru' | 'en') => [
   {
     category: TRANSLATIONS[lang].skills.producer,
     items: lang === 'ru' 
-      ? ["Управление IT-проектами (Agile/Scrum)", "Внедрение и сопровождение IT-решений", "Разработка технической и проектной документации", "Оптимизация и масштабирование цифровых решений"]
-      : ["IT Project Management (Agile/Scrum)", "IT Solutions Implementation", "Technical & Project Documentation", "Digital Solutions Optimization & Scaling"],
+      ? ["Управление полным циклом IT-производства", "Масштабирование цифровых экосистем и инфраструктуры", "Стратегическое планирование и риск-менеджмент", "Оптимизация Delivery-процессов и качества"]
+      : ["Full-cycle IT production management", "Scaling digital ecosystems & infrastructure", "Strategic planning & risk mitigation", "Delivery optimization & quality excellence"],
     icon: <Briefcase className="w-5 h-5 text-blue-400" />
   },
   {
     category: TRANSLATIONS[lang].skills.gamedev,
     items: lang === 'ru'
-      ? ["Разработка пользовательских сценариев взаимодействия", "Исследование и адаптация новых технологий (AI, XR, Blockchain)", "Проектирование игровых механик", "Создание концептов и прототипов"]
-      : ["UX Interaction Scenarios Development", "Emerging Tech Research (AI, XR, Blockchain)", "Game Mechanics Design", "Concepts & Prototyping"],
+      ? ["Проектирование высококонверсионных игровых циклов", "R&D и интеграция передовых технологий (AI/XR)", "Балансировка игровой экономики и монетизации", "Архитектура уникального пользовательского опыта (UX)"]
+      : ["Design of high-conversion game loops", "R&D & integration of emerging tech (AI/XR)", "Game economy & monetization balancing", "Unique immersive UX architecture"],
     icon: <Gamepad2 className="w-5 h-5 text-purple-400" />
   },
   {
     category: TRANSLATIONS[lang].skills.po,
     items: lang === 'ru'
-      ? ["Анализ и автоматизация бизнес-процессов", "Тестирование и контроль качества программных продуктов", "Консультирование и обучение пользователей", "Управление жизненным циклом продукта"]
-      : ["Business Process Analysis & Automation", "Software QA & Testing Control", "User Consulting & Training", "Product Lifecycle Management"],
+      ? ["Максимизация ценности продукта и ROI", "Data-driven автоматизация бизнес-процессов", "Управление Roadmaps и стратегией развития", "Формирование и рост кросс-функциональных команд"]
+      : ["Maximizing product value & ROI", "Data-driven business process automation", "Product strategy & roadmap orchestration", "Cross-functional team building & growth"],
     icon: <Layers className="w-5 h-5 text-emerald-400" />
   }
 ];
@@ -121,7 +121,7 @@ const GET_PROJECTS = (lang: 'ru' | 'en') => [
     description: lang === 'ru'
       ? "Многопользовательский VR-паркур шутер. Разработка сетевых механик и игрового баланса."
       : "Multiplayer VR parkour shooter. Network mechanics and game balance development.",
-    stack: ["Unity", "VR", "Multiplayer", "C#"],
+    stack: ["Unreal Engine", "VR", "Singleplayer", "Multiplayer"],
     youtubeId: "83n7jWFOBE0",
     links: [
       { name: "Oculus", url: "https://www.oculus.com/experiences/quest/4901911359882668" },
@@ -297,7 +297,7 @@ export default function App() {
             <div className="text-xs leading-relaxed text-zinc-300">
               {t.experience.map((exp, i) => (
                 <p key={i} className="mb-2">
-                  <span className="text-white font-bold">{exp.highlight}</span> {exp.text}
+                  <span className="text-[var(--accent)] font-extrabold">{exp.highlight}</span> {exp.text}
                 </p>
               ))}
             </div>
@@ -322,6 +322,7 @@ export default function App() {
                       className="absolute inset-0 w-full h-full grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
+                      loading="lazy"
                       title={project.title}
                     />
                   ) : project.image ? (
@@ -373,7 +374,10 @@ export default function App() {
       </div>
 
       {/* Footer */}
-      <footer className="footer-area sleek-glass rounded-2xl p-5 md:px-8 flex flex-col md:flex-row justify-end items-center gap-6">
+      <footer className="footer-area sleek-glass rounded-2xl p-5 md:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="text-zinc-500 text-[10px] md:text-xs font-semibold tracking-wider">
+          © 2026 ALEKSANDR KOPANEV
+        </div>
         <div className="flex flex-wrap justify-center gap-3">
           {CONTACTS.map((contact) => (
             <a 

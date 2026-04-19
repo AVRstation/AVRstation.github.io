@@ -54,8 +54,8 @@ body {
 
 .sleek-card-hover:hover {
   border-color: rgba(0, 240, 255, 0.4);
-  box-shadow: 0 10px 30px rgba(0, 240, 255, 0.1);
-  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 240, 255, 0.15);
+  transform: scale(1.02);
 }
 
 .status-pill {
