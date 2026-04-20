@@ -41,7 +41,8 @@ const TRANSLATIONS = {
       po: "Product Owner"
     },
     snake_rules: "Змейка следует за курсором. Ешь яблоки и расти. Не врезайся в себя и ИИ-противника!",
-    snake_best: "Рекорд: 314"
+    snake_best: "Рекорд: 314",
+    contributions_label: "ЧТО СДЕЛАНО"
   },
   en: {
     first_name: "Aleksandr",
@@ -67,7 +68,8 @@ const TRANSLATIONS = {
       po: "Product Owner"
     },
     snake_rules: "Snake follows cursor. Eat apples to grow. Avoid hitting yourself or the AI opponent!",
-    snake_best: "Best score: 314"
+    snake_best: "Best score: 314",
+    contributions_label: "KEY CONTRIBUTIONS"
   },
   cn: {
     first_name: "亚历山大",
@@ -93,7 +95,8 @@ const TRANSLATIONS = {
       po: "产品负责人"
     },
     snake_rules: "蛇跟随光标。吃苹果生长。避免撞到自己或 AI 对手！",
-    snake_best: "最高纪录：314"
+    snake_best: "最高纪录：314",
+    contributions_label: "主要贡献"
   }
 };
 
@@ -131,45 +134,65 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
   {
     title: "SPLIT FPV: Drone Racing",
     description: lang === 'cn'
-      ? "免费、真实的 FPV 模拟器，用于提高无人机飞行技能。支持连接真实发报机、手柄或键盘，飞向蓝天。"
+      ? "免费且真实的 FPV 模拟器，用于提高无人机驾驶技能。包含精细的飞行物理和专门的战斗任务。"
       : lang === 'ru' 
-        ? "Бесплатный реалистичный FPV-симулятор для прокачки реальных навыков управления дроном. Подключай настоящий пульт, бери в руки геймпад или клавиатуру и отправляйся в небо."
-        : "Free realistic FPV simulator to improve real drone piloting skills. Connect a real transmitter, take a gamepad or keyboard and take to the skies.",
-    stack: ["FPV Simulation", "Unity", "Transmitter Support"],
+        ? "Бесплатный реалистичный FPV-симулятор для прокачки навыков управления дроном. Включает проработанную физику полета и специализированные боевые миссии."
+        : "Free realistic FPV simulator to sharpen drone piloting skills. Features sophisticated flight physics and specialized combat missions.",
+    whatDone: lang === 'cn'
+      ? "设计游戏玩法和进度系统，调优真实飞行物理，集成遥控器和手柄支持。"
+      : lang === 'ru'
+        ? "Проектирование геймплея и прогрессии, тюнинг реалистичной физики полета, интеграция поддержки пультов и геймпадов."
+        : "Gameplay & progression design, realistic flight physics tuning, transmitter and gamepad integration.",
+    stack: ["FPV Simulator", "Unity", "Gamedesign"],
     youtubeId: "73QgqnQXSvw",
     links: [
       { name: "Steam", url: "https://store.steampowered.com/app/4348580/SPLIT_FPV_Drone_Racing/" }
     ]
   },
   {
-    title: "Shooter VR",
+    title: "Shooter VR: LBE - Free Roam",
     description: lang === 'cn'
-      ? "具有内置地图生成器和级别编辑器的动态自由移动射击游戏。"
+      ? "专为线下体验店设计的动态 LBE 自由移动射击游戏 (Free Roam VR)，通过内置关卡创建工具提供极高的重玩价值。"
       : lang === 'ru'
-        ? "Динамический шутер со свободным перемещением — встроенный генератор и редактор карт."
-        : "Dynamic freeroam shooter featuring a built-in map generator and level editor.",
-    stack: ["Multiplayer", "LBE", "Freeroam VR"],
+        ? "Динамичный LBE-шутер со свободным перемещением (Free Roam VR) для офлайн-арен, обеспечивающий высокую реиграбельность за счет встроенных инструментов создания уровней."
+        : "Dynamic LBE Free Roam VR shooter for location-based entertainment, offering high replayability via built-in level creation tools.",
+    whatDone: lang === 'cn'
+      ? "主导内置地图生成器 and 关卡编辑器的开发，设计游戏循环，针对多玩家会话进行平衡调整。"
+      : lang === 'ru'
+        ? "Руководство разработкой встроенного генератора и редактора карт, проектирование игрового цикла, настройка баланса для многопользовательских сессий."
+        : "Leading the development of built-in map generator and editor, game loop design, and multiplayer session balancing.",
+    stack: ["Multiplayer", "LBE", "Free Roam VR"],
     youtubeId: "I8B3NarPd2E",
     links: []
   },
   {
-    title: "Football VR",
+    title: "Football VR: LBE - Free Roam",
     description: lang === 'cn'
-      ? "在全真场地上通过全身追踪技术实现的虚拟现实足球体验。"
+      ? "沉浸式足球模拟器，利用全身追踪技术将球员的真实动作转化为虚拟球场表现。"
       : lang === 'ru' 
-        ? "Футбол в виртуальной реальности на реальном поле с трекингом всего тела." 
-        : "Virtual reality football on a real field with full body tracking.",
-    stack: ["Full Body Tracking", "Unity", "Tracking Systems"],
+        ? "Иммерсивный симулятор футбола, переносящий реальные движения игрока на виртуальное поле с использованием технологии Full Body Tracking." 
+        : "Immersive football simulator translating real-world movements onto a virtual pitch using Full Body Tracking technology.",
+    whatDone: lang === 'cn'
+      ? "集成复杂的全身追踪系统，同步物理 and 虚拟对象，管理开发流程。"
+      : lang === 'ru'
+        ? "Интеграция комплексных систем трекинга всего тела, синхронизация физических и виртуальных объектов, управление процессами разработки."
+        : "Integration of complex body tracking systems, physical-to-virtual object synchronization, and development process management.",
+    stack: ["Full Body Tracking", "Unity", "Gamedesign"],
     youtubeId: "sSeCxxwv-A8",
     links: []
   },
   {
-    title: "Rythm VR",
+    title: "Rythm VR: Sports",
     description: lang === 'cn'
-      ? "结合拳击、网球、双剑动作与生成式音乐的节奏游戏。"
+      ? "结合了拳击、网球和双剑战斗机制与生成式音乐系统的 VR 跨界作品。"
       : lang === 'ru' 
-        ? "Ритм-игра объединяющая спортивные направления бокса, тенниса, парных мечей с генеративной музыкой."
-        : "Rhythm game combining box, tennis, dual swords with generative music.",
+        ? "VR-кроссовер, органично объединяющий механики бокса, тенниса и боя на парных мечах с системой генеративного музыкального сопровождения."
+        : "VR crossover seamlessly merging boxing, tennis, and dual-sword combat mechanics with a generative music system.",
+    whatDone: lang === 'cn'
+      ? "开发概念，将运动动作模式与节奏机制平衡，并根据音频序列调优关卡生成算法。"
+      : lang === 'ru'
+        ? "Разработка концепции, балансировка спортивных паттернов движений с ритм-механиками, настройка алгоритмов генерации уровня под аудиоряд."
+        : "Concept development, balancing sports movement patterns with rhythm mechanics, and tuning level generation algorithms to audio tracks.",
     stack: ["Generative Music", "Rhythm Game", "Combat Sports"],
     youtubeId: "096o56nwQMo",
     links: []
@@ -177,10 +200,15 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
   {
     title: "Deadhook",
     description: lang === 'cn'
-      ? "疯狂的 VR Roguelike 射击游戏。"
+      ? "具有 Roguelike 元素和先进钩爪移动系统的动态 VR 射击游戏。"
       : lang === 'ru' 
-        ? "Безумный VR Roguelike шутер."
-        : "Frantic VR Roguelike shooter.",
+        ? "Динамичный VR-шутер с элементами Roguelike и продвинутой системой перемещения с помощью крюка-кошки."
+        : "Dynamic VR shooter featuring Roguelike elements and an advanced grappling hook movement system.",
+    whatDone: lang === 'cn'
+      ? "设计核心机制、Roguelike 循环（元进度、武器和敌人平衡），并筹备 Meta Quest、SteamVR 和 PSVR2 平台发布。"
+      : lang === 'ru'
+        ? "Геймдизайн кор-механик, проектирование Roguelike-цикла (мета-прогрессия, баланс оружия и противников), подготовка продукта к релизу на Meta Quest, SteamVR и PSVR2."
+        : "Core mechanics design, Roguelike cycle planning (meta-progression, weapon/enemy balancing), and multi-platform release preparation (Meta Quest, SteamVR, PSVR2).",
     stack: ["VR Roguelike", "Action", "Design"],
     youtubeId: "GB5ERsLVf6I",
     links: [
@@ -193,11 +221,16 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
   {
     title: "STRIDE: Fates",
     description: lang === 'cn'
-      ? "剧情驱动的 VR 跑酷冒险游戏。探索反乌托邦大都市，体验极致的动作自由。"
+      ? "剧情驱动的 VR 跑酷射击游戏。探索反乌托邦大都市，为玩家提供极高的战术移动自由度和混合现实 (MR) 体验。"
       : lang === 'ru'
-        ? "Сюжетный VR-паркур боевик. Исследуйте антиутопичный мегаполис с полной свободой движений."
-        : "Story-driven VR parkour action. Explore a dystopian metropolis with complete freedom of movement.",
-    stack: ["Parkour Action", "Story-driven", "VR"],
+        ? "Сюжетный VR-экшен с элементами паркура. Исследование антиутопичного мегаполис, предлагающее игрокам абсолютную свободу тактических передвижений."
+        : "Story-driven VR parkour action. Explores a dystopian metropolis while offering players absolute freedom in tactical movement.",
+    whatDone: lang === 'cn'
+      ? "实现混合现实模式，设计游戏循环，协调开发与叙事团队之间的协作。"
+      : lang === 'ru'
+        ? "Реализации Mix Reality режима, дизайн игрового цикла, координация взаимодействия между командами разработки и нарратива."
+        : "Mixed Reality mode implementation, game loop design, and cross-team coordination between development and narrative units.",
+    stack: ["Parkour Action", "Story-driven", "MR"],
     youtubeId: "LVMTZguRlKo",
     links: [
       { name: "Meta Quest", url: "https://www.meta.com/en-gb/experiences/5968439973240748/" },
@@ -209,11 +242,16 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
   {
     title: "STRIDE Multiplayer",
     description: lang === 'cn'
-      ? "多人 VR 跑酷射击游戏。负责网络机制开发和游戏平衡设计。"
+      ? "竞技性多玩家 VR 射击游戏，在此移动能力和跑酷成为关键的战术优势。"
       : lang === 'ru'
-        ? "Многопользовательский VR-паркур шутер. Разработка сетевых механик и игрового баланса."
-        : "Multiplayer VR parkour shooter. Network mechanics and game balance development.",
-    stack: ["Unreal Engine", "VR", "Singleplayer", "Multiplayer"],
+        ? "Соревновательный многопользовательский VR-шутер, где мобильность и паркур становятся главным тактическим преимуществом игрока."
+        : "Competitive multiplayer VR shooter where high mobility and parkour maneuvers become primary tactical advantages.",
+    whatDone: lang === 'cn'
+      ? "设计和调优网络机制，开发子模式，并对游戏平衡进行全面的算法计算和迭代测试。"
+      : lang === 'ru'
+        ? "Проектирование и тюнинг сетевых механик, разработка под режимов, полный расчет и итеративная настройка игрового баланса."
+        : "Network mechanics design & tuning, sub-mode development, and comprehensive algorithmic game balance iteration.",
+    stack: ["Unreal Engine", "Singleplayer", "Multiplayer"],
     youtubeId: "83n7jWFOBE0",
     links: [
       { name: "Meta Quest", url: "https://www.oculus.com/experiences/quest/4901911359882668" },
@@ -225,11 +263,16 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
   {
     title: "STACK",
     description: lang === 'cn'
-      ? "专注于动态和物理交互的 VR 团队射击游戏。"
+      ? "战术性团队 VR 射击游戏，高度强调物理互动、环境破坏和动态近战体验。"
       : lang === 'ru'
-        ? "Командный шутер в виртуальной реальности с упором на динамику и физическое взаимодействие."
-        : "VR team shooter focused on dynamics and physical interaction.",
-    stack: ["OpenVR", "Physics-based", "Action"],
+        ? "Тактический командный VR-шутер с глубоким упором на физическое взаимодействие объектов, разрушаемость и динамику ближнего боя."
+        : "Tactical team VR shooter with a strong focus on physical object interactions, destructibility, and dynamic close combat.",
+    whatDone: lang === 'cn'
+      ? "设计物理交互、创建战术地图并管理产品的全生命周期开发。"
+      : lang === 'ru'
+        ? "Проектирование физических взаимодействий, создание тактических карт, управление полным циклом разработки продукта."
+        : "Designing physical interactions, tactical map creation, and full product development lifecycle management.",
+    stack: ["Unity", "Physics-based", "Action"],
     youtubeId: "RAJVJAjBX8c",
     links: [
       { name: "Meta Quest", url: "https://www.meta.com/experiences/stack/5366874313435765" },
@@ -239,10 +282,15 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
   {
     title: "Against - Map Editor",
     description: lang === 'cn'
-      ? "为战斗节奏射击游戏开发关卡编辑器，为创意社区提供工具链。"
+      ? "专门为名为 AGAINST 的节奏射击游戏设计的专业工具 and 强大的关卡编辑器，旨在支持 UGC 社区。"
       : lang === 'ru'
-        ? "Разработка редактора уровней для боевого ритм-шутера. Инструментарий для творческого сообщества."
-        : "Level editor for rhythm-combat shooter. Community creative toolkit.",
+        ? "Профессиональный инструментарий и мощный редактор уровней, созданный для поддержки UGC-сообщества боевого ритм-шутера AGAINST."
+        : "Professional toolset and powerful level editor built to support the UGC community of the rhythm combat shooter AGAINST.",
+    whatDone: lang === 'cn'
+      ? "设计编辑器 UX/UI，为模组制作者开发客户端，并建立稳定的 UGC 内容共享基础设施。"
+      : lang === 'ru'
+        ? "Проектирование UX/UI редактора, разработка клиента для моддеров, выстраивание надежной инфраструктуры для создания и обмена пользовательским контентом."
+        : "UX/UI design of the editor, developing the modder client, and building a robust infrastructure for UGC creation and exchange.",
     stack: ["Editor Tooling", "Unity SDK", "User Generated Content"],
     youtubeId: "48VhkwMV80Y",
     links: [
@@ -253,10 +301,15 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
   {
     title: lang === 'ru' ? "Проектирование квартиры" : "Apartment Design VR",
     description: lang === 'cn'
-      ? "为房地产开发商客户提供的虚拟和增强现实解决方案。"
+      ? "面向房地产开发商及其终端客户的 B2B VR/AR 解决方案，支持实时定制化装修预览。"
       : lang === 'ru'
-        ? "Решения для клиентов застройщика в виртуальной и дополненной реальности."
-        : "VR and AR solutions for real estate developer clients.",
+        ? "B2B VR/AR-решение для презентации объектов недвижимости застройщикам и конечным клиентам с возможностью кастомизации отделки в реальном времени."
+        : "B2B VR/AR solution for real estate visualization, allowing developers and clients to customize finishes in real-time.",
+    whatDone: lang === 'cn'
+      ? "管理开发流程，优化并将建筑 CAD 模型集成到引擎中，并为 VR 演示设计无缝的用户路径。"
+      : lang === 'ru'
+        ? "Управление разработкой, оптимизация и интеграция архитектурных CAD-моделей в движок, создание бесшовного пользовательского пути для VR-презентаций."
+        : "Development management, CAD architectural model optimization and integration, and seamless user journey design for VR tours.",
     stack: ["Real Estate", "VR/AR", "Architecture"],
     youtubeId: "VK1YTMYuse0",
     links: []
@@ -264,10 +317,15 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
   {
     title: "Fencer VR",
     description: lang === 'cn'
-      ? "真实的击剑模拟器。具备精确的动作追踪和符合物理规则的剑身行为。"
+      ? "专业 VR 击剑模拟器，具有物理精准的剑刃行为 and 对运动员姿势的精确追踪。"
       : lang === 'ru'
-        ? "Реалистичный симулятор фехтования. Точное отслеживание движений и физически корректное поведение клинка."
-        : "Realistic fencing simulator. Precise motion tracking and physics-based blade behavior.",
+        ? "Профессиональный VR-симулятор фехтования, отличающийся физически корректным поведением клинка и точнейшим отслеживанием стойки спортсмена."
+        : "Professional VR fencing simulator featuring physics-accurate blade behaviors and ultra-precise athlete posture tracking.",
+    whatDone: lang === 'cn'
+      ? "开发各种模式、游戏循环 and 任务，并为 Meta Quest 平台版本做准备。"
+      : lang === 'ru'
+        ? "Разработка режимов, игрового цикла и заданий, подготовка продукта к релизу на Meta Quest."
+        : "Developing game modes, loop logic, and tasks, plus platform preparation for the Meta Quest release.",
     stack: ["Physics Engine", "Precision Tracking", "Sports Sim"],
     youtubeId: "4DZVP613WoQ",
     links: [
@@ -277,10 +335,15 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
   {
     title: "Biathlon VR Trainer",
     description: lang === 'cn'
-      ? "面向冬季两项运动员的专业模拟器，支持射击精度和体能负荷建模。"
+      ? "面向专业冬两项运动员的专用训练设备。包含精准的弹道建模 and 实际物理负载传感器集成。"
       : lang === 'ru'
-        ? "Профессиональный тренажер для биатлонистов. Моделирование стрельбы и физических нагрузок."
-        : "Professional simulator for biathletes. Shooting and physical load modeling.",
+        ? "Специализированный спортивный тренажер для биатлонистов. Включает точное моделирование баллистики и интеграцию датчиков реальной физической нагрузки."
+        : "Specialized sports trainer for biathletes. Includes precise ballistics modeling and real physical load sensor integration.",
+    whatDone: lang === 'cn'
+      ? "向专业教练收集需求，开发结果分析模块，并针对真实步枪控制器的射击 and 装填进行调优。"
+      : lang === 'ru'
+        ? "Сбор требований у профессиональных тренеров, разработка аналитического модуля для оценки результатов, настройка реальной винтовки-контроллера для стрельбы и перезарядки."
+        : "Requirement gathering from pro coaches, analytical results module development, and hardware tuning for a real rifle controller.",
     stack: ["Training Sim", "Simulation", "Analytics"],
     youtubeId: "MyqNSP_e0BE",
     links: []
@@ -288,10 +351,15 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
   {
     title: "Education VR Box",
     description: lang === 'cn'
-      ? "适用于学校的自主 VR 解决方案。集成教育模块和集中式系统管理。"
+      ? "为教育机构提供的端到端独立软硬件 VR 方案，配备集中控制系统。"
       : lang === 'ru'
-        ? "Автономное VR-решение для школ. Образовательные модули и централизованное управление системой."
-        : "Autonomous VR solution for schools. Educational modules and centralized system management.",
+        ? "Автономный аппаратно-программный VR-комплекс «под ключ» для образовательных учреждений с системой централизованного контроля."
+        : "Standalone hardware/software VR turnkey solution for educational institutions with a centralized control system.",
+    whatDone: lang === 'cn'
+      ? "集成软硬件 (EdTech)，开发跨设备网络批量内容启动系统，并统筹教学模块制作。"
+      : lang === 'ru'
+        ? "Интеграция аппаратного и программного обеспечения (EdTech), разработка системы одновременного запуска контента на сети устройств, продюсирование обучающих модулей."
+        : "Hardware/Software EdTech integration, multi-device bulk content management, and educational module producing.",
     stack: ["EdTech", "Hardware/Software Integration", "Education"],
     youtubeId: "BmsaeoKpcqU",
     links: []
@@ -299,10 +367,15 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
   {
     title: "Nevskiy Simulator",
     description: lang === 'cn'
-      ? "为展会设计的剑术模拟器。提供沉浸式的历史战斗互动体验。"
+      ? "为大型展台设计的活动用历史剑术模拟器，针对高带宽交互体验进行了优化。"
       : lang === 'ru'
-        ? "Симулятор боя на мечах для выставочных стендов. Интерактивный опыт исторического сражения."
-        : "Sword fighting simulator for exhibition stands. Immersive historical battle experience.",
+        ? "Ивентный симулятор исторического боя на мечах, оптимизированный для высокой проходимости и вау-эффекта на крупных выставочных стендах."
+        : "Event-based historical sword fighting simulator optimized for high throughput and high-impact tradeshow experiences.",
+    whatDone: lang === 'cn'
+      ? "设计短小沉浸式体验流程，为普通大众优化 UX 路径，并负责展台的技术搭建。"
+      : lang === 'ru'
+        ? "Проектирование коротких иммерсивных сессий, адаптация и оптимизация UX для неподготовленных пользователей, технический сетап выставочного стенда."
+        : "Designing short immersive sessions, UX optimization for lay users, and technical setup for exhibition stands.",
     stack: ["Exhibition Tech", "Sword Fighting", "Immersive Experience"],
     youtubeId: "vbz74nwQv7M",
     links: []
@@ -310,10 +383,15 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
   {
     title: "VR Weapons Museum",
     description: lang === 'cn'
-      ? "交互式枪械百科全书，提供详尽的武器研究和射击体验。"
+      ? "具有高度详细且真实的游戏体验的互动式 VR 枪械百科全书，包含真实的组装/拆解 and 物理射击体验。"
       : lang === 'ru'
-        ? "Интерактивная энциклопедия стрелкового оружия с возможностью детального изучения и стрельбы."
-        : "Interactive small arms encyclopedia with detailed study and shooting options.",
+        ? "Интерактивная VR-энциклопедия стрелкового оружия с высокой детализацией исторически достоверной сборки/разборки и реалистичной физикой стрельбы."
+        : "Interactive VR museum of firearms with highly detailed, historically accurate assembly and realistic ballistics.",
+    whatDone: lang === 'cn'
+      ? "主导历史参考资料的 3D 建模流程，调优互动逻辑，并筹划博物馆内的叙事路径。"
+      : lang === 'ru'
+        ? "Руководство процессом 3D-моделирования исторических референсов, настройка интерактивных взаимодействий, подготовка сюжетного повествования."
+        : "Leading 3D modeling of historical assets, tuning interaction systems, and narrative planning.",
     stack: ["3D Interaction", "History", "VR"],
     youtubeId: "R-btZ92JkaY",
     links: []
@@ -321,10 +399,15 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
   {
     title: "Boxglass VR Cardboards",
     description: lang === 'cn'
-      ? "扩展价格实惠的 VR 头显初创公司，与 Google Cardboard 深度集成。"
+      ? "生产实惠的移动 VR 头显的硬件初创公司市场进入与扩张。"
       : lang === 'ru'
-        ? "Масштабирование VR-стартапа по производству доступных гарнитур. Интеграция с Google Cardboard."
-        : "Scaling affordable VR headset startup. Integration with Google Cardboard.",
+        ? "Вывод на рынок и масштабирование hardware-стартапа по производству доступных мобильных VR-гарнитур."
+        : "Market entry and scaling for a hardware startup producing affordable mobile VR headsets.",
+    whatDone: lang === 'cn'
+      ? "建立制造供应链，组织 B2B 销售，并成功通过了 Works With Google Cardboard 生态系统的认证和集成。"
+      : lang === 'ru'
+        ? "Выстраивание производственной цепочки, организация B2B-продаж, успешная техническая сертификация и интеграция продуктов с экосистемой Works With Google Cardboard."
+        : "Supply chain setup, B2B sales management, and technical certification/integration with the 'Works With Google Cardboard' ecosystem.",
     stack: ["StartUp", "Manufacturing", "B2B"],
     image: "https://static.tildacdn.com/tild3234-6461-4636-b435-643732656430/firm2222.jpg",
     links: [
@@ -556,11 +639,20 @@ export default function App() {
                     ))}
                   </div>
                   <h3 className="text-lg md:text-xl font-bold mb-2 group-hover:text-[var(--accent)] transition-colors">{project.title}</h3>
-                  <p className="text-[var(--text-dim)] text-xs md:text-sm leading-relaxed mb-4 flex-1">
+                  <p className="text-[var(--text-dim)] text-xs md:text-sm leading-relaxed mb-4">
                     {project.description}
                   </p>
                   
-                  <div className="flex gap-4 items-center">
+                  {project.whatDone && (
+                    <div className="mb-6">
+                      <div className="text-[10px] font-black tracking-widest text-[var(--accent)] mb-2 opacity-60 uppercase">{t.contributions_label}</div>
+                      <p className="text-[var(--text-dim)] text-[11px] leading-relaxed italic opacity-90 border-l border-[var(--accent)]/30 pl-3">
+                        {project.whatDone}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="mt-auto flex gap-4 items-center">
                     {project.links.map(link => (
                       <a 
                         key={link.url} 
