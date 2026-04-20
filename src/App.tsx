@@ -132,6 +132,107 @@ const GET_SKILLS = (lang: 'ru' | 'en' | 'cn') => [
 
 const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
   {
+    title: "STRIDE: Fates",
+    description: lang === 'cn'
+      ? "剧情驱动的 VR 跑酷射击游戏。探索反乌托邦大都市，为玩家提供极高的战术移动自由度和混合现实 (MR) 体验。"
+      : lang === 'ru'
+        ? "Сюжетный VR-экшен с элементами паркура. Исследование антиутопичного мегаполис, предлагающее игрокам абсолютную свободу тактических передвижений."
+        : "Story-driven VR parkour action. Explores a dystopian metropolis while offering players absolute freedom in tactical movement.",
+    whatDone: lang === 'cn'
+      ? "实现混合现实模式，设计游戏循环，协调开发与叙事团队之间的协作。"
+      : lang === 'ru'
+        ? "Реализации Mix Reality режима, дизайн игрового цикла, координация взаимодействия между командами разработки и нарратива."
+        : "Mixed Reality mode implementation, game loop design, and cross-team coordination between development and narrative units.",
+    stack: ["Parkour Action", "Story-driven", "MR"],
+    youtubeId: "LVMTZguRlKo",
+    links: [
+      { name: "Meta Quest", url: "https://www.meta.com/en-gb/experiences/5968439973240748/" },
+      { name: "Steam", url: "https://store.steampowered.com/app/2597880/STRIDE_Fates/" },
+      { name: "PlayStation", url: "https://store.playstation.com/en-us/concept/10010312" },
+      { name: "Pico", url: "https://store-global.picoxr.com/gb/detail/1/7378790057861382150" }
+    ]
+  },
+  {
+    title: "STRIDE Multiplayer",
+    description: lang === 'cn'
+      ? "竞技性多玩家 VR 射击游戏，在此移动能力和跑酷成为关键的战术优势。"
+      : lang === 'ru'
+        ? "Соревновательный многопользовательский VR-шутер, где мобильность и паркур становятся главным тактическим преимуществом игрока."
+        : "Competitive multiplayer VR shooter where high mobility and parkour maneuvers become primary tactical advantages.",
+    whatDone: lang === 'cn'
+      ? "设计和调优网络 mechanics，开发子模式，并对游戏平衡进行全面的算法计算和迭代测试。"
+      : lang === 'ru'
+        ? "Проектирование и тюнинг сетевых механик, разработка под режимов, полный расчет и итеративная настройка игрового баланса."
+        : "Network mechanics design & tuning, sub-mode development, and comprehensive algorithmic game balance iteration.",
+    stack: ["Unreal Engine", "Singleplayer", "Multiplayer"],
+    youtubeId: "83n7jWFOBE0",
+    links: [
+      { name: "Meta Quest", url: "https://www.oculus.com/experiences/quest/4901911359882668" },
+      { name: "Steam", url: "https://store.steampowered.com/app/1292040/STRIDE" },
+      { name: "PlayStation", url: "https://store.playstation.com/en-us/product/UP6195-CUSA25130_00-6556661881407173" },
+      { name: "Pico", url: "https://store-global.picoxr.com/gb/detail/1/4029" }
+    ]
+  },
+  {
+    title: "STACK",
+    description: lang === 'cn'
+      ? "战术性团队 VR 射击游戏，高度强调物理互动、环境破坏和动态近战体验。"
+      : lang === 'ru'
+        ? "Тактический командный VR-шутер с глубоким упором на физическое взаимодействие объектов, разрушаемость и динамику ближнего боя."
+        : "Tactical team VR shooter with a strong focus on physical object interactions, destructibility, and dynamic close combat.",
+    whatDone: lang === 'cn'
+      ? "设计物理交互、创建战术地图并管理产品的全生命周期开发。"
+      : lang === 'ru'
+        ? "Проектирование физических взаимодействий, создание тактических карт, управление полным циклом разработки продукта."
+        : "Designing physical interactions, tactical map creation, and full product development lifecycle management.",
+    stack: ["Unity", "Physics-based", "Action"],
+    youtubeId: "RAJVJAjBX8c",
+    links: [
+      { name: "Meta Quest", url: "https://www.meta.com/experiences/stack/5366874313435765" },
+      { name: "Pico", url: "https://store-global.picoxr.com/global/detail/1/7339799345019273268" }
+    ]
+  },
+  {
+    title: "Deadhook",
+    description: lang === 'cn'
+      ? "具有 Roguelike 元素和先进钩爪移动系统的动态 VR 射击游戏。"
+      : lang === 'ru' 
+        ? "Динамичный VR-шутер с элементами Roguelike и продвинутой системой перемещения с помощью крюка-кошки."
+        : "Dynamic VR shooter featuring Roguelike elements and an advanced grappling hook movement system.",
+    whatDone: lang === 'cn'
+      ? "设计核心机制、Roguelike 循环（元进度、武器和敌人平衡），并筹备 Meta Quest、SteamVR 和 PSVR2 平台发布。"
+      : lang === 'ru'
+        ? "Геймдизайн кор-механик, проектирование Roguelike-цикла (мета-прогрессия, баланс оружия и противников), подготовка продукта к релизу на Meta Quest, SteamVR и PSVR2."
+        : "Core mechanics design, Roguelike cycle planning (meta-progression, weapon/enemy balancing), and multi-platform release preparation (Meta Quest, SteamVR, PSVR2).",
+    stack: ["VR Roguelike", "Action", "Design"],
+    youtubeId: "GB5ERsLVf6I",
+    links: [
+      { name: "Meta Quest", url: "https://www.meta.com/experiences/dead-hook/8896303273744663/" },
+      { name: "Steam", url: "https://store.steampowered.com/app/2342360/Dead_Hook/" },
+      { name: "PlayStation", url: "https://store.playstation.com/concept/10009531" },
+      { name: "Pico", url: "https://store-global.picoxr.com/gb/detail/1/7309044953793970182" }
+    ]
+  },
+  {
+    title: "Against - Map Editor",
+    description: lang === 'cn'
+      ? "专门为名为 AGAINST 的节奏射击游戏设计的专业工具 and 强大的关卡编辑器，旨在支持 UGC 社区。"
+      : lang === 'ru'
+        ? "Профессиональный инструментарий и мощный редактор уровней, созданный для поддержки UGC-сообщества боевого ритм-шутера AGAINST."
+        : "Professional toolset and powerful level editor built to support the UGC community of the rhythm combat shooter AGAINST.",
+    whatDone: lang === 'cn'
+      ? "设计编辑器 UX/UI，为模组制作者开发客户端，并建立稳定的 UGC 内容共享基础设施。"
+      : lang === 'ru'
+        ? "Проектирование UX/UI редактора, разработка клиента для моддеров, выстраивание надежной инфраструктуры для создания и обмена пользовательским контентом."
+        : "UX/UI design of the editor, developing the modder client, and building a robust infrastructure for UGC creation and exchange.",
+    stack: ["Editor Tooling", "Unity SDK", "User Generated Content"],
+    youtubeId: "48VhkwMV80Y",
+    links: [
+      { name: "Steam", url: "https://store.steampowered.com/app/1584840/AGAINST" },
+      { name: "Pico", url: "https://store-global.picoxr.com/ru/detail/1/3744" }
+    ]
+  },
+  {
     title: "SPLIT FPV: Drone Racing",
     description: lang === 'cn'
       ? "免费且真实的 FPV 模拟器，用于提高无人机驾驶技能。包含精细的飞行物理和专门的战斗任务。"
@@ -139,7 +240,7 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
         ? "Бесплатный реалистичный FPV-симулятор для прокачки навыков управления дроном. Включает проработанную физику полета и специализированные боевые миссии."
         : "Free realistic FPV simulator to sharpen drone piloting skills. Features sophisticated flight physics and specialized combat missions.",
     whatDone: lang === 'cn'
-      ? "设计游戏玩法和进度系统，调优真实飞行物理，集成遥控器和手柄支持。"
+      ? "设计游戏玩法 and 进度系统，调优真实飞行物理，集成遥控器和手柄支持。"
       : lang === 'ru'
         ? "Проектирование геймплея и прогрессии, тюнинг реалистичной физики полета, интеграция поддержки пультов и геймпадов."
         : "Gameplay & progression design, realistic flight physics tuning, transmitter and gamepad integration.",
@@ -195,123 +296,6 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
         : "Concept development, balancing sports movement patterns with rhythm mechanics, and tuning level generation algorithms to audio tracks.",
     stack: ["Generative Music", "Rhythm Game", "Combat Sports"],
     youtubeId: "096o56nwQMo",
-    links: []
-  },
-  {
-    title: "Deadhook",
-    description: lang === 'cn'
-      ? "具有 Roguelike 元素和先进钩爪移动系统的动态 VR 射击游戏。"
-      : lang === 'ru' 
-        ? "Динамичный VR-шутер с элементами Roguelike и продвинутой системой перемещения с помощью крюка-кошки."
-        : "Dynamic VR shooter featuring Roguelike elements and an advanced grappling hook movement system.",
-    whatDone: lang === 'cn'
-      ? "设计核心机制、Roguelike 循环（元进度、武器和敌人平衡），并筹备 Meta Quest、SteamVR 和 PSVR2 平台发布。"
-      : lang === 'ru'
-        ? "Геймдизайн кор-механик, проектирование Roguelike-цикла (мета-прогрессия, баланс оружия и противников), подготовка продукта к релизу на Meta Quest, SteamVR и PSVR2."
-        : "Core mechanics design, Roguelike cycle planning (meta-progression, weapon/enemy balancing), and multi-platform release preparation (Meta Quest, SteamVR, PSVR2).",
-    stack: ["VR Roguelike", "Action", "Design"],
-    youtubeId: "GB5ERsLVf6I",
-    links: [
-      { name: "Meta Quest", url: "https://www.meta.com/experiences/dead-hook/8896303273744663/" },
-      { name: "Steam", url: "https://store.steampowered.com/app/2342360/Dead_Hook/" },
-      { name: "PlayStation", url: "https://store.playstation.com/concept/10009531" },
-      { name: "Pico", url: "https://store-global.picoxr.com/gb/detail/1/7309044953793970182" }
-    ]
-  },
-  {
-    title: "STRIDE: Fates",
-    description: lang === 'cn'
-      ? "剧情驱动的 VR 跑酷射击游戏。探索反乌托邦大都市，为玩家提供极高的战术移动自由度和混合现实 (MR) 体验。"
-      : lang === 'ru'
-        ? "Сюжетный VR-экшен с элементами паркура. Исследование антиутопичного мегаполис, предлагающее игрокам абсолютную свободу тактических передвижений."
-        : "Story-driven VR parkour action. Explores a dystopian metropolis while offering players absolute freedom in tactical movement.",
-    whatDone: lang === 'cn'
-      ? "实现混合现实模式，设计游戏循环，协调开发与叙事团队之间的协作。"
-      : lang === 'ru'
-        ? "Реализации Mix Reality режима, дизайн игрового цикла, координация взаимодействия между командами разработки и нарратива."
-        : "Mixed Reality mode implementation, game loop design, and cross-team coordination between development and narrative units.",
-    stack: ["Parkour Action", "Story-driven", "MR"],
-    youtubeId: "LVMTZguRlKo",
-    links: [
-      { name: "Meta Quest", url: "https://www.meta.com/en-gb/experiences/5968439973240748/" },
-      { name: "Steam", url: "https://store.steampowered.com/app/2597880/STRIDE_Fates/" },
-      { name: "PlayStation", url: "https://store.playstation.com/en-us/concept/10010312" },
-      { name: "Pico", url: "https://store-global.picoxr.com/gb/detail/1/7378790057861382150" }
-    ]
-  },
-  {
-    title: "STRIDE Multiplayer",
-    description: lang === 'cn'
-      ? "竞技性多玩家 VR 射击游戏，在此移动能力和跑酷成为关键的战术优势。"
-      : lang === 'ru'
-        ? "Соревновательный многопользовательский VR-шутер, где мобильность и паркур становятся главным тактическим преимуществом игрока."
-        : "Competitive multiplayer VR shooter where high mobility and parkour maneuvers become primary tactical advantages.",
-    whatDone: lang === 'cn'
-      ? "设计和调优网络机制，开发子模式，并对游戏平衡进行全面的算法计算和迭代测试。"
-      : lang === 'ru'
-        ? "Проектирование и тюнинг сетевых механик, разработка под режимов, полный расчет и итеративная настройка игрового баланса."
-        : "Network mechanics design & tuning, sub-mode development, and comprehensive algorithmic game balance iteration.",
-    stack: ["Unreal Engine", "Singleplayer", "Multiplayer"],
-    youtubeId: "83n7jWFOBE0",
-    links: [
-      { name: "Meta Quest", url: "https://www.oculus.com/experiences/quest/4901911359882668" },
-      { name: "Steam", url: "https://store.steampowered.com/app/1292040/STRIDE" },
-      { name: "PlayStation", url: "https://store.playstation.com/en-us/product/UP6195-CUSA25130_00-6556661881407173" },
-      { name: "Pico", url: "https://store-global.picoxr.com/gb/detail/1/4029" }
-    ]
-  },
-  {
-    title: "STACK",
-    description: lang === 'cn'
-      ? "战术性团队 VR 射击游戏，高度强调物理互动、环境破坏和动态近战体验。"
-      : lang === 'ru'
-        ? "Тактический командный VR-шутер с глубоким упором на физическое взаимодействие объектов, разрушаемость и динамику ближнего боя."
-        : "Tactical team VR shooter with a strong focus on physical object interactions, destructibility, and dynamic close combat.",
-    whatDone: lang === 'cn'
-      ? "设计物理交互、创建战术地图并管理产品的全生命周期开发。"
-      : lang === 'ru'
-        ? "Проектирование физических взаимодействий, создание тактических карт, управление полным циклом разработки продукта."
-        : "Designing physical interactions, tactical map creation, and full product development lifecycle management.",
-    stack: ["Unity", "Physics-based", "Action"],
-    youtubeId: "RAJVJAjBX8c",
-    links: [
-      { name: "Meta Quest", url: "https://www.meta.com/experiences/stack/5366874313435765" },
-      { name: "Pico", url: "https://store-global.picoxr.com/global/detail/1/7339799345019273268" }
-    ]
-  },
-  {
-    title: "Against - Map Editor",
-    description: lang === 'cn'
-      ? "专门为名为 AGAINST 的节奏射击游戏设计的专业工具 and 强大的关卡编辑器，旨在支持 UGC 社区。"
-      : lang === 'ru'
-        ? "Профессиональный инструментарий и мощный редактор уровней, созданный для поддержки UGC-сообщества боевого ритм-шутера AGAINST."
-        : "Professional toolset and powerful level editor built to support the UGC community of the rhythm combat shooter AGAINST.",
-    whatDone: lang === 'cn'
-      ? "设计编辑器 UX/UI，为模组制作者开发客户端，并建立稳定的 UGC 内容共享基础设施。"
-      : lang === 'ru'
-        ? "Проектирование UX/UI редактора, разработка клиента для моддеров, выстраивание надежной инфраструктуры для создания и обмена пользовательским контентом."
-        : "UX/UI design of the editor, developing the modder client, and building a robust infrastructure for UGC creation and exchange.",
-    stack: ["Editor Tooling", "Unity SDK", "User Generated Content"],
-    youtubeId: "48VhkwMV80Y",
-    links: [
-      { name: "Steam", url: "https://store.steampowered.com/app/1584840/AGAINST" },
-      { name: "Pico", url: "https://store-global.picoxr.com/ru/detail/1/3744" }
-    ]
-  },
-  {
-    title: lang === 'ru' ? "Проектирование квартиры" : "Apartment Design VR",
-    description: lang === 'cn'
-      ? "面向房地产开发商及其终端客户的 B2B VR/AR 解决方案，支持实时定制化装修预览。"
-      : lang === 'ru'
-        ? "B2B VR/AR-решение для презентации объектов недвижимости застройщикам и конечным клиентам с возможностью кастомизации отделки в реальном времени."
-        : "B2B VR/AR solution for real estate visualization, allowing developers and clients to customize finishes in real-time.",
-    whatDone: lang === 'cn'
-      ? "管理开发流程，优化并将建筑 CAD 模型集成到引擎中，并为 VR 演示设计无缝的用户路径。"
-      : lang === 'ru'
-        ? "Управление разработкой, оптимизация и интеграция архитектурных CAD-моделей в движок, создание бесшовного пользовательского пути для VR-презентаций."
-        : "Development management, CAD architectural model optimization and integration, and seamless user journey design for VR tours.",
-    stack: ["Real Estate", "VR/AR", "Architecture"],
-    youtubeId: "VK1YTMYuse0",
     links: []
   },
   {
@@ -385,7 +369,7 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
     description: lang === 'cn'
       ? "具有高度详细且真实的游戏体验的互动式 VR 枪械百科全书，包含真实的组装/拆解 and 物理射击体验。"
       : lang === 'ru'
-        ? "Интерактивная VR-энциклопедия стрелкового оружия с высокой детализацией исторически достоверной сборки/разборки и реалистичной физикой стрельбы."
+        ? "Интерактивная VR-энциклопедия стрелкового оружия with высокой детализацией исторически достоверной сборки/разборки и реалистичной физикой стрельбы."
         : "Interactive VR museum of firearms with highly detailed, historically accurate assembly and realistic ballistics.",
     whatDone: lang === 'cn'
       ? "主导历史参考资料的 3D 建模流程，调优互动逻辑，并筹划博物馆内的叙事路径。"
@@ -397,9 +381,25 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
     links: []
   },
   {
+    title: lang === 'ru' ? "Проектирование квартиры" : "Apartment Design VR",
+    description: lang === 'cn'
+      ? "面向房地产开发商及其终端客户的 B2B VR/AR 解决方案，支持实时定制化装修预览。"
+      : lang === 'ru'
+        ? "B2B VR/AR-решение для презентации объектов недвижимости застройщикам и конечным клиентам с возможностью кастомизации отделки в реальном времени."
+        : "B2B VR/AR solution for real estate visualization, allowing developers and clients to customize finishes in real-time.",
+    whatDone: lang === 'cn'
+      ? "管理开发流程，优化并将建筑 CAD 模型集成到引擎中，并为 VR 演示设计无缝的用户路径。"
+      : lang === 'ru'
+        ? "Управление разработкой, оптимизация и интеграция архитектурных CAD-моделей в движок, создание бесшовного пользовательского пути для VR-презентаций."
+        : "Development management, CAD architectural model optimization and integration, and seamless user journey design for VR tours.",
+    stack: ["Real Estate", "VR/AR", "Architecture"],
+    youtubeId: "VK1YTMYuse0",
+    links: []
+  },
+  {
     title: "Boxglass VR Cardboards",
     description: lang === 'cn'
-      ? "生产实惠的移动 VR 头显的硬件初创公司市场进入与扩张。"
+      ? "生产实惠的 mobile VR 头显的硬件初创公司市场进入与扩张。"
       : lang === 'ru'
         ? "Вывод на рынок и масштабирование hardware-стартапа по производству доступных мобильных VR-гарнитур."
         : "Market entry and scaling for a hardware startup producing affordable mobile VR headsets.",
