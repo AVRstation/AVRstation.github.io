@@ -137,6 +137,19 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
         : "Free realistic FPV simulator to improve real drone piloting skills. Connect a real transmitter, take a gamepad or keyboard and take to the skies.",
     stack: ["FPV Simulation", "Unity", "Transmitter Support"],
     youtubeId: "73QgqnQXSvw",
+    links: [
+      { name: "Steam", url: "https://store.steampowered.com/app/4348580/SPLIT_FPV_Drone_Racing/" }
+    ]
+  },
+  {
+    title: "Shooter VR",
+    description: lang === 'cn'
+      ? "具有内置地图生成器和级别编辑器的动态自由移动射击游戏。"
+      : lang === 'ru'
+        ? "Динамический шутер со свободным перемещением — встроенный генератор и редактор карт."
+        : "Dynamic freeroam shooter featuring a built-in map generator and level editor.",
+    stack: ["Multiplayer", "LBE", "Freeroam VR"],
+    youtubeId: "I8B3NarPd2E",
     links: []
   },
   {
@@ -371,9 +384,9 @@ export default function App() {
       {/* Header */}
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end pb-6 border-b border-[var(--glass-border)] gap-4">
         <div className="name-brand">
-          <div className="text-2xl md:text-3xl font-extrabold tracking-tighter uppercase">
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tighter uppercase">
             {t.first_name}<span className="text-[var(--accent)] font-black"> {t.last_name}</span>
-          </div>
+          </h1>
           <div className="text-[10px] md:text-xs text-[var(--text-dim)] mt-1 tracking-wider font-medium uppercase opacity-80">
             {t.role}
           </div>
@@ -522,7 +535,7 @@ export default function App() {
                   ) : project.image ? (
                     <img 
                       src={project.image} 
-                      alt={project.title}
+                      alt={`Screenshot of ${project.title} - ${project.description.slice(0, 50)}...`}
                       referrerPolicy="no-referrer"
                       className="absolute inset-0 w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700"
                     />
@@ -542,7 +555,7 @@ export default function App() {
                       </span>
                     ))}
                   </div>
-                  <h4 className="text-lg md:text-xl font-bold mb-2 group-hover:text-[var(--accent)] transition-colors">{project.title}</h4>
+                  <h3 className="text-lg md:text-xl font-bold mb-2 group-hover:text-[var(--accent)] transition-colors">{project.title}</h3>
                   <p className="text-[var(--text-dim)] text-xs md:text-sm leading-relaxed mb-4 flex-1">
                     {project.description}
                   </p>
@@ -554,6 +567,7 @@ export default function App() {
                         href={link.url} 
                         target="_blank" 
                         rel="noopener noreferrer"
+                        aria-label={`${link.name} for ${project.title}`}
                         className="inline-flex items-center gap-1.5 text-[10px] font-bold text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
                       >
                         {link.name} <ExternalLink className="w-3 h-3" />
