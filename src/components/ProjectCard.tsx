@@ -6,11 +6,19 @@ interface ProjectCardProps {
   project: any;
   idx: number;
   contributionsLabel: string;
+  onWatchVideo?: () => void;
   key?: string | number;
 }
 
-export function ProjectCard({ project, idx, contributionsLabel }: ProjectCardProps) {
+export function ProjectCard({ project, idx, contributionsLabel, onWatchVideo }: ProjectCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
+
+  const handlePlay = () => {
+    if (!isPlaying && project.youtubeId) {
+      setIsPlaying(true);
+      if (onWatchVideo) onWatchVideo();
+    }
+  };
 
   return (
     <motion.div
@@ -22,7 +30,7 @@ export function ProjectCard({ project, idx, contributionsLabel }: ProjectCardPro
     >
       <div 
         className="aspect-video relative overflow-hidden bg-zinc-900 border-b border-[var(--glass-border)] cursor-pointer"
-        onClick={() => !isPlaying && project.youtubeId && setIsPlaying(true)}
+        onClick={handlePlay}
       >
         {project.youtubeId ? (
           isPlaying ? (

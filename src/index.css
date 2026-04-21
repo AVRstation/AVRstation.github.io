@@ -133,7 +133,19 @@ body {
   }
 }
 
-.status-pill::after {
+.status-pill:active {
+  transform: translateY(2px);
+  box-shadow: 
+    0 2px 0 0 rgba(4, 120, 87, 0.8),
+    0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.shine-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-effect::after {
   content: '';
   position: absolute;
   top: -50%;
@@ -144,18 +156,167 @@ body {
     45deg,
     transparent 0%,
     transparent 40%,
-    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.2) 50%,
     transparent 60%,
     transparent 100%
   );
   transform: rotate(25deg);
-  animation: shine 4s infinite;
+  animation: shine 8s infinite;
+  pointer-events: none;
 }
 
 @keyframes shine {
   0% { transform: translateX(-100%) rotate(25deg); }
-  20% { transform: translateX(100%) rotate(25deg); }
+  15% { transform: translateX(100%) rotate(25deg); }
   100% { transform: translateX(100%) rotate(25deg); }
+}
+
+.shine-effect-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-effect-hover::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -150%;
+  width: 300%;
+  height: 300%;
+  background: linear-gradient(
+    45deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.shine-effect-hover:hover::after {
+  opacity: 1;
+  animation: shine 5s infinite;
+}
+
+.copyright-badge {
+  @apply transition-all duration-300 rounded-xl px-4 py-2 cursor-default border border-transparent;
+}
+
+.copyright-badge:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 4px 0 0 rgba(0, 0, 0, 0.3),
+    0 8px 15px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
+  color: white !important;
+}
+
+.slot-3d {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 4px 0 0 rgba(0, 0, 0, 0.4),
+    0 8px 15px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.slot-3d:hover {
+  transform: translateY(-1px);
+  box-shadow: 
+    0 5px 0 0 rgba(0, 0, 0, 0.4),
+    0 10px 20px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  border-color: var(--accent);
+}
+
+.slot-3d:active {
+  transform: translateY(3px);
+  box-shadow: 
+    0 1px 0 0 rgba(0, 0, 0, 0.4),
+    0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.slot-3d-jackpot {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.15) 0%, rgba(0, 240, 255, 0.05) 100%);
+  box-shadow: 
+    0 4px 0 0 #0088CC,
+    0 0 30px rgba(0, 240, 255, 0.3),
+    inset 0 0 15px rgba(0, 240, 255, 0.2);
+}
+
+.kb-key {
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 
+    0 6px 0 0 rgba(0, 0, 0, 0.5),
+    0 8px 12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.1s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 4px;
+}
+
+.kb-key:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+.kb-key:active {
+  transform: translateY(4px);
+  box-shadow: 
+    0 2px 0 0 rgba(0, 0, 0, 0.5),
+    0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.kb-key-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 800;
+  color: var(--text-dim);
+  opacity: 0.5;
+  position: absolute;
+  top: 6px;
+  left: 8px;
+}
+
+.header-3d-wrapper {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  box-shadow: 
+    0 4px 0 0 rgba(0, 0, 0, 0.5),
+    0 8px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(12px);
+}
+
+.header-3d-wrapper:hover {
+  border-color: rgba(0, 240, 255, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 5px 0 0 rgba(0, 0, 0, 0.5),
+    0 10px 15px rgba(0, 0, 0, 0.4);
+}
+
+.header-3d-wrapper:active {
+  transform: translateY(3px);
+  box-shadow: 
+    0 1px 0 0 rgba(0, 0, 0, 0.5),
+    0 2px 5px rgba(0, 0, 0, 0.4);
 }
 
 .tag {

@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { SnakeGame } from './components/SnakeGame';
 import { PongGame } from './components/PongGame';
 import { SpaceInvadersGame } from './components/SpaceInvadersGame';
 import { ProjectCard } from './components/ProjectCard';
+import { SlotMachine } from './components/SlotMachine';
+import { TreasureChest } from './components/TreasureChest';
+import { AchievementSystem, AchievementSystemHandle } from './components/AchievementSystem';
 import { 
   Briefcase, 
   Gamepad2, 
@@ -15,7 +18,8 @@ import {
   Disc,
   Globe,
   Sun,
-  Moon
+  Moon,
+  Power
 } from 'lucide-react';
 
 const TRANSLATIONS = {
@@ -472,8 +476,10 @@ const detectInitialLanguage = (): 'ru' | 'en' | 'cn' => {
 };
 
 export default function App() {
+  const achievementsRef = React.useRef<AchievementSystemHandle>(null);
   const [lang, setLang] = useState<'ru' | 'en' | 'cn'>(detectInitialLanguage);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [gamesEnabled, setGamesEnabled] = useState(true);
   const [activeGame, setActiveGame] = useState<'snake' | 'pong' | 'space'>(() => {
     const r = Math.random();
     if (r < 0.33) return 'snake';
@@ -491,6 +497,47 @@ export default function App() {
   const [spaceAiScore, setSpaceAiScore] = useState(0);
 
   const [isMobile, setIsMobile] = useState(false);
+  const [contactTrigger, setContactTrigger] = useState(0);
+
+  // Achievement Triggers
+  useEffect(() => {
+    const isFirstRun = !localStorage.getItem('ach_lang_init');
+    if (!isFirstRun) achievementsRef.current?.unlock('change_lang');
+    localStorage.setItem('ach_lang_init', 'true');
+  }, [lang]);
+
+  useEffect(() => {
+    const isFirstRun = !localStorage.getItem('ach_theme_init');
+    if (!isFirstRun) achievementsRef.current?.unlock('toggle_theme');
+    localStorage.setItem('ach_theme_init', 'true');
+  }, [theme]);
+
+  useEffect(() => {
+    const isFirstRun = !localStorage.getItem('ach_game_init');
+    if (!isFirstRun) achievementsRef.current?.unlock('change_game');
+    localStorage.setItem('ach_game_init', 'true');
+  }, [activeGame]);
+
+  useEffect(() => {
+    if (!gamesEnabled) achievementsRef.current?.unlock('disable_games');
+    else {
+      const wasDisabled = localStorage.getItem('ach_games_disabled');
+      if (wasDisabled === 'true') achievementsRef.current?.unlock('toggle_power_on');
+    }
+    localStorage.setItem('ach_games_disabled', (!gamesEnabled).toString());
+  }, [gamesEnabled]);
+
+  useEffect(() => {
+    if (snakeScore > 0) achievementsRef.current?.unlock('snake_point');
+  }, [snakeScore]);
+
+  useEffect(() => {
+    if (pongScore > 0) achievementsRef.current?.unlock('pong_point');
+  }, [pongScore]);
+
+  useEffect(() => {
+    if (spaceScore > 0) achievementsRef.current?.unlock('space_point');
+  }, [spaceScore]);
 
   useEffect(() => {
     // Reset all scores when game changes
@@ -545,7 +592,7 @@ export default function App() {
 
       {/* Interactive Games */}
       <AnimatePresence mode="wait">
-        {activeGame === 'snake' && (
+        {gamesEnabled && activeGame === 'snake' && (
           <motion.div
             key="snake-wrapper"
             initial={{ opacity: 0 }}
@@ -555,7 +602,7 @@ export default function App() {
             <SnakeGame onScoreChange={setSnakeScore} onAIScoreChange={setAiScore} />
           </motion.div>
         )}
-        {activeGame === 'pong' && (
+        {gamesEnabled && activeGame === 'pong' && (
           <motion.div
             key="pong-wrapper"
             initial={{ opacity: 0 }}
@@ -565,7 +612,7 @@ export default function App() {
             <PongGame onScoreChange={setPongScore} onAIScoreChange={setPongAiScore} />
           </motion.div>
         )}
-        {activeGame === 'space' && (
+        {gamesEnabled && activeGame === 'space' && (
           <motion.div
             key="space-wrapper"
             initial={{ opacity: 0 }}
@@ -578,7 +625,8 @@ export default function App() {
       </AnimatePresence>
       
       <div className="relative z-10 min-h-screen lg:h-screen lg:overflow-hidden flex flex-col p-4 md:p-6 lg:p-10 max-w-[1440px] mx-auto gap-6 lg:gap-8">
-      {/* Header */}
+        <AchievementSystem ref={achievementsRef} lang={lang} />
+        {/* Header */}
       <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end pb-6 border-b border-[var(--glass-border)] gap-6 perspective-1000">
         <div className="name-brand w-full lg:w-auto">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tighter uppercase leading-tight">
@@ -595,14 +643,14 @@ export default function App() {
             {/* Theme Toggle */}
             <button 
               onClick={toggleTheme}
-              className="p-2 rounded-full bg-[var(--glass)] border border-[var(--glass-border)] text-[var(--accent)] hover:bg-[var(--glass-border)] transition-all"
+              className="p-2 rounded-full header-3d-wrapper text-[var(--accent)] transition-all"
               title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
             >
               {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
 
             {/* Language Switcher */}
-            <div className="flex items-center bg-[var(--glass)] border border-[var(--glass-border)] rounded-full p-1">
+            <div className="flex items-center header-3d-wrapper rounded-full p-1">
               <button 
                 onClick={() => setLang('ru')}
                 className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${lang === 'ru' ? 'bg-[var(--accent)] text-black' : 'text-[var(--text-dim)] hover:text-white'}`}
@@ -632,7 +680,7 @@ export default function App() {
               })}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="group relative hidden md:flex items-center bg-[var(--glass)] border border-[var(--glass-border)] rounded-full p-1 cursor-pointer hover:border-[var(--accent)] transition-colors z-50"
+              className="group relative hidden md:flex items-center header-3d-wrapper rounded-full p-1 cursor-pointer z-50 transition-all"
             >
               <div className="flex items-center gap-4 px-4 py-1.5">
                 <div className="flex items-center gap-1.5 mr-1">
@@ -669,6 +717,21 @@ export default function App() {
                       {activeGame === 'snake' ? aiScore : activeGame === 'pong' ? pongAiScore : spaceAiScore}
                     </span>
                   </div>
+                  <div className="w-[1px] h-3 bg-[var(--glass-border)] ml-2" />
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setGamesEnabled(prev => !prev);
+                    }}
+                    className={`w-5 h-5 rounded-full flex items-center justify-center transition-all duration-300 ${
+                      gamesEnabled 
+                        ? 'bg-green-500 shadow-[0_0_12px_rgba(34,197,94,0.6)]' 
+                        : 'bg-zinc-700 opacity-50'
+                    }`}
+                    title={gamesEnabled ? "Turn off background games" : "Turn on background games"}
+                  >
+                    <Power className={`w-2.5 h-2.5 ${gamesEnabled ? 'text-white' : 'text-zinc-400'}`} strokeWidth={4} />
+                  </button>
                 </div>
               </div>
 
@@ -688,15 +751,15 @@ export default function App() {
           </div>
 
           <motion.a 
-            key={isMobile ? 'contact-static' : `${snakeScore}-${aiScore}-${pongScore}-${pongAiScore}-${spaceScore}-${spaceAiScore}`}
+            key={`${contactTrigger}-${snakeScore}-${aiScore}-${pongScore}-${pongAiScore}-${spaceScore}-${spaceAiScore}`}
             href="https://t.me/xrman"
             target="_blank"
             rel="noopener noreferrer"
-            className="status-pill gap-2 cursor-pointer scale-90 sm:scale-100 origin-right"
+            className="status-pill shine-effect gap-2 cursor-pointer scale-90 sm:scale-100 origin-right"
             animate={isMobile ? {} : { 
               rotateZ: [0, -10, 10, -10, 10, 0],
               rotateX: [0, 25, 0],
-              scale: [1, 1.15, 1],
+              scale: contactTrigger > 0 ? [1, 1.3, 1, 1.2, 1] : [1, 1.15, 1],
               y: [0, -10, 0]
             }}
             whileHover={{ scale: 1.1, y: -2 }}
@@ -766,33 +829,50 @@ export default function App() {
                 project={project}
                 idx={idx}
                 contributionsLabel={t.contributions_label}
+                onWatchVideo={() => achievementsRef.current?.unlock('watch_video')}
               />
             ))}
           </div>
+
+          {/* Treasure Interactive */}
+          <TreasureChest 
+            onOpen={() => achievementsRef.current?.unlock('chest_open')} 
+            onBackToTop={() => achievementsRef.current?.unlock('back_to_top')} 
+          />
         </main>
       </div>
 
       {/* Footer */}
       <footer className="footer-area sleek-glass rounded-2xl p-6 md:px-10 flex flex-col md:flex-row justify-between items-center gap-8 mb-4">
-        <div className="flex flex-col gap-2">
-          <div className="text-[var(--text-dim)] text-xs md:text-sm font-black tracking-widest uppercase">
-            © 2026 ALEKSANDR KOPANEV
+        <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
+          <SlotMachine onWin={() => {
+            setContactTrigger(prev => prev + 1);
+            achievementsRef.current?.unlock('slot_win');
+          }} />
+          <div className="flex flex-col gap-2">
+            <div className="text-[var(--text-dim)] text-xs md:text-sm font-black tracking-widest uppercase copyright-badge shine-effect-hover">
+              © 2026 ALEKSANDR KOPANEV
+            </div>
           </div>
         </div>
-        <div className="flex flex-wrap justify-center gap-3">
-          {CONTACTS.map((contact) => (
+        <div className="flex flex-wrap justify-center gap-4">
+          {CONTACTS.map((contact, index) => (
             <a 
               key={contact.label} 
               href={contact.url} 
               target="_blank" 
               rel="noopener noreferrer"
-              className={`footer-btn px-6 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 hover:scale-105 ${
-                contact.label === 'Telegram' 
-                  ? 'bg-white text-black' 
-                  : 'sleek-glass text-white'
-              }`}
+              title={contact.label}
+              onClick={() => {
+                achievementsRef.current?.unlock('click_contact');
+                achievementsRef.current?.unlock('f_key_click');
+              }}
+              className={`kb-key w-14 h-14 group transition-all duration-300 ${contact.color} !bg-opacity-100 border-none shadow-lg`}
             >
-              {contact.label}
+              <span className="kb-key-label !text-white/50">F{index + 1}</span>
+              <div className="text-white drop-shadow-md transform group-hover:scale-110 transition-transform">
+                {React.cloneElement(contact.icon as React.ReactElement, { className: "w-6 h-6" })}
+              </div>
             </a>
           ))}
         </div>
