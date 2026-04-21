@@ -5,6 +5,10 @@ interface Point {
   y: number;
 }
 
+interface Apple extends Point {
+  opacity: number;
+}
+
 interface SnakeGameProps {
   onScoreChange?: (score: number) => void;
   onAIScoreChange?: (score: number) => void;
@@ -15,7 +19,7 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
   const snakeRef = useRef<Point[]>([]);
   const aiSnakeRef = useRef<Point[]>([]);
   const aiAngleRef = useRef<number>(0);
-  const appleRef = useRef<Point | null>(null);
+  const applesRef = useRef<Apple[]>([]);
   const mouseRef = useRef<Point>({ x: 0, y: 0 });
   const [gameOver, setGameOver] = useState(false);
   const scoreRef = useRef(0);
@@ -59,16 +63,25 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
       x = window.innerWidth - (Math.random() * sideWidth + margin);
     }
 
-    appleRef.current = {
+    const newApple: Apple = {
       x: Math.max(margin, Math.min(window.innerWidth - margin, x)),
-      y: Math.random() * (window.innerHeight - 100) + 50
+      y: Math.random() * (window.innerHeight - 100) + 50,
+      opacity: 0
     };
+    
+    applesRef.current.push(newApple);
+  };
+
+  const ensureApples = () => {
+    while (applesRef.current.length < 3) {
+      spawnApple();
+    }
   };
 
   useEffect(() => {
     resetGame();
     spawnAISnake();
-    spawnApple();
+    ensureApples();
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY };
@@ -127,15 +140,69 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
         // Target angle
         const targetAngle = Math.atan2(target.y - head.y, target.x - head.x);
         
-        // Find shortest angular distance
-        let diff = targetAngle - aiAngleRef.current;
+        // --- Improved AI logic with Obstacle Avoidance ---
+        let bestAngle = targetAngle;
+        let maxWeight = -10000;
+        
+        // Check 12 directions around the snake
+        for (let i = 0; i < 12; i++) {
+          const testAngle = (i / 12) * Math.PI * 2;
+          let weight = 0;
+
+          // 1. Goal alignment (prefer directions towards apple)
+          let angleDiff = Math.abs(testAngle - targetAngle);
+          while (angleDiff > Math.PI) angleDiff = Math.PI * 2 - angleDiff;
+          weight -= angleDiff * 50;
+
+      // 2. Obstacle detection
+          const checkDistances = [25, 50, 100]; // Check near, medium, and far
+          
+          for (const dist of checkDistances) {
+            const px = head.x + Math.cos(testAngle) * dist;
+            const py = head.y + Math.sin(testAngle) * dist;
+
+            // Wall avoidance (extremely high penalty)
+            const margin = 60;
+            if (px < margin || px > window.innerWidth - margin || py < margin || py > window.innerHeight - margin) {
+              weight -= 10000 / (dist / 25);
+            }
+
+            // Player avoidance (very high penalty)
+            for (const seg of snakeRef.current) {
+              const dx = px - seg.x;
+              const dy = py - seg.y;
+              const d2 = dx * dx + dy * dy;
+              if (d2 < 2500) { // 50px radius for weight
+                weight -= 5000 / (dist / 25);
+              }
+            }
+
+            // Self avoidance (extremely high penalty to avoid crashing into self)
+            for (let k = 4; k < snake.length; k++) {
+              const seg = snake[k];
+              const dx = px - seg.x;
+              const dy = py - seg.y;
+              const d2 = dx * dx + dy * dy;
+              if (d2 < 2025) { // 45px radius for weight
+                weight -= 8000 / (dist / 25);
+              }
+            }
+          }
+
+          if (weight > maxWeight) {
+            maxWeight = weight;
+            bestAngle = testAngle;
+          }
+        }
+
+        // Smoothly rotate towards bestAngle
+        let diff = bestAngle - aiAngleRef.current;
         while (diff < -Math.PI) diff += Math.PI * 2;
         while (diff > Math.PI) diff -= Math.PI * 2;
         
-        // Limit turning speed (arc effect)
-        const turnSpeed = 0.05;
+        const turnSpeed = 0.12; // Even faster turning to dodge self
         if (Math.abs(diff) < turnSpeed) {
-          aiAngleRef.current = targetAngle;
+          aiAngleRef.current = bestAngle;
         } else {
           aiAngleRef.current += Math.sign(diff) * turnSpeed;
         }
@@ -168,12 +235,30 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
         return newSnake;
       };
 
+      // Calculate dynamic speed based on individual scores (the longer the snake, the slower it moves)
+      const playerSpeed = Math.max(4.5 - scoreRef.current * 0.1, 2.0);
+      const aiSpeed = Math.max(4.2 - aiScoreRef.current * 0.1, 1.8);
+
       // 1. Update Player position
-      snakeRef.current = updateSnake(snakeRef.current, mouseRef.current, 3);
+      snakeRef.current = updateSnake(snakeRef.current, mouseRef.current, playerSpeed);
       
-      // 2. Update AI position (Move towards apple with turn limit)
-      if (appleRef.current) {
-        aiSnakeRef.current = updateAISnake(aiSnakeRef.current, appleRef.current, 2.5);
+      // 2. Update AI position (Move towards closest apple)
+      if (applesRef.current.length > 0) {
+        // Find closest apple
+        const aiHead = aiSnakeRef.current[0];
+        if (aiHead) {
+          let closestApple = applesRef.current[0];
+          let minDist = Math.sqrt((aiHead.x - closestApple.x)**2 + (aiHead.y - closestApple.y)**2);
+          
+          for (let i = 1; i < applesRef.current.length; i++) {
+            const dist = Math.sqrt((aiHead.x - applesRef.current[i].x)**2 + (aiHead.y - applesRef.current[i].y)**2);
+            if (dist < minDist) {
+              minDist = dist;
+              closestApple = applesRef.current[i];
+            }
+          }
+          aiSnakeRef.current = updateAISnake(aiSnakeRef.current, closestApple, aiSpeed);
+        }
       }
 
       // Check Player collisions
@@ -182,8 +267,8 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
         // Self
         for (let i = 2; i < snakeRef.current.length; i++) {
           const seg = snakeRef.current[i];
-          if (Math.sqrt((head.x - seg.x)**2 + (head.y - seg.y)**2) < 8) {
-            resetGame();
+          if (Math.sqrt((head.x - seg.x)**2 + (head.y - seg.y)**2) < 6) {
+            if (scoreRef.current > 0) resetGame();
             break;
           }
         }
@@ -191,7 +276,7 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
         for (let i = 0; i < aiSnakeRef.current.length; i++) {
           const seg = aiSnakeRef.current[i];
           if (Math.sqrt((head.x - seg.x)**2 + (head.y - seg.y)**2) < 10) {
-            resetGame();
+            if (scoreRef.current > 0) resetGame();
             break;
           }
         }
@@ -203,7 +288,7 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
         // Self
         for (let i = 2; i < aiSnakeRef.current.length; i++) {
           const seg = aiSnakeRef.current[i];
-          if (Math.sqrt((aiHead.x - seg.x)**2 + (aiHead.y - seg.y)**2) < 8) {
+          if (Math.sqrt((aiHead.x - seg.x)**2 + (aiHead.y - seg.y)**2) < 6) {
             spawnAISnake();
             break;
           }
@@ -219,43 +304,49 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
       }
 
       // Check for Apple collection
-      if (appleRef.current) {
+      applesRef.current.forEach((apple, index) => {
+        // Update opacity for smooth appearance
+        if (apple.opacity < 1) apple.opacity += 0.02;
+
         // Player eat
-        if (head && Math.sqrt((head.x - appleRef.current.x)**2 + (head.y - appleRef.current.y)**2) < 20) {
+        if (head && Math.sqrt((head.x - apple.x)**2 + (head.y - apple.y)**2) < 20) {
           scoreRef.current += 1;
           if (onScoreChange) onScoreChange(scoreRef.current);
           for(let k=0; k<4; k++) snakeRef.current.push({ ...snakeRef.current[snakeRef.current.length-1] });
-          spawnApple();
+          applesRef.current.splice(index, 1);
+          ensureApples();
         }
         // AI eat
-        else if (aiHead && Math.sqrt((aiHead.x - appleRef.current.x)**2 + (aiHead.y - appleRef.current.y)**2) < 20) {
+        else if (aiHead && Math.sqrt((aiHead.x - apple.x)**2 + (aiHead.y - apple.y)**2) < 20) {
           aiScoreRef.current += 1;
           if (onAIScoreChange) onAIScoreChange(aiScoreRef.current);
           for(let k=0; k<4; k++) aiSnakeRef.current.push({ ...aiSnakeRef.current[aiSnakeRef.current.length-1] });
-          spawnApple();
+          applesRef.current.splice(index, 1);
+          ensureApples();
         }
-      }
+      });
 
       // Draw
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw Apple
-      if (appleRef.current) {
+      // Draw Apples
+      applesRef.current.forEach(apple => {
         ctx.save();
-        const { x, y } = appleRef.current;
-        const grad = ctx.createRadialGradient(x, y, 0, x, y, 200);
-        grad.addColorStop(0, 'rgba(255, 0, 0, 0.4)');
+        const { x, y, opacity } = apple;
+        const glowRadius = 100; // Decreased by 2 times from 200
+        const grad = ctx.createRadialGradient(x, y, 0, x, y, glowRadius);
+        grad.addColorStop(0, `rgba(255, 0, 0, ${0.4 * opacity})`);
         grad.addColorStop(0.7, 'rgba(255, 0, 0, 0)');
         
         ctx.fillStyle = grad;
-        ctx.fillRect(x - 200, y - 200, 400, 400);
+        ctx.fillRect(x - glowRadius, y - glowRadius, glowRadius * 2, glowRadius * 2);
 
         ctx.beginPath();
         ctx.arc(x, y, 8, 0, Math.PI * 2);
-        ctx.fillStyle = '#FF4D4D';
+        ctx.fillStyle = `rgba(255, 77, 77, ${opacity})`;
         ctx.fill();
         ctx.restore();
-      }
+      });
 
       const currentSnake = snakeRef.current;
       const theme = document.documentElement.getAttribute('data-theme') || 'dark';
@@ -267,7 +358,9 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
         ctx.lineWidth = 10;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.strokeStyle = theme === 'dark' ? 'rgba(255, 0, 255, 0.2)' : 'rgba(200, 0, 200, 0.2)';
+        ctx.strokeStyle = theme === 'dark' ? 'rgba(255, 0, 255, 0.6)' : 'rgba(200, 0, 200, 0.6)';
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = theme === 'dark' ? 'rgba(255, 0, 255, 0.8)' : 'rgba(200, 0, 200, 0.8)';
         
         ctx.beginPath();
         ctx.moveTo(currentAISnake[0].x, currentAISnake[0].y);
@@ -281,12 +374,13 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
         ctx.save();
         const { x, y } = currentAISnake[0];
         const aiColor = theme === 'dark' ? '#FF00FF' : '#AA00AA';
-        const aiGrad = ctx.createRadialGradient(x, y, 0, x, y, 200);
+        const aiGradRadius = 100;
+        const aiGrad = ctx.createRadialGradient(x, y, 0, x, y, aiGradRadius);
         aiGrad.addColorStop(0, theme === 'dark' ? 'rgba(255, 0, 255, 0.3)' : 'rgba(200, 0, 200, 0.3)');
         aiGrad.addColorStop(0.7, 'rgba(0, 0, 0, 0)');
         
         ctx.fillStyle = aiGrad;
-        ctx.fillRect(x - 200, y - 200, 400, 400);
+        ctx.fillRect(x - aiGradRadius, y - aiGradRadius, aiGradRadius * 2, aiGradRadius * 2);
 
         ctx.beginPath();
         ctx.arc(x, y, 6, 0, Math.PI * 2);
@@ -301,7 +395,9 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
         ctx.lineWidth = 10;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.strokeStyle = theme === 'dark' ? 'rgba(0, 240, 255, 0.4)' : 'rgba(0, 136, 204, 0.4)';
+        ctx.strokeStyle = theme === 'dark' ? 'rgba(0, 240, 255, 0.6)' : 'rgba(0, 136, 204, 0.6)';
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = theme === 'dark' ? 'rgba(0, 240, 255, 0.8)' : 'rgba(0, 136, 204, 0.8)';
         
         ctx.beginPath();
         ctx.moveTo(currentSnake[0].x, currentSnake[0].y);
@@ -315,12 +411,13 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
         ctx.save();
         const { x, y } = currentSnake[0];
         const headColor = theme === 'dark' ? '#00F0FF' : '#0088CC';
-        const playerGrad = ctx.createRadialGradient(x, y, 0, x, y, 200);
+        const playerGradRadius = 100;
+        const playerGrad = ctx.createRadialGradient(x, y, 0, x, y, playerGradRadius);
         playerGrad.addColorStop(0, theme === 'dark' ? 'rgba(0, 240, 255, 0.3)' : 'rgba(0, 136, 204, 0.3)');
         playerGrad.addColorStop(0.7, 'rgba(0, 0, 0, 0)');
         
         ctx.fillStyle = playerGrad;
-        ctx.fillRect(x - 200, y - 200, 400, 400);
+        ctx.fillRect(x - playerGradRadius, y - playerGradRadius, playerGradRadius * 2, playerGradRadius * 2);
 
         ctx.beginPath();
         ctx.arc(x, y, 6, 0, Math.PI * 2);

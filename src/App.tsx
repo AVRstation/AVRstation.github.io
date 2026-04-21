@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { SnakeGame } from './components/SnakeGame';
+import { PongGame } from './components/PongGame';
+import { SpaceInvadersGame } from './components/SpaceInvadersGame';
+import { ProjectCard } from './components/ProjectCard';
 import { 
   Briefcase, 
   Gamepad2, 
   Layers, 
-  MapPin, 
   Send, 
   Mail, 
   ExternalLink, 
@@ -21,7 +23,7 @@ const TRANSLATIONS = {
     first_name: "АЛЕКСАНДР",
     last_name: "КОПАНЕВ",
     role: "Senior гейм дизайнер • Product Owner • Креативный продюсер",
-    status: "Доступен для проектов",
+    status: "Связаться",
     experience_title: "ОПЫТ",
     experience: [
       { highlight: "27+ лет", text: "глубокой насмотренности и экспертизы в игровом домене" },
@@ -32,7 +34,6 @@ const TRANSLATIONS = {
       { highlight: "5+ лет", text: "запуска и интеграции решений на базе Искусственного Интеллекта" }
     ],
     projects_title: "Проекты и Кейсы",
-    footer_location: "г. Москва, Россия — GMT+3",
     contact_cta_title: "Готовы к следующему технологическому рывку?",
     contact_cta_text: "Давайте обсудим ваш проект, будь то создание метавселенной, сложной сетевой механики или образовательного VR-симулятора.",
     skills: {
@@ -41,14 +42,19 @@ const TRANSLATIONS = {
       po: "Product Owner"
     },
     snake_rules: "Змейка следует за курсором. Ешь яблоки и расти. Не врезайся в себя и ИИ-противника!",
+    pong_rules: "Pong: Управляйте ракеткой мышью. Отбивайте мяч и не дайте ИИ забить гол!",
+    space_rules: "Invaders: Управляйте кораблем мышью. Уничтожьте пришельцев, прежде чем они доберутся до вас!",
     snake_best: "Рекорд: 314",
+    game_snake: "Змейка",
+    game_pong: "Pong",
+    game_space: "Invaders",
     contributions_label: "ЧТО СДЕЛАНО"
   },
   en: {
     first_name: "Aleksandr",
     last_name: "Kopanev",
     role: "Senior Game Designer • Product Owner • Creative Producer",
-    status: "Available for projects",
+    status: "Contact",
     experience_title: "EXPERIENCE",
     experience: [
       { highlight: "27+ years", text: "of deep gaming domain expertise and analysis" },
@@ -59,7 +65,6 @@ const TRANSLATIONS = {
       { highlight: "5+ years", text: "shipping and integrating AI-driven solutions" }
     ],
     projects_title: "Projects & Cases",
-    footer_location: "Moscow, Russia — GMT+3",
     contact_cta_title: "Ready for the next tech leap?",
     contact_cta_text: "Let's discuss your project, whether it's a metaverse, complex network mechanics, or an educational VR simulator.",
     skills: {
@@ -68,14 +73,19 @@ const TRANSLATIONS = {
       po: "Product Owner"
     },
     snake_rules: "Snake follows cursor. Eat apples to grow. Avoid hitting yourself or the AI opponent!",
+    pong_rules: "Pong: Use mouse to move paddle. Hit the ball back and don't let AI score!",
+    space_rules: "Invaders: Control ship with mouse. Destroy aliens before they reach you!",
     snake_best: "Best score: 314",
+    game_snake: "Snake",
+    game_pong: "Pong",
+    game_space: "Invaders",
     contributions_label: "KEY CONTRIBUTIONS"
   },
   cn: {
     first_name: "亚历山大",
     last_name: "科帕内夫",
     role: "资深游戏设计师 • 产品负责人 • 创意制片人",
-    status: "准备好承接项目",
+    status: "联系我",
     experience_title: "经验",
     experience: [
       { highlight: "27+ 年", text: "深厚的游戏领域专业知识和分析能力" },
@@ -86,7 +96,6 @@ const TRANSLATIONS = {
       { highlight: "5+ 年", text: "发布和集成人工智能驱动的解决方案" }
     ],
     projects_title: "项目与案例",
-    footer_location: "莫斯科，俄罗斯 — GMT+3",
     contact_cta_title: "准备好迎接下一次技术飞跃了吗？",
     contact_cta_text: "让我们讨论您的项目，无论是元宇宙、复杂的网络机制，还是教育性 VR 模拟器。",
     skills: {
@@ -95,7 +104,12 @@ const TRANSLATIONS = {
       po: "产品负责人"
     },
     snake_rules: "蛇跟随光标。吃苹果生长。避免撞到自己或 AI 对手！",
+    pong_rules: "Pong：使用鼠标移动球拍。击回球，不要让 AI 進球！",
+    space_rules: "Invaders：使用鼠标移动飞船。在敌人到达之前摧毁他们！",
     snake_best: "最高纪录：314",
+    game_snake: "贪吃蛇",
+    game_pong: "乒乓球",
+    game_space: "太空入侵者",
     contributions_label: "主要贡献"
   }
 };
@@ -423,16 +437,75 @@ const CONTACTS = [
   { label: "Discord", value: "xrman", url: "https://discordapp.com/users/258354536287043588/", icon: <Disc className="w-6 h-6" />, color: "bg-indigo-600 hover:bg-indigo-500" }
 ];
 
+const detectInitialLanguage = (): 'ru' | 'en' | 'cn' => {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('portfolio-lang') as 'ru' | 'en' | 'cn';
+    if (saved && ['ru', 'en', 'cn'].includes(saved)) return saved;
+  }
+
+  if (typeof navigator === 'undefined') return 'en';
+  
+  const userLangs = (navigator.languages || [navigator.language]).map(l => l.toLowerCase());
+  
+  // 1. Look for a direct preferred match in the supported set
+  for (const lang of userLangs) {
+    if (lang.startsWith('ru')) return 'ru';
+    if (lang.startsWith('zh')) return 'cn';
+    if (lang.startsWith('en')) return 'en';
+  }
+  
+  // 2. Fuzzy mapping for related languages if no direct match was found in the preferred list
+  const preferred = userLangs[0] || '';
+  if (preferred.startsWith('be') || preferred.startsWith('kk') || preferred.startsWith('uk')) return 'ru';
+
+  // 3. Fallback: Check TimeZone
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const russianZones = ['Europe/Moscow', 'Europe/Saratov', 'Europe/Ulyanovsk', 'Europe/Volgograd', 'Europe/Kirov', 'Europe/Astrakhan', 'Asia/Yekaterinburg', 'Asia/Omsk', 'Asia/Novosibirsk', 'Asia/Barnaul', 'Asia/Tomsk', 'Asia/Krasnoyarsk', 'Asia/Irkutsk', 'Asia/Chita', 'Asia/Yakutsk', 'Asia/Khabarovsk', 'Asia/Vladivostok', 'Asia/Sakhalin', 'Asia/Magadan', 'Asia/Srednekolymsk', 'Asia/Kamchatka', 'Asia/Anadyr'];
+    const chinaZones = ['Asia/Shanghai', 'Asia/Chongqing', 'Asia/Harbin', 'Asia/Urumqi', 'Asia/Hong_Kong', 'Asia/Macau'];
+    
+    if (russianZones.includes(tz)) return 'ru';
+    if (chinaZones.includes(tz)) return 'cn';
+  } catch (e) {}
+
+  return 'en';
+};
+
 export default function App() {
-  const [lang, setLang] = useState<'ru' | 'en' | 'cn'>('ru');
+  const [lang, setLang] = useState<'ru' | 'en' | 'cn'>(detectInitialLanguage);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [activeGame, setActiveGame] = useState<'snake' | 'pong' | 'space'>(() => {
+    const r = Math.random();
+    if (r < 0.33) return 'snake';
+    if (r < 0.66) return 'pong';
+    return 'space';
+  });
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [snakeScore, setSnakeScore] = useState(0);
   const [aiScore, setAiScore] = useState(0);
 
+  const [pongScore, setPongScore] = useState(0);
+  const [pongAiScore, setPongAiScore] = useState(0);
+
+  const [spaceScore, setSpaceScore] = useState(0);
+  const [spaceAiScore, setSpaceAiScore] = useState(0);
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024); // Covering both mobile and tablet as requested earlier
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('portfolio-lang', lang);
+  }, [lang]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -460,22 +533,53 @@ export default function App() {
         }}
       />
 
-      {/* Interactive Snake Game */}
-      <SnakeGame onScoreChange={setSnakeScore} onAIScoreChange={setAiScore} />
+      {/* Interactive Games */}
+      <AnimatePresence mode="wait">
+        {activeGame === 'snake' && (
+          <motion.div
+            key="snake-wrapper"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <SnakeGame onScoreChange={setSnakeScore} onAIScoreChange={setAiScore} />
+          </motion.div>
+        )}
+        {activeGame === 'pong' && (
+          <motion.div
+            key="pong-wrapper"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <PongGame onScoreChange={setPongScore} onAIScoreChange={setPongAiScore} />
+          </motion.div>
+        )}
+        {activeGame === 'space' && (
+          <motion.div
+            key="space-wrapper"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <SpaceInvadersGame onScoreChange={setSpaceScore} onAIScoreChange={setSpaceAiScore} />
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       <div className="relative z-10 min-h-screen lg:h-screen lg:overflow-hidden flex flex-col p-4 md:p-6 lg:p-10 max-w-[1440px] mx-auto gap-6 lg:gap-8">
       {/* Header */}
-      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end pb-6 border-b border-[var(--glass-border)] gap-4">
-        <div className="name-brand">
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tighter uppercase">
+      <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end pb-6 border-b border-[var(--glass-border)] gap-6 perspective-1000">
+        <div className="name-brand w-full lg:w-auto">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tighter uppercase leading-tight">
             {t.first_name}<span className="text-[var(--accent)] font-black"> {t.last_name}</span>
           </h1>
-          <div className="text-[10px] md:text-xs text-[var(--text-dim)] mt-1 tracking-wider font-medium uppercase opacity-80">
+          <div className="text-[10px] sm:text-xs md:text-sm text-[var(--text-dim)] mt-1 tracking-wider font-bold uppercase opacity-80 max-w-full overflow-hidden text-ellipsis">
             {t.role}
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center gap-4 md:gap-6 w-full lg:w-auto justify-between lg:justify-end">
           {/* Theme & Language Switchers */}
           <div className="flex items-center gap-3">
             {/* Theme Toggle */}
@@ -488,68 +592,109 @@ export default function App() {
             </button>
 
             {/* Language Switcher */}
-            <div className="flex items-center bg-[var(--glass)] border border-[var(--glass-border)] rounded-full p-1 self-start sm:self-auto">
+            <div className="flex items-center bg-[var(--glass)] border border-[var(--glass-border)] rounded-full p-1">
               <button 
                 onClick={() => setLang('ru')}
-                className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all ${lang === 'ru' ? 'bg-[var(--accent)] text-black' : 'text-[var(--text-dim)] hover:text-white'}`}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${lang === 'ru' ? 'bg-[var(--accent)] text-black' : 'text-[var(--text-dim)] hover:text-white'}`}
               >
                 RU
               </button>
               <button 
                 onClick={() => setLang('en')}
-                className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all ${lang === 'en' ? 'bg-[var(--accent)] text-black' : 'text-[var(--text-dim)] hover:text-white'}`}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${lang === 'en' ? 'bg-[var(--accent)] text-black' : 'text-[var(--text-dim)] hover:text-white'}`}
               >
                 EN
               </button>
               <button 
                 onClick={() => setLang('cn')}
-                className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all ${lang === 'cn' ? 'bg-[var(--accent)] text-black' : 'text-[var(--text-dim)] hover:text-white'}`}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${lang === 'cn' ? 'bg-[var(--accent)] text-black' : 'text-[var(--text-dim)] hover:text-white'}`}
               >
                 CN
               </button>
             </div>
 
-            {/* Snake Score */}
-            <div className="group relative hidden sm:flex items-center bg-[var(--glass)] border border-[var(--glass-border)] rounded-full px-4 py-1.5 gap-4 cursor-help">
+            {/* Game & Score Switcher */}
+            <motion.div 
+              onClick={() => setActiveGame(prev => {
+                if (prev === 'snake') return 'pong';
+                if (prev === 'pong') return 'space';
+                return 'snake';
+              })}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative hidden md:flex items-center bg-[var(--glass)] border border-[var(--glass-border)] rounded-full px-4 py-1.5 gap-4 cursor-pointer hover:border-[var(--accent)] transition-colors z-50"
+            >
               <div className="flex items-center gap-1.5 mr-1">
-                <span className="text-xs">🐍</span>
-                <span className="text-xs">🍎</span>
+                {activeGame === 'snake' && (
+                  <>
+                    <span className="text-xs">🐍</span>
+                    <span className="text-xs">🍎</span>
+                  </>
+                )}
+                {activeGame === 'pong' && (
+                  <>
+                    <span className="text-xs">🏓</span>
+                    <span className="text-xs">⚽</span>
+                  </>
+                )}
+                {activeGame === 'space' && (
+                  <>
+                    <span className="text-xs">🚀</span>
+                    <span className="text-xs">👾</span>
+                  </>
+                )}
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black text-[var(--accent)] tracking-widest">{snakeScore}</span>
-                <span className="text-[8px] opacity-70 uppercase">You</span>
+                <span className="text-xs font-black text-[var(--accent)] tracking-widest">
+                  {activeGame === 'snake' ? snakeScore : activeGame === 'pong' ? pongScore : spaceScore}
+                </span>
+                <span className="text-[10px] opacity-70 uppercase font-bold">You</span>
               </div>
               <div className="w-[1px] h-3 bg-[var(--glass-border)]" />
               <div className="flex items-center gap-2">
-                <span className="text-[8px] opacity-70 uppercase">AI</span>
-                <span className="text-[10px] font-black text-[#FF00FF] tracking-widest">{aiScore}</span>
+                <span className="text-[10px] opacity-70 uppercase font-bold">AI</span>
+                <span className="text-xs font-black text-[#FF00FF] tracking-widest">
+                  {activeGame === 'snake' ? aiScore : activeGame === 'pong' ? pongAiScore : spaceAiScore}
+                </span>
               </div>
 
-              {/* Tooltip */}
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-48 p-4 sleek-glass rounded-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none scale-95 group-hover:scale-100 border border-[var(--glass-border)] shadow-2xl">
-                <div className="text-[10px] text-white/90 leading-relaxed font-medium">
-                  {t.snake_rules}
+              {/* Tooltip (Positioned Above) */}
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-56 p-4 sleek-glass rounded-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[60] pointer-events-none scale-95 group-hover:scale-100 border border-[var(--glass-border)] shadow-2xl">
+                <div className="text-[10px] font-black uppercase text-[var(--accent)] mb-2 tracking-widest">
+                  {activeGame === 'snake' ? t.game_snake : activeGame === 'pong' ? t.game_pong : t.game_space}
                 </div>
-                <div className="mt-3 pt-3 border-t border-[var(--glass-border)] flex items-center justify-between">
-                  <span className="text-[9px] font-black uppercase tracking-tighter text-[var(--accent)]">{t.snake_best}</span>
-                  <span className="text-[10px]">🏆</span>
+                <div className="text-xs text-white/90 leading-relaxed font-medium mb-3">
+                  {activeGame === 'snake' ? t.snake_rules : activeGame === 'pong' ? t.pong_rules : t.space_rules}
+                </div>
+                <div className="pt-3 border-t border-[var(--glass-border)] flex items-center justify-between">
+                  <span className="text-[10px] font-bold opacity-60 uppercase">Click to change game</span>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
 
-          <a 
+          <motion.a 
+            key={isMobile ? 'contact-static' : `${snakeScore}-${aiScore}-${pongScore}-${pongAiScore}-${spaceScore}-${spaceAiScore}`}
             href="https://t.me/xrman"
             target="_blank"
             rel="noopener noreferrer"
-            className="status-pill flex items-center gap-2 whitespace-nowrap !border-emerald-500/50 !bg-emerald-500/10 cursor-pointer hover:scale-105 transition-transform active:scale-95 duration-300"
+            className="status-pill gap-2 cursor-pointer scale-90 sm:scale-100 origin-right"
+            animate={isMobile ? {} : { 
+              rotateZ: [0, -10, 10, -10, 10, 0],
+              rotateX: [0, 25, 0],
+              scale: [1, 1.15, 1],
+              y: [0, -10, 0]
+            }}
+            whileHover={{ scale: 1.1, y: -2 }}
+            whileTap={{ scale: 0.95, y: 0 }}
+            transition={{ 
+              duration: 0.6, 
+              ease: "backOut"
+            }}
           >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="text-emerald-400">{t.status}</span>
-          </a>
+            <Send className="w-4 h-4" />
+            <span>{t.status}</span>
+          </motion.a>
         </div>
       </header>
 
@@ -563,7 +708,7 @@ export default function App() {
           >
             {skills.map((cat) => (
               <div key={cat.category} className="skill-cat">
-                <h3 className="text-[10px] uppercase font-bold tracking-[0.2em] text-[var(--text-dim)] mb-4 flex items-center gap-3 after:content-[''] after:flex-1 after:h-[1px] after:bg-[var(--glass-border)]">
+                <h3 className="text-xs uppercase font-extrabold tracking-[0.2em] text-[var(--text-dim)] mb-4 flex items-center gap-3 after:content-[''] after:flex-1 after:h-[1px] after:bg-[var(--glass-border)]">
                   {cat.category}
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -583,10 +728,10 @@ export default function App() {
             transition={{ delay: 0.1 }}
             className="sleek-glass rounded-2xl p-6"
           >
-            <div className="text-[10px] uppercase font-bold tracking-widest text-[var(--text-dim)] mb-3 opacity-60">{t.experience_title}</div>
-            <div className="text-xs leading-relaxed text-[var(--text-dim)]">
+            <div className="text-xs uppercase font-extrabold tracking-widest text-[var(--text-dim)] mb-4 opacity-60">{t.experience_title}</div>
+            <div className="text-sm leading-relaxed text-[var(--text-dim)]">
               {t.experience.map((exp, i) => (
-                <p key={i} className="mb-2">
+                <p key={i} className="mb-3">
                   <span className="text-[var(--accent)] font-extrabold">{exp.highlight}</span> {exp.text}
                 </p>
               ))}
@@ -596,87 +741,29 @@ export default function App() {
 
         {/* Main Feed - Projects */}
         <main className="flex-1 overflow-y-auto pr-0 lg:pr-4">
+          <h2 className="text-sm uppercase font-black tracking-[0.3em] text-[var(--accent)] mb-8 opacity-80 flex items-center gap-4">
+            <Briefcase className="w-4 h-4" /> {t.projects_title}
+            <div className="h-[1px] flex-1 bg-gradient-to-r from-[var(--glass-border)] to-transparent" />
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 pb-10">
             {projects.map((project, idx) => (
-              <motion.div 
+              <ProjectCard 
                 key={project.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 + 0.2 }}
-                className="project-card sleek-glass rounded-2xl overflow-hidden sleek-card-hover group flex flex-col"
-              >
-                <div className="aspect-video relative overflow-hidden bg-zinc-900 border-b border-[var(--glass-border)]">
-                  {project.youtubeId ? (
-                    <iframe 
-                      src={`https://www.youtube.com/embed/${project.youtubeId}?modestbranding=1&rel=0&iv_load_policy=3&color=white`}
-                      className="absolute inset-0 w-full h-full grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      loading="lazy"
-                      title={project.title}
-                    />
-                  ) : project.image ? (
-                    <img 
-                      src={project.image} 
-                      alt={`Screenshot of ${project.title} - ${project.description.slice(0, 50)}...`}
-                      referrerPolicy="no-referrer"
-                      className="absolute inset-0 w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
-                       <Globe className="w-12 h-12 text-zinc-700" />
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-                </div>
-                
-                <div className="p-5 md:p-6 flex flex-col flex-1">
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {project.stack.map(s => (
-                      <span key={s} className="text-[9px] font-mono font-bold uppercase text-[var(--accent)] opacity-80">
-                        • {s}
-                      </span>
-                    ))}
-                  </div>
-                  <h3 className="text-lg md:text-xl font-bold mb-2 group-hover:text-[var(--accent)] transition-colors">{project.title}</h3>
-                  <p className="text-[var(--text-dim)] text-xs md:text-sm leading-relaxed mb-4">
-                    {project.description}
-                  </p>
-                  
-                  {project.whatDone && (
-                    <div className="mb-6">
-                      <div className="text-[10px] font-black tracking-widest text-[var(--accent)] mb-2 opacity-60 uppercase">{t.contributions_label}</div>
-                      <p className="text-[var(--text-dim)] text-[11px] leading-relaxed italic opacity-90 border-l border-[var(--accent)]/30 pl-3">
-                        {project.whatDone}
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="mt-auto flex gap-4 items-center">
-                    {project.links.map(link => (
-                      <a 
-                        key={link.url} 
-                        href={link.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        aria-label={`${link.name} for ${project.title}`}
-                        className="inline-flex items-center gap-1.5 text-[10px] font-bold text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
-                      >
-                        {link.name} <ExternalLink className="w-3 h-3" />
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
+                project={project}
+                idx={idx}
+                contributionsLabel={t.contributions_label}
+              />
             ))}
           </div>
         </main>
       </div>
 
       {/* Footer */}
-      <footer className="footer-area sleek-glass rounded-2xl p-5 md:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
-        <div className="text-[var(--text-dim)] text-[10px] md:text-xs font-semibold tracking-wider">
-          © 2026 ALEKSANDR KOPANEV
+      <footer className="footer-area sleek-glass rounded-2xl p-6 md:px-10 flex flex-col md:flex-row justify-between items-center gap-8 mb-4">
+        <div className="flex flex-col gap-2">
+          <div className="text-[var(--text-dim)] text-xs md:text-sm font-black tracking-widest uppercase">
+            © 2026 ALEKSANDR KOPANEV
+          </div>
         </div>
         <div className="flex flex-wrap justify-center gap-3">
           {CONTACTS.map((contact) => (
