@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { ExternalLink, Globe } from 'lucide-react';
+import { ExternalLink, Globe, Play } from 'lucide-react';
 
 interface ProjectCardProps {
   project: any;
@@ -10,6 +10,8 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, idx, contributionsLabel }: ProjectCardProps) {
+  const [isPlaying, setIsPlaying] = useState(false);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -19,16 +21,33 @@ export function ProjectCard({ project, idx, contributionsLabel }: ProjectCardPro
       className="project-card sleek-glass rounded-2xl overflow-hidden sleek-card-hover group flex flex-col will-change-transform"
     >
       <div 
-        className="aspect-video relative overflow-hidden bg-zinc-900 border-b border-[var(--glass-border)]"
+        className="aspect-video relative overflow-hidden bg-zinc-900 border-b border-[var(--glass-border)] cursor-pointer"
+        onClick={() => !isPlaying && project.youtubeId && setIsPlaying(true)}
       >
         {project.youtubeId ? (
-          <iframe 
-            src={`https://www.youtube.com/embed/${project.youtubeId}?modestbranding=1&rel=0&iv_load_policy=3&color=white`}
-            className="absolute inset-0 w-full h-full grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700 pointer-events-none"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            loading="lazy"
-            title={project.title}
-          />
+          isPlaying ? (
+            <iframe 
+              src={`https://www.youtube.com/embed/${project.youtubeId}?modestbranding=1&rel=0&iv_load_policy=3&color=white&autoplay=1`}
+              className="absolute inset-0 w-full h-full grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              title={project.title}
+            />
+          ) : (
+            <div className="absolute inset-0 w-full h-full group/player">
+              <img 
+                src={`https://img.youtube.com/vi/${project.youtubeId}/hqdefault.jpg`}
+                alt={project.title}
+                className="absolute inset-0 w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/0 transition-colors">
+                <div className="w-16 h-16 rounded-full bg-[var(--accent)]/90 flex items-center justify-center text-black shadow-2xl scale-90 group-hover:scale-100 transition-transform duration-300">
+                  <Play className="w-8 h-8 fill-black ml-1" />
+                </div>
+              </div>
+            </div>
+          )
         ) : project.image ? (
           <img 
             src={project.image} 
@@ -41,7 +60,9 @@ export function ProjectCard({ project, idx, contributionsLabel }: ProjectCardPro
              <Globe className="w-12 h-12 text-zinc-700" />
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+        {!isPlaying && (
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+        )}
       </div>
       
       <div 
