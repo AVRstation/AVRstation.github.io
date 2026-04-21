@@ -493,6 +493,16 @@ export default function App() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    // Reset all scores when game changes
+    setSnakeScore(0);
+    setAiScore(0);
+    setPongScore(0);
+    setPongAiScore(0);
+    setSpaceScore(0);
+    setSpaceAiScore(0);
+  }, [activeGame]);
+
+  useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024); // Covering both mobile and tablet as requested earlier
     checkMobile();
     window.addEventListener('resize', checkMobile);
@@ -622,40 +632,44 @@ export default function App() {
               })}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="group relative hidden md:flex items-center bg-[var(--glass)] border border-[var(--glass-border)] rounded-full px-4 py-1.5 gap-4 cursor-pointer hover:border-[var(--accent)] transition-colors z-50"
+              className="group relative hidden md:flex items-center bg-[var(--glass)] border border-[var(--glass-border)] rounded-full p-1 cursor-pointer hover:border-[var(--accent)] transition-colors z-50"
             >
-              <div className="flex items-center gap-1.5 mr-1">
-                {activeGame === 'snake' && (
-                  <>
-                    <span className="text-xs">🐍</span>
-                    <span className="text-xs">🍎</span>
-                  </>
-                )}
-                {activeGame === 'pong' && (
-                  <>
-                    <span className="text-xs">🏓</span>
-                    <span className="text-xs">⚽</span>
-                  </>
-                )}
-                {activeGame === 'space' && (
-                  <>
-                    <span className="text-xs">🚀</span>
-                    <span className="text-xs">👾</span>
-                  </>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-black text-[var(--accent)] tracking-widest">
-                  {activeGame === 'snake' ? snakeScore : activeGame === 'pong' ? pongScore : spaceScore}
-                </span>
-                <span className="text-[10px] opacity-70 uppercase font-bold">You</span>
-              </div>
-              <div className="w-[1px] h-3 bg-[var(--glass-border)]" />
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] opacity-70 uppercase font-bold">AI</span>
-                <span className="text-xs font-black text-[#FF00FF] tracking-widest">
-                  {activeGame === 'snake' ? aiScore : activeGame === 'pong' ? pongAiScore : spaceAiScore}
-                </span>
+              <div className="flex items-center gap-4 px-4 py-1.5">
+                <div className="flex items-center gap-1.5 mr-1">
+                  {activeGame === 'snake' && (
+                    <>
+                      <span className="text-xs">🐍</span>
+                      <span className="text-xs">🍎</span>
+                    </>
+                  )}
+                  {activeGame === 'pong' && (
+                    <>
+                      <span className="text-xs">🏓</span>
+                      <span className="text-xs">⚽</span>
+                    </>
+                  )}
+                  {activeGame === 'space' && (
+                    <>
+                      <span className="text-xs">🚀</span>
+                      <span className="text-xs">👾</span>
+                    </>
+                  )}
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black text-[var(--accent)] tracking-widest">
+                      {activeGame === 'snake' ? snakeScore : activeGame === 'pong' ? pongScore : spaceScore}
+                    </span>
+                    <span className="text-[10px] opacity-70 uppercase font-bold">You</span>
+                  </div>
+                  <div className="w-[1px] h-3 bg-[var(--glass-border)]" />
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] opacity-70 uppercase font-bold">AI</span>
+                    <span className="text-xs font-black text-[#FF00FF] tracking-widest">
+                      {activeGame === 'snake' ? aiScore : activeGame === 'pong' ? pongAiScore : spaceAiScore}
+                    </span>
+                  </div>
+                </div>
               </div>
 
               {/* Tooltip (Positioned Above) */}

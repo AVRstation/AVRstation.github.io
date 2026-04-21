@@ -7,20 +7,22 @@ interface PongGameProps {
 
 export const PongGame: React.FC<PongGameProps> = ({ onScoreChange, onAIScoreChange }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const ballRef = useRef({ x: 0, y: 0, vx: 5, vy: 5 });
+  const ballRef = useRef<{ x: number, y: number, vx: number, vy: number, trail: { x: number, y: number }[] }>({ 
+    x: 0, y: 0, vx: 5, vy: 5, trail: [] 
+  });
   const playerRef = useRef({ y: 0 });
   const aiRef = useRef({ y: 0 });
   const scoresRef = useRef({ player: 0, ai: 0 });
   
-  const hitEffectRef = useRef({ x: 0, y: 0, opacity: 0 });
+  const hitEffectRef = useRef({ x: 0, y: 0, opacity: 0, color: '#FFFFFF' });
   
   const paddleHeight = 100;
   const paddleWidth = 10;
   const ballSize = 8;
   const paddleMargin = 50;
 
-  const triggerHitEffect = (x: number, y: number) => {
-    hitEffectRef.current = { x, y, opacity: 1 };
+  const triggerHitEffect = (x: number, y: number, color = '#FFFFFF') => {
+    hitEffectRef.current = { x, y, opacity: 1, color };
   };
 
   const resetBall = (canvasWidth: number, canvasHeight: number) => {
@@ -28,7 +30,8 @@ export const PongGame: React.FC<PongGameProps> = ({ onScoreChange, onAIScoreChan
       x: canvasWidth / 2,
       y: canvasHeight / 2,
       vx: (Math.random() > 0.5 ? 1 : -1) * 5,
-      vy: (Math.random() - 0.5) * 10
+      vy: (Math.random() - 0.5) * 10,
+      trail: []
     };
   };
 
@@ -53,6 +56,9 @@ export const PongGame: React.FC<PongGameProps> = ({ onScoreChange, onAIScoreChan
       }
 
       // Update ball
+      ballRef.current.trail.unshift({ x: ballRef.current.x, y: ballRef.current.y });
+      if (ballRef.current.trail.length > 10) ballRef.current.trail.pop();
+
       ballRef.current.x += ballRef.current.vx;
       ballRef.current.y += ballRef.current.vy;
 
@@ -96,10 +102,12 @@ export const PongGame: React.FC<PongGameProps> = ({ onScoreChange, onAIScoreChan
       if (ballRef.current.x < 0) {
         scoresRef.current.ai += 1;
         if (onAIScoreChange) onAIScoreChange(scoresRef.current.ai);
+        triggerHitEffect(0, ballRef.current.y, '#FF0000');
         resetBall(width, height);
       } else if (ballRef.current.x > width) {
         scoresRef.current.player += 1;
         if (onScoreChange) onScoreChange(scoresRef.current.player);
+        triggerHitEffect(width, ballRef.current.y, '#FF0000');
         resetBall(width, height);
       }
 
@@ -130,19 +138,30 @@ export const PongGame: React.FC<PongGameProps> = ({ onScoreChange, onAIScoreChan
       ctx.shadowBlur = 25;
       ctx.fillRect(width - paddleMargin - paddleWidth, aiRef.current.y, paddleWidth, paddleHeight);
 
+      // Ball Trail
+      ballRef.current.trail.forEach((t, i) => {
+        const ratio = (10 - i) / 10;
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, ballSize * ratio, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 160, 0, ${ratio * 0.4})`;
+        ctx.shadowBlur = 0;
+        ctx.fill();
+      });
+
       // Ball
       ctx.beginPath();
       ctx.arc(ballRef.current.x, ballRef.current.y, ballSize, 0, Math.PI * 2);
-      ctx.fillStyle = '#FFFFFF';
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = '#FFFFFF';
+      ctx.fillStyle = '#FFB000';
+      ctx.shadowBlur = 20;
+      ctx.shadowColor = '#FFB000';
       ctx.fill();
 
       // Hit Glow Effect
       if (hitEffectRef.current.opacity > 0) {
-        const { x, y, opacity } = hitEffectRef.current;
+        const { x, y, opacity, color } = hitEffectRef.current;
         const grad = ctx.createRadialGradient(x, y, 0, x, y, 100);
-        grad.addColorStop(0, `rgba(255, 255, 255, ${opacity * 0.4})`);
+        const rgb = color === '#FF0000' ? '255, 0, 0' : '255, 255, 255';
+        grad.addColorStop(0, `rgba(${rgb}, ${opacity * 0.5})`);
         grad.addColorStop(1, 'transparent');
         ctx.fillStyle = grad;
         ctx.shadowBlur = 0;

@@ -19,12 +19,25 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
   const playerPos = useRef({ x: 50, y: 0 });
   const score = useRef(0);
   const aiScore = useRef(0);
+  const particles = useRef<{ x: number, y: number, vx: number, vy: number, life: number, color: string }[]>([]);
 
   const ALIEN_ROWS = 5;
   const ALIEN_COLS = 4;
   const ALIEN_SPACING = 50;
 
   const lastPattern = useRef(-1);
+
+  const triggerExplosion = (x: number, y: number, color: string) => {
+    for (let i = 0; i < 15; i++) {
+      particles.current.push({
+        x, y,
+        vx: (Math.random() - 0.5) * 6,
+        vy: (Math.random() - 0.5) * 6,
+        life: 1.0,
+        color
+      });
+    }
+  };
 
   const initAliens = (width: number, height: number) => {
     const newAliens = [];
@@ -131,6 +144,9 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
       if (!canvas || !ctx) return;
 
       const { width, height } = canvas;
+      const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+      const playerColor = theme === 'dark' ? '#00F0FF' : '#0088CC';
+      const alienColor = theme === 'dark' ? '#FF00FF' : '#AA00AA';
 
       if (aliens.current.length === 0) {
         initAliens(width, height);
@@ -179,6 +195,7 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
               a.alive = false;
               hit = true;
               score.current += 10;
+              triggerExplosion(a.x, a.y, alienColor);
               if (onScoreChange) onScoreChange(score.current);
             }
           });
@@ -188,11 +205,20 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
           // Check collision with player
           if (Math.abs(b.x - playerPos.current.x) < 30 && Math.abs(b.y - playerPos.current.y) < 40) {
             aiScore.current += 1;
+            triggerExplosion(playerPos.current.x, playerPos.current.y, playerColor);
             if (onAIScoreChange) onAIScoreChange(aiScore.current);
             return false;
           }
           return b.x > 0;
         }
+      });
+
+      // 3.5 Update Particles
+      particles.current = particles.current.filter(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.02;
+        return p.life > 0;
       });
 
       // Reset if all aliens dead
@@ -209,9 +235,6 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
 
       // 4. Draw
       ctx.clearRect(0, 0, width, height);
-      const theme = document.documentElement.getAttribute('data-theme') || 'dark';
-      const playerColor = theme === 'dark' ? '#00F0FF' : '#0088CC';
-      const alienColor = theme === 'dark' ? '#FF00FF' : '#AA00AA';
 
       // Draw Player (Spaceship)
       ctx.fillStyle = playerColor;
@@ -242,6 +265,17 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
         ctx.shadowBlur = 10;
         ctx.fillRect(b.x - 5, b.y - 2, 10, 4);
       });
+      ctx.shadowBlur = 0;
+
+      // Draw Particles
+      particles.current.forEach(p => {
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.life;
+        ctx.shadowBlur = 5;
+        ctx.shadowColor = p.color;
+        ctx.fillRect(p.x, p.y, 3, 3);
+      });
+      ctx.globalAlpha = 1.0;
       ctx.shadowBlur = 0;
 
       animationFrameId = requestAnimationFrame(render);

@@ -25,9 +25,30 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
   const scoreRef = useRef(0);
   const aiScoreRef = useRef(0);
   const segmentDist = 15; // Distance between segments
+  const particlesRef = useRef<{ x: number, y: number, vx: number, vy: number, life: number, color: string }[]>([]);
+
+  const triggerExplosion = (snake: Point[], color: string) => {
+    snake.forEach((seg, idx) => {
+      const count = idx === 0 ? 12 : 4;
+      for (let i = 0; i < count; i++) {
+        particlesRef.current.push({
+          x: seg.x,
+          y: seg.y,
+          vx: (Math.random() - 0.5) * 5,
+          vy: (Math.random() - 0.5) * 5,
+          life: 1.0,
+          color
+        });
+      }
+    });
+  };
 
   // Initialize game
   const resetGame = () => {
+    const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const color = theme === 'dark' ? '#00F0FF' : '#0088CC';
+    if (snakeRef.current.length > 0) triggerExplosion(snakeRef.current, color);
+
     snakeRef.current = [
       { x: window.innerWidth / 2, y: window.innerHeight / 2 },
       { x: window.innerWidth / 2, y: window.innerHeight / 2 + segmentDist },
@@ -39,6 +60,10 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
   };
 
   const spawnAISnake = () => {
+    const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const color = theme === 'dark' ? '#FF00FF' : '#AA00AA';
+    if (aiSnakeRef.current.length > 0) triggerExplosion(aiSnakeRef.current, color);
+
     const x = Math.random() * (window.innerWidth - 200) + 100;
     const y = Math.random() * (window.innerHeight - 200) + 100;
     aiSnakeRef.current = [
@@ -326,8 +351,27 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
         }
       });
 
+      // 3. Update Particles
+      particlesRef.current = particlesRef.current.filter(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.02;
+        return p.life > 0;
+      });
+
       // Draw
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw Particles
+      ctx.save();
+      particlesRef.current.forEach(p => {
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.life;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = p.color;
+        ctx.fillRect(p.x, p.y, 4, 4);
+      });
+      ctx.restore();
 
       // Draw Apples
       applesRef.current.forEach(apple => {
