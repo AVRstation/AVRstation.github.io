@@ -2,17 +2,30 @@ class SoundManager {
   private ctx: AudioContext | null = null;
 
   public init() {
-    if (!this.ctx) {
-      this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    }
-    if (this.ctx.state === 'suspended') {
-      this.ctx.resume();
+    try {
+      if (!this.ctx) {
+        this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+    } catch (e) {
+      console.warn("Audio initialization failed:", e);
     }
   }
 
-  playNote(freq: number, type: OscillatorType = 'sine', duration: number = 0.1, volume: number = 0.1) {
+  private async ensureContext(): Promise<boolean> {
     this.init();
-    if (!this.ctx) return;
+    if (!this.ctx) return false;
+    if (this.ctx.state === 'suspended') {
+      await this.ctx.resume();
+    }
+    return this.ctx.state === 'running';
+  }
+
+  async playNote(freq: number, type: OscillatorType = 'sine', duration: number = 0.1, volume: number = 0.1) {
+    const isReady = await this.ensureContext();
+    if (!isReady || !this.ctx) return;
 
     try {
       const osc = this.ctx.createOscillator();

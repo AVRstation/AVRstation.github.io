@@ -9,7 +9,9 @@ export interface Achievement {
   icon: string;
 }
 
-export const ACHIEVEMENTS_LIST: Record<'en' | 'ru' | 'cn', Achievement[]> = {
+type Language = 'en' | 'ru' | 'cn' | 'hi' | 'es' | 'ar' | 'fr';
+
+export const ACHIEVEMENTS_LIST: Record<Language, Achievement[]> = {
   en: [
     { id: 'first_load', title: 'Hello World', description: 'Experience the Matrix', icon: '🌐' },
     { id: 'change_game', title: 'Multitasking', description: 'Switch between game systems', icon: '🎮' },
@@ -67,6 +69,82 @@ export const ACHIEVEMENTS_LIST: Record<'en' | 'ru' | 'cn', Achievement[]> = {
     { id: 'long_session', title: '专注', description: '花费时间探索', icon: '🧠' },
     { id: 'all_unlocked', title: '传奇', description: '收集所有成就', icon: '🏆' },
   ],
+  hi: [
+    { id: 'first_load', title: 'नमस्ते दुनिया', description: 'मैट्रिक्स का अनुभव करें', icon: '🌐' },
+    { id: 'change_game', title: 'मल्टीटास्किंग', description: 'गेम सिस्टम के बीच स्विच करें', icon: '🎮' },
+    { id: 'toggle_theme', title: 'प्रकाश के वास्तुकार', description: 'विषय बदलें', icon: '🌓' },
+    { id: 'disable_games', title: 'फोकस मोड', description: 'बैकग्राउंड गेम बंद करें', icon: '🔇' },
+    { id: 'change_lang', title: 'वैश्विक नागरिक', description: 'प्रोफ़ाइल भाषा बदलें', icon: '🌍' },
+    { id: 'slot_win', title: 'लकी स्ट्राइक', description: 'स्लॉट मशीन पर जीतें', icon: '🎰' },
+    { id: 'chest_open', title: 'डंगऑन क्रॉलर', description: 'प्राचीन खजाना मिला', icon: '👑' },
+    { id: 'watch_video', title: 'सिनेमैटोग्राफर', description: 'प्रोजेक्ट वीडियो देखा', icon: '🎬' },
+    { id: 'click_contact', title: 'नेटवर्किंग', description: 'सोशल लिंक देखें', icon: '📡' },
+    { id: 'snake_point', title: 'भूखा सांप', description: 'स्नेक में एक अंक प्राप्त किया', icon: '🍎' },
+    { id: 'pong_point', title: 'पिंग पोंग प्रो', description: 'पोंग में एक अंक प्राप्त किया', icon: '🏓' },
+    { id: 'space_point', title: 'अंतरिक्ष रक्षक', description: 'इनवेडर्स में एक अंक प्राप्त किया', icon: '👾' },
+    { id: 'back_to_top', title: 'टाइम ट्रैवलर', description: 'शॉर्टकट का उपयोग किया', icon: '⏳' },
+    { id: 'toggle_power_on', title: 'पावर अप', description: 'गेम फिर से चालू किए', icon: '⚡' },
+    { id: 'f_key_click', title: 'कीबोर्ड वारियर', description: 'F-सीरीज कीज़ का उपयोग किया', icon: '⌨️' },
+    { id: 'long_session', title: 'समर्पित', description: 'खोज में समय बिताया', icon: '🧠' },
+    { id: 'all_unlocked', title: 'लीजेंड', description: 'सभी उपलब्धियां प्राप्त कीं', icon: '🏆' },
+  ],
+  es: [
+    { id: 'first_load', title: 'Hola Mundo', description: 'Experimenta la Matrix', icon: '🌐' },
+    { id: 'change_game', title: 'Multitarea', description: 'Cambia entre sistemas de juego', icon: '🎮' },
+    { id: 'toggle_theme', title: 'Arquitecto de Luz', description: 'Cambia el tema del sitio', icon: '🌓' },
+    { id: 'disable_games', title: 'Modo Foco', description: 'Desactiva juegos de fondo', icon: '🔇' },
+    { id: 'change_lang', title: 'Ciudadano Global', description: 'Cambia el idioma del perfil', icon: '🌍' },
+    { id: 'slot_win', title: 'Golpe de Suerte', description: 'Gana en la máquina tragamonedas', icon: '🎰' },
+    { id: 'chest_open', title: 'Explorador de Mazmorras', description: 'Encontraste el tesoro antiguo', icon: '👑' },
+    { id: 'watch_video', title: 'Cinematógrafo', description: 'Viste un video de proyecto', icon: '🎬' },
+    { id: 'click_contact', title: 'Networking', description: 'Mira los enlaces sociales', icon: '📡' },
+    { id: 'snake_point', title: 'Serpiente Hambrienta', description: 'Anotaste un punto en Snake', icon: '🍎' },
+    { id: 'pong_point', title: 'Pro de Ping Pong', description: 'Anotaste un punto en Pong', icon: '🏓' },
+    { id: 'space_point', title: 'Defensor Espacial', description: 'Anotaste un punto en Invaders', icon: '👾' },
+    { id: 'back_to_top', title: 'Viajero del Tiempo', description: 'Usaste el atajo al inicio', icon: '⏳' },
+    { id: 'toggle_power_on', title: 'Energía', description: 'Reactivaste los juegos', icon: '⚡' },
+    { id: 'f_key_click', title: 'Guerrero del Teclado', description: 'Usaste las teclas F', icon: '⌨️' },
+    { id: 'long_session', title: 'Dedicado', description: 'Pasaste tiempo explorando', icon: '🧠' },
+    { id: 'all_unlocked', title: 'Leyenda', description: 'Coleccionaste todos los logros', icon: '🏆' },
+  ],
+  ar: [
+    { id: 'first_load', title: 'مرحباً بالعالم', description: 'تجربة الماتريكس', icon: '🌐' },
+    { id: 'change_game', title: 'تعدد المهام', description: 'التنقل بين نظم الألعاب', icon: '🎮' },
+    { id: 'toggle_theme', title: 'مهندس الضوء', description: 'تغيير مظهر الموقع', icon: '🌓' },
+    { id: 'disable_games', title: 'وضع التركيز', description: 'تعطيل الألعاب الخلفية', icon: '🔇' },
+    { id: 'change_lang', title: 'مواطن عالمي', description: 'تغيير لغة الملف الشخصي', icon: '🌍' },
+    { id: 'slot_win', title: 'ضربة حظ', description: 'الفوز في آلة الحظ', icon: '🎰' },
+    { id: 'chest_open', title: 'مستكشف الكنوز', description: 'وجدت الكنز القديم', icon: '👑' },
+    { id: 'watch_video', title: 'سينمائي', description: 'شاهدت فيديو المشروع', icon: '🎬' },
+    { id: 'click_contact', title: 'التواصل', description: 'التحقق من روابط التواصل', icon: '📡' },
+    { id: 'snake_point', title: 'الأفعى الجائعة', description: 'سجلت نقطة في الأفعى', icon: '🍎' },
+    { id: 'pong_point', title: 'محترف بينج بونج', description: 'سجلت نقطة في بونج', icon: '🏓' },
+    { id: 'space_point', title: 'مدافع الفضاء', description: 'سجلت نقطة في الغزاة', icon: '👾' },
+    { id: 'back_to_top', title: 'مسافر عبر الزمن', description: 'استخدمت اختصار البداية', icon: '⏳' },
+    { id: 'toggle_power_on', title: 'طاقة إضافية', description: 'أعدت تفعيل الألعاب', icon: '⚡' },
+    { id: 'f_key_click', title: 'محارب لوحة المفاتيح', description: 'استخدمت مفاتيح F', icon: '⌨️' },
+    { id: 'long_session', title: 'مخلص', description: 'قضيت وقتاً في الاستكشاف', icon: '🧠' },
+    { id: 'all_unlocked', title: 'أسطورة', description: 'جمعت كل الإنجازات', icon: '🏆' },
+  ],
+  fr: [
+    { id: 'first_load', title: 'Bonjour le Monde', description: 'Découvrez la Matrix', icon: '🌐' },
+    { id: 'change_game', title: 'Multitâche', description: 'Basculez entre les jeux', icon: '🎮' },
+    { id: 'toggle_theme', title: 'Architecte de Lumière', description: 'Changez le thème du site', icon: '🌓' },
+    { id: 'disable_games', title: 'Mode Concentration', description: 'Désactivez les jeux', icon: '🔇' },
+    { id: 'change_lang', title: 'Citoyen du Monde', description: 'Changez la langue', icon: '🌍' },
+    { id: 'slot_win', title: 'Coup de Chance', description: 'Gagnez à la machine à sous', icon: '🎰' },
+    { id: 'chest_open', title: 'Explorateur de Donjons', description: 'Trésor ancien trouvé', icon: '👑' },
+    { id: 'watch_video', title: 'Cinéaste', description: 'Vidéo de projet regardée', icon: '🎬' },
+    { id: 'click_contact', title: 'Réseautage', description: 'Consultez les liens sociaux', icon: '📡' },
+    { id: 'snake_point', title: 'Serpent Affamé', description: 'Point marqué dans Snake', icon: '🍎' },
+    { id: 'pong_point', title: 'Pro du Ping Pong', description: 'Point marqué dans Pong', icon: '🏓' },
+    { id: 'space_point', title: 'Défenseur Spatial', description: 'Point marqué dans Invaders', icon: '👾' },
+    { id: 'back_to_top', title: 'Voyageur Temporel', description: 'Retour en haut via raccourci', icon: '⏳' },
+    { id: 'toggle_power_on', title: 'Power Up', description: 'Jeux réactivés', icon: '⚡' },
+    { id: 'f_key_click', title: 'Guerrier du Clavier', description: 'Touches F utilisées', icon: '⌨️' },
+    { id: 'long_session', title: 'Dévoué', description: 'Temps passé à explorer', icon: '🧠' },
+    { id: 'all_unlocked', title: 'Légende', description: 'Tous les succès débloqués', icon: '🏆' },
+  ],
 };
 
 export interface AchievementSystemHandle {
@@ -74,7 +152,7 @@ export interface AchievementSystemHandle {
 }
 
 interface AchievementSystemProps {
-  lang: 'en' | 'ru' | 'cn';
+  lang: Language;
 }
 
 const SECRET_ACHIEVEMENTS = ['slot_win', 'chest_open', 'f_key_click', 'long_session', 'all_unlocked'];
@@ -193,7 +271,15 @@ export const AchievementSystem = forwardRef<AchievementSystemHandle, Achievement
               <div className="w-80 h-[400px] overflow-hidden sleek-glass rounded-2xl border border-white/10 shadow-2xl flex flex-col">
                 <div className="p-4 border-b border-white/5 bg-white/5 flex items-center justify-between">
                   <h3 className="text-xs font-black uppercase tracking-widest text-white">
-                    {lang === 'ru' ? 'Достижения' : lang === 'cn' ? '成就' : 'Achievements'}
+                    {{
+                      ru: 'Достижения',
+                      cn: '成就',
+                      en: 'Achievements',
+                      hi: 'उपलब्धियां',
+                      es: 'Logros',
+                      ar: 'الإنجازات',
+                      fr: 'Succès'
+                    }[lang]}
                   </h3>
                   <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[10px] font-black text-[var(--accent)]">
                     {unlocked.length}/{currentAchievements.length}
@@ -207,11 +293,27 @@ export const AchievementSystem = forwardRef<AchievementSystemHandle, Achievement
                       const isSecret = SECRET_ACHIEVEMENTS.includes(ach.id) && !isUnlocked;
                       
                       const displayTitle = isSecret 
-                        ? (lang === 'ru' ? 'Секретное достижение' : lang === 'cn' ? '秘密成就' : 'Secret Achievement') 
+                        ? ({
+                            ru: 'Секретное достижение',
+                            cn: '秘密成就',
+                            en: 'Secret Achievement',
+                            hi: 'गुप्त उपलब्धि',
+                            es: 'Logro Secreto',
+                            ar: 'إنجاز سري',
+                            fr: 'Succès Secret'
+                          }[lang]) 
                         : ach.title;
                       
                       const displayDesc = isSecret 
-                        ? (lang === 'ru' ? 'Выполните скрытое условие' : lang === 'cn' ? '完成隐藏条件以解锁' : 'Unlock to reveal details') 
+                        ? ({
+                            ru: 'Выполните скрытое условие',
+                            cn: '完成隐藏条件以解锁',
+                            en: 'Unlock to reveal details',
+                            hi: 'विवरण प्रकट करने के लिए अनलॉक करें',
+                            es: 'Desbloquea para revelar detalles',
+                            ar: 'افتح للكشف عن التفاصيل',
+                            fr: 'Débloquez pour révéler les détails'
+                          }[lang]) 
                         : ach.description;
 
                       return (
