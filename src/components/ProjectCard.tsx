@@ -22,10 +22,13 @@ export function ProjectCard({ project, idx, contributionsLabel, onWatchVideo }: 
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: idx * 0.05 }}
+      viewport={{ once: true, margin: "100px" }}
+      transition={{ 
+        duration: 0.3,
+        ease: "easeOut"
+      }}
       className="project-card sleek-glass rounded-2xl overflow-hidden sleek-card-hover group flex flex-col will-change-transform"
     >
       <div 
@@ -48,6 +51,8 @@ export function ProjectCard({ project, idx, contributionsLabel, onWatchVideo }: 
                 alt={project.title}
                 className="absolute inset-0 w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
                 referrerPolicy="no-referrer"
+                loading="lazy"
+                decoding="async"
               />
               <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/0 transition-colors">
                 <div className="w-16 h-16 rounded-full bg-[var(--accent)]/90 flex items-center justify-center text-black shadow-2xl scale-90 group-hover:scale-100 transition-transform duration-300">
@@ -61,6 +66,8 @@ export function ProjectCard({ project, idx, contributionsLabel, onWatchVideo }: 
             src={project.image} 
             alt={`Screenshot of ${project.title}`}
             referrerPolicy="no-referrer"
+            loading="lazy"
+            decoding="async"
             className="absolute inset-0 w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700"
           />
         ) : (

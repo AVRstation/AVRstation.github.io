@@ -16,19 +16,25 @@ export const TreasureChest: React.FC<TreasureChestProps> = ({ onOpen, onBackToTo
     if (onOpen) onOpen();
 
     const rewards = ['🪙', '💎', '💍', '🧿', '✨', '👑', '💰', '⚔️', '🛡️', '🧪'];
-    const newItems = Array.from({ length: 35 }).map((_, i) => ({
+    const newItems = Array.from({ length: 18 }).map((_, i) => ({
       id: Date.now() + i,
       char: rewards[Math.floor(Math.random() * rewards.length)],
-      x: (Math.random() - 0.5) * 500,
-      y: -Math.random() * 400 - 180,
-      delay: Math.random() * 0.4,
+      x: (Math.random() - 0.5) * 440,
+      y: -Math.random() * 350 - 150,
+      delay: Math.random() * 0.3,
     }));
     setItems(newItems);
   };
 
   const scrollToTop = () => {
-    const scrollContainer = document.querySelector('main') || window;
-    scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    // Try scrolling both the window and the main container for maximum compatibility
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    const mainContainer = document.querySelector('main');
+    if (mainContainer) {
+      mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
     if (onBackToTop) onBackToTop();
   };
 
@@ -85,49 +91,48 @@ export const TreasureChest: React.FC<TreasureChestProps> = ({ onOpen, onBackToTo
             </div>
           </motion.div>
 
-          {/* Treasure Inside Glow */}
           <AnimatePresence>
             {isOpen && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1.2 }}
-                className="absolute inset-0 bg-yellow-400 rounded-full blur-[40px] -z-10 mix-blend-screen overflow-visible"
+                animate={{ opacity: 1, scale: 1.1 }}
+                className="absolute inset-0 bg-yellow-400/60 rounded-full blur-[25px] -z-10 mix-blend-screen overflow-visible will-change-transform"
               />
             )}
           </AnimatePresence>
 
           {/* Loot Spawning */}
-          <AnimatePresence>
+          <div className="absolute inset-0 pointer-events-none z-40">
             {items.map((item) => (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, scale: 0, x: "20px", y: "-20px" }}
+                initial={{ opacity: 0, scale: 0, x: "0px", y: "0px" }}
                 animate={{ 
                   opacity: [0, 1, 1, 0], 
-                  scale: [0, 1.8, 1.2, 0.5],
+                  scale: [0, 1.5, 1, 0.4],
                   x: item.x,
                   y: item.y,
-                  rotate: 1080
+                  rotate: 720
                 }}
                 transition={{ 
-                  duration: 2.8, 
+                  duration: 2.5, 
                   delay: item.delay,
-                  ease: [0.23, 1, 0.32, 1]
+                  ease: "easeOut"
                 }}
-                className="absolute left-1/2 top-4 -translate-x-1/2 text-4xl z-40 pointer-events-none drop-shadow-xl"
+                className="absolute left-1/2 top-4 -translate-x-1/2 text-3xl will-change-transform"
               >
                 {item.char}
               </motion.div>
             ))}
-          </AnimatePresence>
+          </div>
 
           {/* Magic Glow Rays */}
           {isOpen && (
             <motion.div 
               initial={{ opacity: 0 }}
-              animate={{ opacity: [0.2, 0.5, 0.2] }}
-              transition={{ repeat: Infinity, duration: 3 }}
-              className="absolute -top-40 left-[-100px] right-[-100px] bottom-0 bg-gradient-to-t from-yellow-500/40 to-transparent blur-[60px] pointer-events-none -z-20"
+              animate={{ opacity: [0.15, 0.35, 0.15] }}
+              transition={{ repeat: Infinity, duration: 4 }}
+              className="absolute -top-32 left-[-60px] right-[-60px] bottom-0 bg-gradient-to-t from-yellow-500/30 to-transparent blur-[40px] pointer-events-none -z-20 will-change-opacity"
             />
           )}
         </div>
@@ -144,13 +149,16 @@ export const TreasureChest: React.FC<TreasureChestProps> = ({ onOpen, onBackToTo
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 }}
-              onClick={scrollToTop}
-              className="kb-key px-8 py-3.5 flex-row gap-4 border-yellow-500/30 hover:border-yellow-400 shadow-[0_10px_30px_rgba(0,0,0,0.5)] active:translate-y-4"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToTop();
+              }}
+              className="kb-key px-8 py-4 !flex-row gap-3 border-yellow-500/30 hover:border-yellow-400 shadow-[0_10px_30px_rgba(0,0,0,0.5)] active:translate-y-1 touch-manipulation z-[60]"
             >
-              <span className="kb-key-label">TOP</span>
+              <span className="kb-key-label !static !translate-y-0 text-[10px] opacity-50">TOP</span>
               <span className="text-sm font-black uppercase tracking-[0.2em] text-yellow-400">Return to Start</span>
               <motion.span 
-                animate={{ y: [0, -5, 0] }} 
+                animate={{ y: [0, -4, 0] }} 
                 transition={{ repeat: Infinity, duration: 1.5 }}
                 className="text-lg"
               >

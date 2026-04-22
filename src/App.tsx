@@ -435,10 +435,10 @@ const GET_PROJECTS = (lang: 'ru' | 'en' | 'cn') => [
 ];
 
 const CONTACTS = [
-  { label: "Telegram", value: "@xrman", url: "https://t.me/xrman", icon: <Send className="w-6 h-6" />, color: "bg-blue-600 hover:bg-blue-500" },
-  { label: "Email", value: "hello@xrman.dev", url: "mailto:avkopanev@gmail.com", icon: <Mail className="w-6 h-6" />, color: "bg-zinc-800 hover:bg-zinc-700" },
-  { label: "LinkedIn", value: "Kopanev Alexandr", url: "https://linkedin.com/in/aleksandr-kopanev-18787b104", icon: <Linkedin className="w-6 h-6" />, color: "bg-blue-700 hover:bg-blue-600" },
-  { label: "Discord", value: "xrman", url: "https://discordapp.com/users/258354536287043588/", icon: <Disc className="w-6 h-6" />, color: "bg-indigo-600 hover:bg-indigo-500" }
+  { label: "Telegram", value: "@xrman", url: "https://t.me/xrman", icon: <Send />, color: "text-[#0088cc]", hoverBg: "hover:bg-[#0088cc]", shadow: "hover:shadow-[#0088cc]/30" },
+  { label: "Email", value: "hello@xrman.dev", url: "mailto:avkopanev@gmail.com", icon: <Mail />, color: "text-[#EA4335]", hoverBg: "hover:bg-[#EA4335]", shadow: "hover:shadow-[#EA4335]/30" },
+  { label: "LinkedIn", value: "Kopanev Alexandr", url: "https://linkedin.com/in/aleksandr-kopanev-18787b104", icon: <Linkedin />, color: "text-[#0077b5]", hoverBg: "hover:bg-[#0077b5]", shadow: "hover:shadow-[#0077b5]/30" },
+  { label: "Discord", value: "xrman", url: "https://discordapp.com/users/258354536287043588/", icon: <Disc />, color: "text-[#5865F2]", hoverBg: "hover:bg-[#5865F2]", shadow: "hover:shadow-[#5865F2]/30" }
 ];
 
 const detectInitialLanguage = (): 'ru' | 'en' | 'cn' => {
@@ -867,10 +867,10 @@ export default function App() {
                 achievementsRef.current?.unlock('click_contact');
                 achievementsRef.current?.unlock('f_key_click');
               }}
-              className={`kb-key w-14 h-14 group transition-all duration-300 ${contact.color} !bg-opacity-100 border-none shadow-lg`}
+              className={`kb-key w-14 h-14 group transition-all duration-300 ${contact.hoverBg} ${contact.shadow} border-white/5 hover:border-transparent shadow-lg`}
             >
-              <span className="kb-key-label !text-white/50">F{index + 1}</span>
-              <div className="text-white drop-shadow-md transform group-hover:scale-110 transition-transform">
+              <span className="kb-key-label !text-white/20 group-hover:opacity-0 transition-opacity">F{index + 1}</span>
+              <div className={`${contact.color} group-hover:!text-white transform group-hover:scale-110 transition-all`}>
                 {React.cloneElement(contact.icon as React.ReactElement, { className: "w-6 h-6" })}
               </div>
             </a>
