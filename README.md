@@ -23,9 +23,9 @@ An immersive, gamified web portfolio designed to showcase professional expertise
 * **Styling:** Modern CSS/Tailwind (Dark Mode with Neon Accents)
 * **Deployment:** Vercel with CI/CD integration via GitHub Actions
 
-👨‍💻 About the Author
+## 👨‍💻 About the Author
 
-Aleksandr Kopanev
-Producer | Game Designer | Product Owner
+* **Aleksandr Kopanev
+* **Producer | Game Designer | Product Owner
 
-Specializing in immersive experiences, FPV simulators, and high-end VR applications for Meta Horizon Store, SteamVR, and PSVR2.
+* **Specializing in immersive experiences, FPV simulators, and high-end VR applications for Meta Horizon Store, SteamVR, and PSVR2.
