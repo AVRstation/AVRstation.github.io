@@ -84,7 +84,7 @@ export function ProjectCard({ project, idx, contributionsLabel, onWatchVideo }: 
         className="p-5 md:p-6 flex flex-col flex-1"
       >
         <div className="flex flex-wrap gap-2 mb-3">
-          {project.stack.map((s: string) => (
+          {project.stack?.map((s: string) => (
             <span key={s} className="text-[11px] font-mono font-bold uppercase text-[var(--accent)] opacity-80">
               • {s}
             </span>
@@ -105,7 +105,7 @@ export function ProjectCard({ project, idx, contributionsLabel, onWatchVideo }: 
         )}
 
         <div className="mt-auto flex gap-4 items-center">
-          {project.links.map((link: any) => (
+          {project.links?.map((link: any) => (
             <a 
               key={link.url} 
               href={link.url} 

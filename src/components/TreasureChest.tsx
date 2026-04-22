@@ -4,9 +4,10 @@ import { motion, AnimatePresence } from 'motion/react';
 interface TreasureChestProps {
   onOpen?: () => void;
   onBackToTop?: () => void;
+  t: any;
 }
 
-export const TreasureChest: React.FC<TreasureChestProps> = ({ onOpen, onBackToTop }) => {
+export const TreasureChest: React.FC<TreasureChestProps> = ({ onOpen, onBackToTop, t }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [items, setItems] = useState<{ id: number; char: string; x: number; y: number; delay: number }[]>([]);
 
@@ -46,7 +47,7 @@ export const TreasureChest: React.FC<TreasureChestProps> = ({ onOpen, onBackToTo
            whileInView={{ opacity: 1, y: 0 }}
            className="text-[10px] font-black uppercase tracking-[0.6em] text-yellow-400 bg-yellow-400/10 px-6 py-2 rounded-full border border-yellow-400/20 shadow-[0_0_30px_rgba(250,204,21,0.15)]"
         >
-          {isOpen ? "ANCIENT TREASURE DISCOVERED" : "QUEST REWARD LOCATED"}
+          {isOpen ? t.chest_title_open : t.chest_title_locked}
         </motion.div>
       </div>
 
@@ -140,7 +141,7 @@ export const TreasureChest: React.FC<TreasureChestProps> = ({ onOpen, onBackToTo
 
       <div className="mt-16 flex flex-col items-center gap-8 z-30">
         <div className="text-[10px] uppercase font-black tracking-[0.3em] text-yellow-500/60 text-center max-w-[200px] leading-relaxed">
-          {!isOpen ? "EPIC LOAT AWAITS YOUR COMMAND" : "TREASURE CLAIMED SUCCESSFULLY"}
+          {!isOpen ? t.chest_desc_locked : t.chest_desc_open}
         </div>
 
         <AnimatePresence>
@@ -156,7 +157,7 @@ export const TreasureChest: React.FC<TreasureChestProps> = ({ onOpen, onBackToTo
               className="kb-key px-8 py-4 !flex-row gap-3 border-yellow-500/30 hover:border-yellow-400 shadow-[0_10px_30px_rgba(0,0,0,0.5)] active:translate-y-1 touch-manipulation z-[60]"
             >
               <span className="kb-key-label !static !translate-y-0 text-[10px] opacity-50">TOP</span>
-              <span className="text-sm font-black uppercase tracking-[0.2em] text-yellow-400">Return to Start</span>
+              <span className="text-sm font-black uppercase tracking-[0.2em] text-yellow-400">{t.chest_button}</span>
               <motion.span 
                 animate={{ y: [0, -4, 0] }} 
                 transition={{ repeat: Infinity, duration: 1.5 }}
