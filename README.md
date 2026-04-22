@@ -1,20 +1,31 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 🚀 Interactive VR/MR Developer & Product Owner Portfolio
 
-# Run and deploy your AI Studio app
+An immersive, gamified web portfolio designed to showcase professional expertise, leadership, and technical projects in the fields of Virtual Reality (VR), Mixed Reality (MR), and Game Development.
 
-This contains everything you need to run your app locally.
+🔗 **Live Demo:** [Visit Portfolio](https://kopanev.vercel.app/)
 
-View your app in AI Studio: https://ai.studio/apps/5d62fe88-3905-42cf-9b76-cecd44f88ec0
+## 💡 Key Features
 
-## Run Locally
+* **Interactive Background Games (Player vs AI):** The site features three classic arcade experiences integrated directly into the background: **Snake, Pong, and Space Invaders**. The AI competes against the user in real-time without interfering with the page navigation.
+* **Multi-language Support (i18n):** Fully localized for a global audience, supporting **English, Russian, Hindi, Arabic, French, and Spanish**.
+* **Gamification System:** Includes **17 unlockable achievements** and various interactive "Easter eggs" hidden throughout the UI to reward user exploration.
+* **Project Showreel:** A high-performance grid of 16 detailed case studies. Each project features:
+    * Optimized YouTube video demos (with lazy loading).
+    * Specific "Role & Impact" descriptions.
+    * Technology stack tags and direct store links (Meta, Steam, PSVR2).
+* **Advanced SEO & GEO:** Built with Generative Engine Optimization (GEO) in mind, featuring JSON-LD (Schema.org) microdata, semantic HTML5, and Open Graph tags for rich previews in messengers.
+* **Performance First:** Built with Vite for near-instant loading, featuring smooth CSS animations and responsive layouts for all device types.
 
-**Prerequisites:**  Node.js
+## 🛠 Tech Stack
 
+* **Frontend:** React, Vite
+* **Interactivity:** HTML5 Canvas API, Custom Game Engine Logic (requestAnimationFrame)
+* **Styling:** Modern CSS/Tailwind (Dark Mode with Neon Accents)
+* **Deployment:** Vercel with CI/CD integration via GitHub Actions
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+👨‍💻 About the Author
+
+Aleksandr Kopanev
+Producer | Game Designer | Product Owner
+
+Specializing in immersive experiences, FPV simulators, and high-end VR applications for Meta Horizon Store, SteamVR, and PSVR2.
