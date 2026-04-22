@@ -25,7 +25,7 @@ An immersive, gamified web portfolio designed to showcase professional expertise
 
 ## 👨‍💻 About the Author
 
-* **Aleksandr Kopanev
-* **Producer | Game Designer | Product Owner
+* **Aleksandr Kopanev**
+* **Producer | Game Designer | Product Owner**
 
-* **Specializing in immersive experiences, FPV simulators, and high-end VR applications for Meta Horizon Store, SteamVR, and PSVR2.
+* **Specializing in immersive experiences, FPV simulators, and high-end VR applications for Meta Horizon Store, SteamVR, and PSVR2.**
