@@ -300,6 +300,7 @@ export const GET_PROJECTS = (lang: Language): Project[] => [
       fr: "Intégration de systèmes de suivi corporel complexes, synchronisation physique-virtuelle и gestion du processus de développement."
     }[lang],
     stack: ["Full Body Tracking", "Unity", "Gamedesign"],
+    image: "https://raw.githubusercontent.com/AVRstation/AVRstation.github.io/main/public/FootBall_case.jpg",
     youtubeId: "sSeCxxwv-A8",
     links: []
   },
@@ -324,6 +325,7 @@ export const GET_PROJECTS = (lang: Language): Project[] => [
       fr: "Développement du concept, équilibrage des mouvements sportifs avec des mécanismes rythmiques и réglage des algorithmes de génération."
     }[lang],
     stack: ["Generative Music", "Rhythm Game", "Combat Sports"],
+    image: "https://raw.githubusercontent.com/AVRstation/AVRstation.github.io/main/public/jigle_case.png",
     youtubeId: "096o56nwQMo",
     links: []
   },
@@ -374,6 +376,7 @@ export const GET_PROJECTS = (lang: Language): Project[] => [
       fr: "Collecte des besoins auprès d'entraîneurs pro, développement d'un module analytique и réglage du matériel pour un contrôleur de fusil réel."
     }[lang],
     stack: ["Training Sim", "Simulation", "Analytics"],
+    image: "https://raw.githubusercontent.com/AVRstation/AVRstation.github.io/main/public/biathlon_case.jpeg",
     youtubeId: "MyqNSP_e0BE",
     links: []
   },
@@ -446,6 +449,7 @@ export const GET_PROJECTS = (lang: Language): Project[] => [
       fr: "Direction de la modélisation 3D des actifs historiques, réglage des systèmes d'interaction и planification narrative."
     }[lang],
     stack: ["3D Interaction", "History", "VR"],
+    image: "https://raw.githubusercontent.com/AVRstation/AVRstation.github.io/main/public/museum_case.jpg",
     youtubeId: "R-btZ92JkaY",
     links: []
   },
@@ -478,6 +482,7 @@ export const GET_PROJECTS = (lang: Language): Project[] => [
       fr: "Gestion du développement, optimisation и intégration de modèles architecturaux CAO et conception de parcours utilisateur fluides."
     }[lang],
     stack: ["Real Estate", "VR/AR", "Architecture"],
+    image: "https://raw.githubusercontent.com/AVRstation/AVRstation.github.io/main/public/apart_case.jpg",
     youtubeId: "VK1YTMYuse0",
     links: []
   },

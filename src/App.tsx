@@ -5,6 +5,7 @@ import { ProjectCard } from './components/ProjectCard';
 import { SlotMachine } from './components/SlotMachine';
 import { TreasureChest } from './components/TreasureChest';
 import { AchievementSystem, AchievementSystemHandle } from './components/AchievementSystem';
+import { CustomCursor } from './components/CustomCursor';
 import { 
   Briefcase, 
   Gamepad2, 
@@ -196,6 +197,7 @@ export default function App() {
 
   return (
     <>
+      <CustomCursor />
       {/* Background Glow */}
       <div 
         className="pointer-events-none fixed inset-0 z-0 opacity-20 transition-opacity duration-300 hidden lg:block"

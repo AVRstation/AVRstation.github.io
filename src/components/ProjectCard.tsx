@@ -12,6 +12,7 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project, idx, contributionsLabel, onWatchVideo }: ProjectCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const handlePlay = () => {
     if (!isPlaying && project.youtubeId) {
@@ -48,15 +49,19 @@ export function ProjectCard({ project, idx, contributionsLabel, onWatchVideo }: 
             />
           ) : (
             <div className="absolute inset-0 w-full h-full group/player">
-              <img 
-                src={`https://img.youtube.com/vi/${project.youtubeId}/hqdefault.jpg`}
+              <motion.img 
+                src={project.image || `https://img.youtube.com/vi/${project.youtubeId}/hqdefault.jpg`}
                 alt={project.title}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isImageLoaded ? 1 : 0 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                onLoad={() => setIsImageLoaded(true)}
                 className="absolute inset-0 w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
                 referrerPolicy="no-referrer"
                 loading="lazy"
                 decoding="async"
               />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/0 transition-colors">
+              <div className={`absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/0 transition-colors ${!isImageLoaded && 'hidden'}`}>
                 <div className="w-16 h-16 rounded-full bg-[var(--accent)]/90 flex items-center justify-center text-black shadow-2xl scale-90 group-hover:scale-100 transition-transform duration-300">
                   <Play className="w-8 h-8 fill-black ml-1" />
                 </div>
@@ -66,9 +71,13 @@ export function ProjectCard({ project, idx, contributionsLabel, onWatchVideo }: 
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center relative">
             {project.image ? (
-               <img 
+               <motion.img 
                src={project.image} 
                alt={`Screenshot of ${project.title}`}
+               initial={{ opacity: 0 }}
+               animate={{ opacity: isImageLoaded ? 1 : 0 }}
+               transition={{ duration: 0.6, ease: "easeOut" }}
+               onLoad={() => setIsImageLoaded(true)}
                referrerPolicy="no-referrer"
                loading="lazy"
                decoding="async"
@@ -79,7 +88,7 @@ export function ProjectCard({ project, idx, contributionsLabel, onWatchVideo }: 
             )}
           </div>
         )}
-        {!isPlaying && (
+        {!isPlaying && isImageLoaded && (
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
         )}
       </button>
