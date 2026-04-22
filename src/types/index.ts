@@ -1,3 +1,5 @@
+import React from 'react';
+
 export type Language = 'ru' | 'en' | 'cn' | 'hi' | 'es' | 'ar' | 'fr';
 
 export interface Translation {

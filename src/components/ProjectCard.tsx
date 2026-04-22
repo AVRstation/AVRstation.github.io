@@ -31,9 +31,11 @@ export function ProjectCard({ project, idx, contributionsLabel, onWatchVideo }: 
       }}
       className="project-card sleek-glass rounded-2xl overflow-hidden sleek-card-hover group flex flex-col will-change-transform"
     >
-      <div 
-        className="aspect-video relative overflow-hidden bg-zinc-900 border-b border-[var(--glass-border)] cursor-pointer"
+      <button 
+        className="aspect-video relative overflow-hidden bg-zinc-900 border-b border-[var(--glass-border)] cursor-pointer w-full text-left p-0 border-none block"
         onClick={handlePlay}
+        aria-label={isPlaying ? undefined : `Play video for ${project.title}`}
+        disabled={isPlaying || !project.youtubeId}
       >
         {project.youtubeId ? (
           isPlaying ? (
@@ -61,24 +63,26 @@ export function ProjectCard({ project, idx, contributionsLabel, onWatchVideo }: 
               </div>
             </div>
           )
-        ) : project.image ? (
-          <img 
-            src={project.image} 
-            alt={`Screenshot of ${project.title}`}
-            referrerPolicy="no-referrer"
-            loading="lazy"
-            decoding="async"
-            className="absolute inset-0 w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700"
-          />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
-             <Globe className="w-12 h-12 text-zinc-700" />
+          <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center relative">
+            {project.image ? (
+               <img 
+               src={project.image} 
+               alt={`Screenshot of ${project.title}`}
+               referrerPolicy="no-referrer"
+               loading="lazy"
+               decoding="async"
+               className="absolute inset-0 w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700"
+             />
+            ) : (
+              <Globe className="w-12 h-12 text-zinc-700" />
+            )}
           </div>
         )}
         {!isPlaying && (
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
         )}
-      </div>
+      </button>
       
       <div 
         className="p-5 md:p-6 flex flex-col flex-1"

@@ -482,6 +482,38 @@ export const GET_PROJECTS = (lang: Language): Project[] => [
     links: []
   },
   {
+    title: {
+      ru: "Смотри Динозавры!",
+      cn: "看，恐龙！",
+      en: "Look, Dinosaurs!",
+      hi: "देखो, डायनासोर!",
+      es: "¡Mira, Dinosaurios!",
+      ar: "انظر، ديناصورات!",
+      fr: "Regarde, les Dinosaures !"
+    }[lang],
+    description: {
+      ru: "Снабжение очками всех точек Дикси в России и разработка VR-приложения вместе с интерактивным журналом.",
+      cn: "为全俄罗斯的所有 Dixy 门店供应 VR 眼镜，并开发与互动杂志结合的 VR 应用程序。",
+      en: "Supplying VR glasses to all Dixy stores across Russia and developing a VR application integrated with an interactive educational magazine.",
+      hi: "रूस भर के सभी डिक्सी स्टोर को VR चश्मा की आपूर्ति करना और एक इंटरैक्टिव पत्रिका के साथ एकीकृत एक VR एप्लिकेशन विकसित करना।",
+      es: "Suministro de gafas de VR a todas las tiendas Dixy en Rusia y desarrollo de una aplicación de VR integrada con una revista interactiva.",
+      ar: "توفير نظارات الواقع الافتراضي لمتاجر Dixy في جميع أنحاء روسيا وتطوير تطبيق واقع افتراضي متكامل مع مجلة تفاعلية.",
+      fr: "Fourniture de lunettes VR à tous les magasins Dixy en Russie et développement d'une application VR intégrée à un magazine interactif."
+    }[lang],
+    whatDone: {
+      ru: "Продюсирование проекта, разработка мобильного VR приложения, координация поставок брендированных Cardboard-очков.",
+      cn: "项目制作，开发移动 VR 应用程序，并协调品牌 Cardboard 头显的供应。",
+      en: "Project producing, mobile VR application development, and coordination of branded Cardboard headset supplies.",
+      hi: "परियोजना निर्माण, मोबाइल VR एप्लिकेशन विकास, और ब्रांडेड कार्डबोर्ड हेडसेट आपूर्ति का समन्वय।",
+      es: "Producción del proyecto, desarrollo de la aplicación de VR móvil y coordinación de suministros de visores Cardboard de marca.",
+      ar: "إنتاج المشروع، وتطوير تطبيق الواقع الافتراضي للهاتف المحمول، وتنسيق إمدادات سماعات كاردبورد ذات العلامات التجارية.",
+      fr: "Production du projet, développement de l'application VR mobile et coordination des fournitures de casques Cardboard de marque."
+    }[lang],
+    stack: ["Mobile VR", "EdTech", "Hardware Supply"],
+    youtubeId: "1msmW8acn8g",
+    links: []
+  },
+  {
     title: "Boxglass VR Cardboards",
     description: {
       ru: "Вывод на рынок и масштабирование hardware-стартапа по производству доступных мобильных VR-гарнитур.",

@@ -1,6 +1,6 @@
 {
-  "name": "Alexandr Kopanev | XR Portfolio",
-  "description": "Premium portfolio for a Producer, Game Designer, and Product Owner specializing in VR/MR, 3D simulations, and interactive technologies.",
+  "name": "Remix: Aleksandr Kopanev | XR Portfolio",
+  "description": "Premium portfolio for a Producer, Game Designer, and Product Owner specializing in VR/MR, 3D simulations, and interactive technologies. Includes interactive background games (Snake, Pong, Space Invaders) and detailed XR project case studies.",
   "requestFramePermissions": [],
-  "majorCapabilities": []
+  "majorCapabilities": ["VR Development", "Meta Quest", "Unity 3D", "Game Design", "Product Strategy", "Project Management", "XR Interactive Systems"]
 }

@@ -261,6 +261,7 @@ export default function App() {
                 sounds.init();
               }}
               className="p-2 rounded-full header-3d-wrapper text-[var(--accent)] transition-all"
+              aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
               title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
             >
               {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -278,6 +279,9 @@ export default function App() {
                     ? 'bg-[var(--accent)] text-black shadow-[0_0_20px_var(--accent)]' 
                     : 'text-[var(--accent)] hover:bg-white/5 opacity-80 hover:opacity-100'
                 }`}
+                aria-label="Select Language"
+                aria-expanded={isLangOpen}
+                aria-haspopup="listbox"
                 title="Select Language"
               >
                 <Languages className={`w-4 h-4 ${isLangOpen ? 'animate-pulse' : ''}`} />
@@ -286,10 +290,13 @@ export default function App() {
               <AnimatePresence>
                 {isLangOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    className="absolute top-full right-0 mt-3 w-40 sleek-glass rounded-2xl p-2 border border-[var(--glass-border)] shadow-2xl z-[10001] flex flex-col gap-1"
+                    role="listbox"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.15, ease: "easeOut" }}
+                    className="absolute top-full right-0 mt-3 w-40 panel-glass rounded-2xl p-2 z-[10001] flex flex-col gap-1"
+                    style={{ transform: 'translateZ(0)' }}
                   >
                     {[
                       { code: 'en', label: 'English' },
@@ -301,6 +308,8 @@ export default function App() {
                       { code: 'ar', label: 'العربية' }
                     ].map((l) => (
                       <button
+                        role="option"
+                        aria-selected={lang === l.code}
                         key={l.code}
                         onClick={() => {
                           setLang(l.code as Language);
@@ -309,7 +318,7 @@ export default function App() {
                         className={`w-full px-4 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider text-left transition-all ${
                           lang === l.code 
                             ? 'bg-[var(--accent)] text-black shadow-lg cursor-default' 
-                            : 'text-[var(--text-dim)] hover:text-white hover:bg-white/5'
+                            : 'text-[var(--text-dim)] hover:text-[var(--text-main)] hover:bg-[var(--glass-border)]'
                         }`}
                       >
                         {l.label}
@@ -319,9 +328,128 @@ export default function App() {
                 )}
               </AnimatePresence>
             </div>
+            
+            {/* Action Buttons Container */}
+            <div className="flex items-center gap-3 relative z-[80]">
+              
+              {/* Settings Dropdown (Separated to avoid click interception) */}
+              <div className="relative" ref={settingsRef}>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsSettingsOpen(!isSettingsOpen);
+                  }}
+                  className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 header-3d-wrapper relative z-[90] ${
+                    isSettingsOpen 
+                      ? 'bg-[var(--accent)] text-black shadow-[0_0_20px_var(--accent)]' 
+                      : 'text-[var(--accent)] hover:bg-white/5 opacity-80 hover:opacity-100'
+                  }`}
+                  aria-label={t.settings_title}
+                  aria-expanded={isSettingsOpen}
+                  aria-haspopup="dialog"
+                  title={t.settings_title}
+                >
+                  <Settings className={`w-4 h-4 ${isSettingsOpen ? 'animate-spin-slow' : ''}`} />
+                </button>
+
+                <AnimatePresence>
+                  {isSettingsOpen && (
+                    <motion.div
+                      role="dialog"
+                      aria-label={t.settings_title}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.15, ease: "easeOut" }}
+                      className="absolute top-full left-0 mt-3 w-64 panel-glass rounded-2xl p-4 z-[10001]"
+                      style={{ transform: 'translateZ(0)' }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <h2 className="text-[10px] font-black uppercase text-[var(--accent)] mb-4 tracking-[0.2em] flex items-center gap-2">
+                        <Settings className="w-3 h-3" />
+                        <span>{t.settings_panel_title}</span>
+                      </h2>
+
+                      <div className="flex flex-col gap-3">
+                        {/* Toggle Games */}
+                        <div className="flex items-center justify-between group/row">
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <Gamepad2 className={`w-3.5 h-3.5 ${gamesEnabled ? 'text-[var(--accent)]' : 'text-zinc-500'}`} />
+                            <span className={`text-[11px] font-bold uppercase tracking-wider ${gamesEnabled ? 'text-[var(--text-main)]' : 'text-zinc-500'}`}>{t.settings_games}</span>
+                          </label>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setGamesEnabled(!gamesEnabled);
+                            }}
+                            role="switch"
+                            aria-checked={gamesEnabled}
+                            aria-label={t.settings_games}
+                            className={`w-8 h-4 rounded-full relative transition-colors duration-300 ${gamesEnabled ? 'bg-[var(--accent)]' : 'bg-zinc-700'}`}
+                          >
+                            <motion.div 
+                              animate={{ x: gamesEnabled ? 16 : 2 }}
+                              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm"
+                            />
+                          </button>
+                        </div>
+
+                        {/* Toggle Sound */}
+                        <div className="flex items-center justify-between group/row">
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            {isSoundEnabled ? <Volume2 className="w-3.5 h-3.5 text-green-400" /> : <VolumeX className="w-3.5 h-3.5 text-zinc-500" />}
+                            <span className={`text-[11px] font-bold uppercase tracking-wider ${isSoundEnabled ? 'text-[var(--text-main)]' : 'text-zinc-500'}`}>{t.settings_sounds}</span>
+                          </label>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const newState = !isSoundEnabled;
+                              setIsSoundEnabled(newState);
+                              if (newState) {
+                                sounds.init();
+                              }
+                            }}
+                            role="switch"
+                            aria-checked={isSoundEnabled}
+                            aria-label={t.settings_sounds}
+                            className={`w-8 h-4 rounded-full relative transition-colors duration-300 ${isSoundEnabled ? 'bg-green-500' : 'bg-zinc-700'}`}
+                          >
+                            <motion.div 
+                              animate={{ x: isSoundEnabled ? 16 : 2 }}
+                              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm"
+                            />
+                          </button>
+                        </div>
+
+                        {/* Toggle Play Mode */}
+                        <div className="flex items-center justify-between group/row">
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            {isPlayMode ? <EyeOff className="w-3.5 h-3.5 text-purple-400" /> : <Eye className="w-3.5 h-3.5 text-zinc-500" />}
+                            <span className={`text-[11px] font-bold uppercase tracking-wider ${isPlayMode ? 'text-[var(--text-main)]' : 'text-zinc-500'}`}>{t.settings_play_mode}</span>
+                          </label>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsPlayMode(!isPlayMode);
+                            }}
+                            role="switch"
+                            aria-checked={isPlayMode}
+                            aria-label={t.settings_play_mode}
+                            className={`w-8 h-4 rounded-full relative transition-colors duration-300 ${isPlayMode ? 'bg-purple-500' : 'bg-zinc-700'}`}
+                          >
+                            <motion.div 
+                              animate={{ x: isPlayMode ? 16 : 2 }}
+                              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm"
+                            />
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
             {/* Game & Score Switcher */}
-            <div className="flex items-center gap-3 relative z-[80]">
               <motion.div 
                 onClick={() => setActiveGame(prev => {
                   if (prev === 'snake') return 'pong';
@@ -330,10 +458,22 @@ export default function App() {
                 })}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="group relative hidden md:flex items-center header-3d-wrapper rounded-full p-1 cursor-pointer transition-all"
+                className="group relative hidden md:flex items-center header-3d-wrapper rounded-full p-1 cursor-pointer transition-all focus-within:ring-2 focus-within:ring-[var(--accent)]"
+                role="button"
+                aria-label={t.stats_change_game}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    setActiveGame(prev => {
+                      if (prev === 'snake') return 'pong';
+                      if (prev === 'pong') return 'space';
+                      return 'snake';
+                    });
+                  }
+                }}
               >
-                <div className="flex items-center gap-4 px-4 py-1.5">
-                  <div className="flex items-center gap-1.5 mr-1">
+                <div className="flex items-center gap-4 px-4 py-1.5" aria-live="polite">
+                  <div className="flex items-center gap-1.5 mr-1" aria-hidden="true">
                     {activeGame === 'snake' && (
                       <>
                         <span className="text-xs">🐍</span>
@@ -371,7 +511,10 @@ export default function App() {
                 </div>
 
                 {/* Tooltip (Positioned Above) */}
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-56 p-4 sleek-glass rounded-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[60] pointer-events-none scale-95 group-hover:scale-100 border border-[var(--glass-border)] shadow-2xl">
+                <div 
+                  className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-56 p-4 panel-glass rounded-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[60] pointer-events-none scale-95 group-hover:scale-100"
+                  style={{ transform: 'translateX(-50%) translateZ(0)' }}
+                >
                   <div className="text-[10px] font-black uppercase text-[var(--accent)] mb-2 tracking-widest">
                     {activeGame === 'snake' ? t.game_snake : activeGame === 'pong' ? t.game_pong : t.game_space}
                   </div>
@@ -383,107 +526,6 @@ export default function App() {
                   </div>
                 </div>
               </motion.div>
-
-              {/* Settings Dropdown (Separated to avoid click interception) */}
-              <div className="relative" ref={settingsRef}>
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsSettingsOpen(!isSettingsOpen);
-                  }}
-                  className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 header-3d-wrapper relative z-[90] ${
-                    isSettingsOpen 
-                      ? 'bg-[var(--accent)] text-black shadow-[0_0_20px_var(--accent)]' 
-                      : 'text-[var(--accent)] hover:bg-white/5 opacity-80 hover:opacity-100'
-                  }`}
-                  title={t.settings_title}
-                >
-                  <Settings className={`w-4 h-4 ${isSettingsOpen ? 'animate-spin-slow' : ''}`} />
-                </button>
-
-                <AnimatePresence>
-                  {isSettingsOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                      className="absolute top-full right-0 mt-3 w-64 sleek-glass rounded-2xl p-4 border border-[var(--glass-border)] shadow-2xl z-[10001]"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div className="text-[10px] font-black uppercase text-[var(--accent)] mb-4 tracking-[0.2em] flex items-center gap-2">
-                        <Settings className="w-3 h-3" />
-                        <span>{t.settings_panel_title}</span>
-                      </div>
-
-                      <div className="flex flex-col gap-3">
-                        {/* Toggle Games */}
-                        <div className="flex items-center justify-between group/row">
-                          <div className="flex items-center gap-2">
-                            <Gamepad2 className={`w-3.5 h-3.5 ${gamesEnabled ? 'text-[var(--accent)]' : 'text-zinc-500'}`} />
-                            <span className={`text-[11px] font-bold uppercase tracking-wider ${gamesEnabled ? 'text-white' : 'text-zinc-500'}`}>{t.settings_games}</span>
-                          </div>
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setGamesEnabled(!gamesEnabled);
-                            }}
-                            className={`w-8 h-4 rounded-full relative transition-colors duration-300 ${gamesEnabled ? 'bg-[var(--accent)]' : 'bg-zinc-700'}`}
-                          >
-                            <motion.div 
-                              animate={{ x: gamesEnabled ? 16 : 2 }}
-                              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm"
-                            />
-                          </button>
-                        </div>
-
-                        {/* Toggle Sound */}
-                        <div className="flex items-center justify-between group/row">
-                          <div className="flex items-center gap-2">
-                            {isSoundEnabled ? <Volume2 className="w-3.5 h-3.5 text-green-400" /> : <VolumeX className="w-3.5 h-3.5 text-zinc-500" />}
-                            <span className={`text-[11px] font-bold uppercase tracking-wider ${isSoundEnabled ? 'text-white' : 'text-zinc-500'}`}>{t.settings_sounds}</span>
-                          </div>
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const newState = !isSoundEnabled;
-                              setIsSoundEnabled(newState);
-                              if (newState) {
-                                sounds.init();
-                              }
-                            }}
-                            className={`w-8 h-4 rounded-full relative transition-colors duration-300 ${isSoundEnabled ? 'bg-green-500' : 'bg-zinc-700'}`}
-                          >
-                            <motion.div 
-                              animate={{ x: isSoundEnabled ? 16 : 2 }}
-                              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm"
-                            />
-                          </button>
-                        </div>
-
-                        {/* Toggle Play Mode */}
-                        <div className="flex items-center justify-between group/row">
-                          <div className="flex items-center gap-2">
-                            {isPlayMode ? <EyeOff className="w-3.5 h-3.5 text-purple-400" /> : <Eye className="w-3.5 h-3.5 text-zinc-500" />}
-                            <span className={`text-[11px] font-bold uppercase tracking-wider ${isPlayMode ? 'text-white' : 'text-zinc-500'}`}>{t.settings_play_mode}</span>
-                          </div>
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setIsPlayMode(!isPlayMode);
-                            }}
-                            className={`w-8 h-4 rounded-full relative transition-colors duration-300 ${isPlayMode ? 'bg-purple-500' : 'bg-zinc-700'}`}
-                          >
-                            <motion.div 
-                              animate={{ x: isPlayMode ? 16 : 2 }}
-                              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm"
-                            />
-                          </button>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
             </div>
           </div>
 
@@ -520,8 +562,9 @@ export default function App() {
             animate={{ opacity: 1, x: 0 }}
             className="sleek-glass rounded-2xl p-6 flex flex-col gap-8"
           >
+            <h2 className="sr-only">Skills & Tech Stack</h2>
             {skills?.map((cat) => (
-              <div key={cat.category} className="skill-cat">
+              <section key={cat.category} className="skill-cat">
                 <h3 className="text-xs uppercase font-extrabold tracking-[0.2em] text-[var(--text-dim)] mb-4 flex items-center gap-3 after:content-[''] after:flex-1 after:h-[1px] after:bg-[var(--glass-border)]">
                   {cat.category}
                 </h3>
@@ -532,7 +575,7 @@ export default function App() {
                     </span>
                   ))}
                 </div>
-              </div>
+              </section>
             ))}
           </motion.div>
 
@@ -542,7 +585,7 @@ export default function App() {
             transition={{ delay: 0.1 }}
             className="sleek-glass rounded-2xl p-6"
           >
-            <div className="text-xs uppercase font-extrabold tracking-widest text-[var(--text-dim)] mb-4 opacity-60">{t.experience_title}</div>
+            <h2 className="text-xs uppercase font-extrabold tracking-widest text-[var(--text-dim)] mb-4 opacity-60">{t.experience_title}</h2>
             <div className="text-sm leading-relaxed text-[var(--text-dim)]">
               {t.experience.map((exp, i) => (
                 <p key={i} className="mb-3">
@@ -609,14 +652,15 @@ export default function App() {
               target="_blank" 
               rel="noopener noreferrer"
               title={contact.label}
+              aria-label={contact.label}
               onClick={() => {
                 achievementsRef.current?.unlock('click_contact');
                 achievementsRef.current?.unlock('f_key_click');
               }}
               className={`kb-key w-14 h-14 group transition-all duration-300 ${contact.hoverBg} ${contact.shadow} border-white/5 hover:border-transparent shadow-lg`}
             >
-              <span className="kb-key-label !text-white/20 group-hover:opacity-0 transition-opacity">F{index + 1}</span>
-              <div className={`${contact.color} group-hover:!text-white transform group-hover:scale-110 transition-all`}>
+              <span className="kb-key-label group-hover:opacity-0 transition-opacity">F{index + 1}</span>
+              <div className={`${contact.color} group-hover:!text-[var(--text-main)] transform group-hover:scale-110 transition-all`}>
                 {React.cloneElement(contact.icon as React.ReactElement, { className: "w-6 h-6" })}
               </div>
             </a>

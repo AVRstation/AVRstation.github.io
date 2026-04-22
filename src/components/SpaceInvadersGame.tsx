@@ -26,6 +26,8 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
   const playerPos = useRef({ x: 50, y: 0 });
   const score = useRef(0);
   const aiScore = useRef(0);
+  const playerLives = useRef(3);
+  const respawnTimer = useRef(0);
   const particles = useRef<{ x: number, y: number, vx: number, vy: number, life: number, color: string }[]>([]);
 
   const ALIEN_ROWS = 5;
@@ -34,25 +36,35 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
 
   const lastPattern = useRef(-1);
 
-  const triggerExplosion = (x: number, y: number, color: string) => {
-    for (let i = 0; i < 15; i++) {
+  const triggerExplosion = (x: number, y: number, color: string, isHuge: boolean = false) => {
+    const count = isHuge ? 40 : 15;
+    for (let i = 0; i < count; i++) {
       particles.current.push({
         x, y,
-        vx: (Math.random() - 0.5) * 6,
-        vy: (Math.random() - 0.5) * 6,
+        vx: (Math.random() - 0.5) * (isHuge ? 15 : 6),
+        vy: (Math.random() - 0.5) * (isHuge ? 15 : 6),
         life: 1.0,
         color
       });
     }
   };
 
-  const initAliens = (width: number, height: number) => {
+  const initAliens = (width: number, height: number, resetLives: boolean = false) => {
+    if (resetLives) {
+      playerLives.current = 3;
+      score.current = 0;
+      if (onScoreChange) onScoreChange(0);
+    }
+
     const newAliens = [];
     let pattern;
     do {
       pattern = Math.floor(Math.random() * 5);
     } while (pattern === lastPattern.current);
     lastPattern.current = pattern;
+    
+    // Set respawn pause on start
+    respawnTimer.current = performance.now() + 1500;
     
     const startX = width - 50; // Shifted further right, almost flush to edge
     const centerY = height / 2;
@@ -141,8 +153,15 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
       playerY.current = e.clientY;
       playerPos.current.y = e.clientY;
     };
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        playerY.current = e.touches[0].clientY;
+        playerPos.current.y = e.touches[0].clientY;
+      }
+    };
 
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleTouchMove);
 
     let animationFrameId: number;
     const render = (time: number) => {
@@ -159,8 +178,10 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
         initAliens(width, height);
       }
 
+      const isRespawning = time < respawnTimer.current;
+
       // 1. Update Player Bullets
-      if (time - lastShotTime.current > 400) {
+      if (!isRespawning && time - lastShotTime.current > 400) {
         bullets.current.push({ x: playerPos.current.x + 20, y: playerPos.current.y, side: 'player' });
         // Shoot sounds disabled as per request
         // if (soundEnabled) sounds.playSpaceShoot();
@@ -168,29 +189,31 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
       }
 
       // 2. Update Aliens Movement
-      alienMoveStep.current += 1;
-      if (alienMoveStep.current > 2) {
-        let hitEdge = false;
-        aliens.current.forEach(a => {
-          if (!a.alive) return;
-          a.y += alienDirection.current * 1;
-          if (a.y < 50 || a.y > height - 50) hitEdge = true;
-        });
+      if (!isRespawning) {
+        alienMoveStep.current += 1;
+        if (alienMoveStep.current > 2) {
+          let hitEdge = false;
+          aliens.current.forEach(a => {
+            if (!a.alive) return;
+            a.y += alienDirection.current * 1;
+            if (a.y < 50 || a.y > height - 50) hitEdge = true;
+          });
 
-        if (hitEdge) {
-          alienDirection.current *= -1;
+          if (hitEdge) {
+            alienDirection.current *= -1;
+          }
+          alienMoveStep.current = 0;
         }
-        alienMoveStep.current = 0;
-      }
 
-      // Alien Shooting
-      if (time - lastAlienShotTime.current > 1000) {
-        const aliveAliens = aliens.current.filter(a => a.alive);
-        if (aliveAliens.length > 0) {
-          const shooter = aliveAliens[Math.floor(Math.random() * aliveAliens.length)];
-          bullets.current.push({ x: shooter.x - 20, y: shooter.y, side: 'alien' });
+        // Alien Shooting
+        if (time - lastAlienShotTime.current > 1000) {
+          const aliveAliens = aliens.current.filter(a => a.alive);
+          if (aliveAliens.length > 0) {
+            const shooter = aliveAliens[Math.floor(Math.random() * aliveAliens.length)];
+            bullets.current.push({ x: shooter.x - 20, y: shooter.y, side: 'alien' });
+          }
+          lastAlienShotTime.current = time;
         }
-        lastAlienShotTime.current = time;
       }
 
       // 3. Update Bullets position & Collisions
@@ -215,9 +238,19 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
           // Check collision with player
           if (Math.abs(b.x - playerPos.current.x) < 30 && Math.abs(b.y - playerPos.current.y) < 40) {
             aiScore.current += 1;
-            triggerExplosion(playerPos.current.x, playerPos.current.y, playerColor);
-            if (soundEnabledRef.current) sounds.playSpaceExplosion();
             if (onAIScoreChange) onAIScoreChange(aiScore.current);
+            
+            playerLives.current -= 1;
+            if (playerLives.current <= 0) {
+              triggerExplosion(playerPos.current.x, playerPos.current.y, playerColor, true);
+              if (soundEnabledRef.current) sounds.playSnakeDeath();
+              initAliens(width, height, true);
+            } else {
+              // Just break a heart
+              triggerExplosion(playerPos.current.x - 40, playerPos.current.y + (playerLives.current - 1) * 20, '#FF0000', false);
+              if (soundEnabledRef.current) sounds.playSpaceExplosion();
+              respawnTimer.current = time + 1000;
+            }
             return false;
           }
           return b.x > 0;
@@ -241,13 +274,26 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
       if (aliens.current.some(a => a.alive && a.x < 100)) {
         aiScore.current += 5;
         if (onAIScoreChange) onAIScoreChange(aiScore.current);
-        initAliens(width, height);
+
+        playerLives.current -= 1;
+        if (playerLives.current <= 0) {
+          triggerExplosion(playerPos.current.x, playerPos.current.y, playerColor, true);
+          if (soundEnabledRef.current) sounds.playSnakeDeath();
+          initAliens(width, height, true);
+        } else {
+          triggerExplosion(playerPos.current.x - 40, playerPos.current.y + (playerLives.current - 1) * 20, '#FF0000', false);
+          initAliens(width, height); // Reset aliens without resetting player score yet
+          respawnTimer.current = time + 1500;
+        }
       }
 
       // 4. Draw
       ctx.clearRect(0, 0, width, height);
 
       // Draw Player (Spaceship)
+      if (isRespawning) {
+        ctx.globalAlpha = 0.5 + Math.sin(time / 50) * 0.5;
+      }
       ctx.fillStyle = playerColor;
       ctx.shadowBlur = 30;
       ctx.shadowColor = playerColor;
@@ -256,6 +302,17 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
       ctx.lineTo(playerPos.current.x + 20, playerPos.current.y);
       ctx.lineTo(playerPos.current.x - 10, playerPos.current.y + 20);
       ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1.0;
+
+      // Draw Player Lives (Hearts)
+      ctx.font = '16px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      for (let i = 0; i < playerLives.current; i++) {
+        // Arrange vertically, left of the spaceship
+        ctx.fillText('❤️', playerPos.current.x - 40, playerPos.current.y - 20 + i * 20);
+      }
 
       // Draw Aliens
       ctx.textAlign = 'center';
@@ -305,6 +362,7 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
     };
@@ -314,6 +372,8 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
     <canvas
       ref={canvasRef}
       className="pointer-events-none fixed inset-0 z-5 hidden lg:block opacity-60"
+      role="img"
+      aria-label="Interactive background game: Space Invaders. Control a spaceship and defend against waves of glowing aliens."
     />
   );
 };

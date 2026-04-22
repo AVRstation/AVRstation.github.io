@@ -224,8 +224,9 @@ export const AchievementSystem = forwardRef<AchievementSystemHandle, Achievement
           <motion.div
             initial={{ opacity: 0, x: 100, y: 0 }}
             animate={{ opacity: 1, x: 0, y: 0 }}
-            exit={{ opacity: 0, x: 100, scale: 0.8 }}
-            className="fixed bottom-10 right-10 z-[100] w-72 sleek-glass rounded-2xl p-4 border border-[var(--accent)]/30 shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex items-start gap-4 overflow-hidden"
+            exit={{ opacity: 0, x: 100 }}
+            className="fixed bottom-10 right-10 z-[100] w-72 panel-glass rounded-2xl p-4 border border-[var(--accent)]/30 flex items-start gap-4 overflow-hidden"
+            style={{ transform: 'translateZ(0)' }}
           >
             {/* Progress Bar */}
             <motion.div 
@@ -247,7 +248,7 @@ export const AchievementSystem = forwardRef<AchievementSystemHandle, Achievement
                   {unlocked.length}/{currentAchievements.length}
                 </div>
               </div>
-              <h4 className="text-sm font-black text-white uppercase tracking-tight">{activeNotification.title}</h4>
+              <h4 className="text-sm font-black text-[var(--text-main)] uppercase tracking-tight">{activeNotification.title}</h4>
               <p className="text-[10px] text-[var(--text-dim)] font-medium leading-tight mt-1">{activeNotification.description}</p>
             </div>
 
@@ -262,15 +263,16 @@ export const AchievementSystem = forwardRef<AchievementSystemHandle, Achievement
         <AnimatePresence>
           {isExpanded && (
             <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 20, opacity: 0 }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
               className="mb-4 pointer-events-auto"
             >
-              <div className="w-80 h-[400px] overflow-hidden sleek-glass rounded-2xl border border-white/10 shadow-2xl flex flex-col">
-                <div className="p-4 border-b border-white/5 bg-white/5 flex items-center justify-between">
-                  <h3 className="text-xs font-black uppercase tracking-widest text-white">
+              <div className="w-80 h-[400px] overflow-hidden panel-glass rounded-2xl border border-[var(--glass-border)] flex flex-col relative z-[10001]" style={{ transform: 'translateZ(0)' }}>
+                <div className="p-4 border-b border-[var(--glass-border)] bg-white/5 flex items-center justify-between z-10 relative">
+                  <h3 className="text-xs font-black uppercase tracking-widest text-[var(--text-main)]">
                     {{
                       ru: 'Достижения',
                       cn: '成就',
@@ -329,7 +331,7 @@ export const AchievementSystem = forwardRef<AchievementSystemHandle, Achievement
                             {isSecret ? '❓' : ach.icon}
                           </div>
                           <div className="flex-1">
-                            <div className="text-[10px] font-black uppercase tracking-tight text-white mb-0.5">
+                            <div className="text-[10px] font-black uppercase tracking-tight text-[var(--text-main)] mb-0.5">
                               {displayTitle}
                             </div>
                             <div className="text-[9px] text-[var(--text-dim)] font-medium leading-tight">

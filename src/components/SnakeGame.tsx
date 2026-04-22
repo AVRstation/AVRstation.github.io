@@ -178,49 +178,50 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
         
         // --- Improved AI logic with Obstacle Avoidance ---
         let bestAngle = targetAngle;
-        let maxWeight = -10000;
+        let maxWeight = -Infinity;
         
-        // Check 12 directions around the snake
-        for (let i = 0; i < 12; i++) {
-          const testAngle = (i / 12) * Math.PI * 2;
+        // Increase resolution and prevent flip-flopping
+        const numRays = 36;
+        for (let i = 0; i < numRays; i++) {
+          const testAngle = (i / numRays) * Math.PI * 2;
           let weight = 0;
 
-          // 1. Goal alignment (prefer directions towards apple)
-          let angleDiff = Math.abs(testAngle - targetAngle);
-          while (angleDiff > Math.PI) angleDiff = Math.PI * 2 - angleDiff;
-          weight -= angleDiff * 50;
+          // 1. Goal alignment
+          weight += Math.cos(testAngle - targetAngle) * 100;
 
-      // 2. Obstacle detection
-          const checkDistances = [25, 50, 100]; // Check near, medium, and far
+          // Current direction momentum (prevents jittering/wobbling, but mustn't overpower goal)
+          weight += Math.cos(testAngle - aiAngleRef.current) * 20;
+
+          // 2. Obstacle detection
+          const checkDistances = [30, 60, 90];
           
           for (const dist of checkDistances) {
             const px = head.x + Math.cos(testAngle) * dist;
             const py = head.y + Math.sin(testAngle) * dist;
 
-            // Wall avoidance (extremely high penalty)
-            const margin = 60;
+            // Wall avoidance
+            const margin = 40;
             if (px < margin || px > window.innerWidth - margin || py < margin || py > window.innerHeight - margin) {
-              weight -= 10000 / (dist / 25);
+              weight -= 5000 / dist; // Massive penalty for walls overrides standard weights
             }
 
-            // Player avoidance (very high penalty)
-            for (const seg of snakeRef.current) {
+            // Player avoidance
+            for (let k = 0; k < snakeRef.current.length; k += 2) {
+              const seg = snakeRef.current[k];
               const dx = px - seg.x;
               const dy = py - seg.y;
-              const d2 = dx * dx + dy * dy;
-              if (d2 < 2500) { // 50px radius for weight
-                weight -= 5000 / (dist / 25);
+              if (dx * dx + dy * dy < 1600) { // ~40px radius
+                weight -= 4000 / dist;
               }
             }
 
-            // Self avoidance (extremely high penalty to avoid crashing into self)
-            for (let k = 4; k < snake.length; k++) {
+            // Self avoidance (Skip first few segments to prevent fearing own neck)
+            for (let k = 8; k < snake.length; k += 2) {
               const seg = snake[k];
               const dx = px - seg.x;
               const dy = py - seg.y;
-              const d2 = dx * dx + dy * dy;
-              if (d2 < 2025) { // 45px radius for weight
-                weight -= 8000 / (dist / 25);
+              if (dx * dx + dy * dy < 1600) { 
+                weight -= 4000 / dist;
               }
             }
           }
@@ -236,15 +237,22 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
         while (diff < -Math.PI) diff += Math.PI * 2;
         while (diff > Math.PI) diff -= Math.PI * 2;
         
-        const turnSpeed = 0.12; // Even faster turning to dodge self
+        // Dynamic turn speed based on urgency (large diff means an obstacle forces a sharp pivot)
+        let turnSpeed = 0.08;
+        if (Math.abs(diff) > 1.5) turnSpeed = 0.15;
+        if (Math.abs(diff) > 2.5) turnSpeed = 0.25;
         if (Math.abs(diff) < turnSpeed) {
           aiAngleRef.current = bestAngle;
         } else {
           aiAngleRef.current += Math.sign(diff) * turnSpeed;
         }
+        
+        // Normalize angle to prevent float precision drift
+        while (aiAngleRef.current < -Math.PI) aiAngleRef.current += Math.PI * 2;
+        while (aiAngleRef.current > Math.PI) aiAngleRef.current -= Math.PI * 2;
 
-        const vx = Math.cos(aiAngleRef.current) * speed;
-        const vy = Math.sin(aiAngleRef.current) * speed;
+        const vx = Math.cos(aiAngleRef.current) * Math.max(speed, 2.0);
+        const vy = Math.sin(aiAngleRef.current) * Math.max(speed, 2.0);
         const newHead = { x: head.x + vx, y: head.y + vy };
         
         const newSnake = [newHead];
@@ -321,6 +329,11 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
       // Check AI collisions
       const aiHead = aiSnakeRef.current[0];
       if (aiHead) {
+        // Out of Bounds
+        if (aiHead.x < -20 || aiHead.x > window.innerWidth + 20 || aiHead.y < -20 || aiHead.y > window.innerHeight + 20) {
+          spawnAISnake();
+        }
+        
         // Self
         for (let i = 2; i < aiSnakeRef.current.length; i++) {
           const seg = aiSnakeRef.current[i];
@@ -420,8 +433,13 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
         
         ctx.beginPath();
         ctx.moveTo(currentAISnake[0].x, currentAISnake[0].y);
-        for (let i = 1; i < currentAISnake.length; i++) {
-          ctx.lineTo(currentAISnake[i].x, currentAISnake[i].y);
+        for (let i = 1; i < currentAISnake.length - 1; i++) {
+          const xc = (currentAISnake[i].x + currentAISnake[i + 1].x) / 2;
+          const yc = (currentAISnake[i].y + currentAISnake[i + 1].y) / 2;
+          ctx.quadraticCurveTo(currentAISnake[i].x, currentAISnake[i].y, xc, yc);
+        }
+        if (currentAISnake.length > 2) {
+          ctx.lineTo(currentAISnake[currentAISnake.length - 1].x, currentAISnake[currentAISnake.length - 1].y);
         }
         ctx.stroke();
         ctx.restore();
@@ -457,8 +475,13 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
         
         ctx.beginPath();
         ctx.moveTo(currentSnake[0].x, currentSnake[0].y);
-        for (let i = 1; i < currentSnake.length; i++) {
-          ctx.lineTo(currentSnake[i].x, currentSnake[i].y);
+        for (let i = 1; i < currentSnake.length - 1; i++) {
+          const xc = (currentSnake[i].x + currentSnake[i + 1].x) / 2;
+          const yc = (currentSnake[i].y + currentSnake[i + 1].y) / 2;
+          ctx.quadraticCurveTo(currentSnake[i].x, currentSnake[i].y, xc, yc);
+        }
+        if (currentSnake.length > 2) {
+          ctx.lineTo(currentSnake[currentSnake.length - 1].x, currentSnake[currentSnake.length - 1].y);
         }
         ctx.stroke();
         ctx.restore();
@@ -507,6 +530,8 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
     <canvas
       ref={canvasRef}
       className="pointer-events-none fixed inset-0 z-5 hidden lg:block opacity-60"
+      role="img"
+      aria-label="Interactive background game: Snake. A digital snake follows the mouse cursor amidst glowing apples."
     />
   );
 };
