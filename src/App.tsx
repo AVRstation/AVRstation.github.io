@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { SnakeGame } from './components/SnakeGame';
 import { PongGame } from './components/PongGame';
 import { SpaceInvadersGame } from './components/SpaceInvadersGame';
+import { sounds } from './lib/sounds';
 import { ProjectCard } from './components/ProjectCard';
 import { SlotMachine } from './components/SlotMachine';
 import { TreasureChest } from './components/TreasureChest';
@@ -19,7 +20,12 @@ import {
   Globe,
   Sun,
   Moon,
-  Power
+  Power,
+  Settings,
+  Volume2,
+  VolumeX,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 const TRANSLATIONS = {
@@ -477,9 +483,13 @@ const detectInitialLanguage = (): 'ru' | 'en' | 'cn' => {
 
 export default function App() {
   const achievementsRef = React.useRef<AchievementSystemHandle>(null);
+  const settingsRef = React.useRef<HTMLDivElement>(null);
   const [lang, setLang] = useState<'ru' | 'en' | 'cn'>(detectInitialLanguage);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [gamesEnabled, setGamesEnabled] = useState(true);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSoundEnabled, setIsSoundEnabled] = useState(false);
+  const [isPlayMode, setIsPlayMode] = useState(false);
   const [activeGame, setActiveGame] = useState<'snake' | 'pong' | 'space'>(() => {
     const r = Math.random();
     if (r < 0.33) return 'snake';
@@ -498,6 +508,36 @@ export default function App() {
 
   const [isMobile, setIsMobile] = useState(false);
   const [contactTrigger, setContactTrigger] = useState(0);
+  const [copyrightReactions, setCopyrightReactions] = useState<{ id: number; x: number; y: number; char: string }[]>([]);
+
+  const handleCopyrightClick = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    
+    // Randomize appearance within the button's bounds
+    const getRandomX = () => rect.left + Math.random() * rect.width;
+    const getRandomY = () => rect.top + Math.random() * rect.height;
+    
+    const reaction1 = { 
+      id: Date.now(), 
+      x: getRandomX(), 
+      y: getRandomY(), 
+      char: '👍', 
+      offset: (Math.random() - 0.5) * 60 
+    };
+    const reaction2 = { 
+      id: Date.now() + 1, 
+      x: getRandomX(), 
+      y: getRandomY(), 
+      char: '❤️', 
+      offset: (Math.random() - 0.5) * 60 
+    };
+    
+    setCopyrightReactions(prev => [...prev, reaction1, reaction2]);
+    
+    setTimeout(() => {
+      setCopyrightReactions(prev => prev.filter(r => r.id !== reaction1.id && r.id !== reaction2.id));
+    }, 2000);
+  };
 
   // Achievement Triggers
   useEffect(() => {
@@ -572,6 +612,21 @@ export default function App() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isSettingsOpen && settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
+        setIsSettingsOpen(false);
+      }
+    };
+
+    if (isSettingsOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isSettingsOpen]);
+
   const toggleTheme = () => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
@@ -599,7 +654,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <SnakeGame onScoreChange={setSnakeScore} onAIScoreChange={setAiScore} />
+            <SnakeGame onScoreChange={setSnakeScore} onAIScoreChange={setAiScore} soundEnabled={isSoundEnabled} />
           </motion.div>
         )}
         {gamesEnabled && activeGame === 'pong' && (
@@ -609,7 +664,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <PongGame onScoreChange={setPongScore} onAIScoreChange={setPongAiScore} />
+            <PongGame onScoreChange={setPongScore} onAIScoreChange={setPongAiScore} soundEnabled={isSoundEnabled} />
           </motion.div>
         )}
         {gamesEnabled && activeGame === 'space' && (
@@ -619,7 +674,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <SpaceInvadersGame onScoreChange={setSpaceScore} onAIScoreChange={setSpaceAiScore} />
+            <SpaceInvadersGame onScoreChange={setSpaceScore} onAIScoreChange={setSpaceAiScore} soundEnabled={isSoundEnabled} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -627,7 +682,7 @@ export default function App() {
       <div className="relative z-10 min-h-screen lg:h-screen lg:overflow-hidden flex flex-col p-4 md:p-6 lg:p-10 max-w-[1440px] mx-auto gap-6 lg:gap-8">
         <AchievementSystem ref={achievementsRef} lang={lang} />
         {/* Header */}
-      <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end pb-6 border-b border-[var(--glass-border)] gap-6 perspective-1000">
+      <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end pb-6 border-b border-[var(--glass-border)] gap-6 perspective-1000 relative z-[70]">
         <div className="name-brand w-full lg:w-auto">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tighter uppercase leading-tight">
             {t.first_name}<span className="text-[var(--accent)] font-black"> {t.last_name}</span>
@@ -672,82 +727,170 @@ export default function App() {
             </div>
 
             {/* Game & Score Switcher */}
-            <motion.div 
-              onClick={() => setActiveGame(prev => {
-                if (prev === 'snake') return 'pong';
-                if (prev === 'pong') return 'space';
-                return 'snake';
-              })}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="group relative hidden md:flex items-center header-3d-wrapper rounded-full p-1 cursor-pointer z-50 transition-all"
-            >
-              <div className="flex items-center gap-4 px-4 py-1.5">
-                <div className="flex items-center gap-1.5 mr-1">
-                  {activeGame === 'snake' && (
-                    <>
-                      <span className="text-xs">🐍</span>
-                      <span className="text-xs">🍎</span>
-                    </>
-                  )}
-                  {activeGame === 'pong' && (
-                    <>
-                      <span className="text-xs">🏓</span>
-                      <span className="text-xs">⚽</span>
-                    </>
-                  )}
-                  {activeGame === 'space' && (
-                    <>
-                      <span className="text-xs">🚀</span>
-                      <span className="text-xs">👾</span>
-                    </>
-                  )}
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-black text-[var(--accent)] tracking-widest">
-                      {activeGame === 'snake' ? snakeScore : activeGame === 'pong' ? pongScore : spaceScore}
-                    </span>
-                    <span className="text-[10px] opacity-70 uppercase font-bold">You</span>
+            <div className="flex items-center gap-3 relative z-[80]">
+              <motion.div 
+                onClick={() => setActiveGame(prev => {
+                  if (prev === 'snake') return 'pong';
+                  if (prev === 'pong') return 'space';
+                  return 'snake';
+                })}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="group relative hidden md:flex items-center header-3d-wrapper rounded-full p-1 cursor-pointer transition-all"
+              >
+                <div className="flex items-center gap-4 px-4 py-1.5">
+                  <div className="flex items-center gap-1.5 mr-1">
+                    {activeGame === 'snake' && (
+                      <>
+                        <span className="text-xs">🐍</span>
+                        <span className="text-xs">🍎</span>
+                      </>
+                    )}
+                    {activeGame === 'pong' && (
+                      <>
+                        <span className="text-xs">🏓</span>
+                        <span className="text-xs">⚽</span>
+                      </>
+                    )}
+                    {activeGame === 'space' && (
+                      <>
+                        <span className="text-xs">🚀</span>
+                        <span className="text-xs">👾</span>
+                      </>
+                    )}
                   </div>
-                  <div className="w-[1px] h-3 bg-[var(--glass-border)]" />
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] opacity-70 uppercase font-bold">AI</span>
-                    <span className="text-xs font-black text-[#FF00FF] tracking-widest">
-                      {activeGame === 'snake' ? aiScore : activeGame === 'pong' ? pongAiScore : spaceAiScore}
-                    </span>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-black text-[var(--accent)] tracking-widest">
+                        {activeGame === 'snake' ? snakeScore : activeGame === 'pong' ? pongScore : spaceScore}
+                      </span>
+                      <span className="text-[10px] opacity-70 uppercase font-bold">You</span>
+                    </div>
+                    <div className="w-[1px] h-3 bg-[var(--glass-border)]" />
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] opacity-70 uppercase font-bold">AI</span>
+                      <span className="text-xs font-black text-[#FF00FF] tracking-widest">
+                        {activeGame === 'snake' ? aiScore : activeGame === 'pong' ? pongAiScore : spaceAiScore}
+                      </span>
+                    </div>
                   </div>
-                  <div className="w-[1px] h-3 bg-[var(--glass-border)] ml-2" />
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setGamesEnabled(prev => !prev);
-                    }}
-                    className={`w-5 h-5 rounded-full flex items-center justify-center transition-all duration-300 ${
-                      gamesEnabled 
-                        ? 'bg-green-500 shadow-[0_0_12px_rgba(34,197,94,0.6)]' 
-                        : 'bg-zinc-700 opacity-50'
-                    }`}
-                    title={gamesEnabled ? "Turn off background games" : "Turn on background games"}
-                  >
-                    <Power className={`w-2.5 h-2.5 ${gamesEnabled ? 'text-white' : 'text-zinc-400'}`} strokeWidth={4} />
-                  </button>
                 </div>
-              </div>
 
-              {/* Tooltip (Positioned Above) */}
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-56 p-4 sleek-glass rounded-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[60] pointer-events-none scale-95 group-hover:scale-100 border border-[var(--glass-border)] shadow-2xl">
-                <div className="text-[10px] font-black uppercase text-[var(--accent)] mb-2 tracking-widest">
-                  {activeGame === 'snake' ? t.game_snake : activeGame === 'pong' ? t.game_pong : t.game_space}
+                {/* Tooltip (Positioned Above) */}
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-56 p-4 sleek-glass rounded-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[60] pointer-events-none scale-95 group-hover:scale-100 border border-[var(--glass-border)] shadow-2xl">
+                  <div className="text-[10px] font-black uppercase text-[var(--accent)] mb-2 tracking-widest">
+                    {activeGame === 'snake' ? t.game_snake : activeGame === 'pong' ? t.game_pong : t.game_space}
+                  </div>
+                  <div className="text-xs text-white/90 leading-relaxed font-medium mb-3">
+                    {activeGame === 'snake' ? t.snake_rules : activeGame === 'pong' ? t.pong_rules : t.space_rules}
+                  </div>
+                  <div className="pt-3 border-t border-[var(--glass-border)] flex items-center justify-between">
+                    <span className="text-[10px] font-bold opacity-60 uppercase whitespace-nowrap">Click to change game</span>
+                  </div>
                 </div>
-                <div className="text-xs text-white/90 leading-relaxed font-medium mb-3">
-                  {activeGame === 'snake' ? t.snake_rules : activeGame === 'pong' ? t.pong_rules : t.space_rules}
-                </div>
-                <div className="pt-3 border-t border-[var(--glass-border)] flex items-center justify-between">
-                  <span className="text-[10px] font-bold opacity-60 uppercase">Click to change game</span>
-                </div>
+              </motion.div>
+
+              {/* Settings Dropdown (Separated to avoid click interception) */}
+              <div className="relative" ref={settingsRef}>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsSettingsOpen(!isSettingsOpen);
+                  }}
+                  className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 header-3d-wrapper relative z-[90] ${
+                    isSettingsOpen 
+                      ? 'bg-[var(--accent)] text-black shadow-[0_0_20px_var(--accent)]' 
+                      : 'text-[var(--accent)] hover:bg-white/5 opacity-80 hover:opacity-100'
+                  }`}
+                  title="Game Settings"
+                >
+                  <Settings className={`w-4 h-4 ${isSettingsOpen ? 'animate-spin-slow' : ''}`} />
+                </button>
+
+                <AnimatePresence>
+                  {isSettingsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      className="absolute top-full right-0 mt-3 w-64 sleek-glass rounded-2xl p-4 border border-[var(--glass-border)] shadow-2xl z-[10001]"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="text-[10px] font-black uppercase text-[var(--accent)] mb-4 tracking-[0.2em] flex items-center gap-2">
+                        <Settings className="w-3 h-3" />
+                        <span>Control Panel</span>
+                      </div>
+
+                      <div className="flex flex-col gap-3">
+                        {/* Toggle Games */}
+                        <div className="flex items-center justify-between group/row">
+                          <div className="flex items-center gap-2">
+                            <Gamepad2 className={`w-3.5 h-3.5 ${gamesEnabled ? 'text-[var(--accent)]' : 'text-zinc-500'}`} />
+                            <span className={`text-[11px] font-bold uppercase tracking-wider ${gamesEnabled ? 'text-white' : 'text-zinc-500'}`}>Background Games</span>
+                          </div>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setGamesEnabled(!gamesEnabled);
+                            }}
+                            className={`w-8 h-4 rounded-full relative transition-colors duration-300 ${gamesEnabled ? 'bg-[var(--accent)]' : 'bg-zinc-700'}`}
+                          >
+                            <motion.div 
+                              animate={{ x: gamesEnabled ? 16 : 2 }}
+                              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm"
+                            />
+                          </button>
+                        </div>
+
+                        {/* Toggle Sound */}
+                        <div className="flex items-center justify-between group/row">
+                          <div className="flex items-center gap-2">
+                            {isSoundEnabled ? <Volume2 className="w-3.5 h-3.5 text-green-400" /> : <VolumeX className="w-3.5 h-3.5 text-zinc-500" />}
+                            <span className={`text-[11px] font-bold uppercase tracking-wider ${isSoundEnabled ? 'text-white' : 'text-zinc-500'}`}>Game Sounds</span>
+                          </div>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const newState = !isSoundEnabled;
+                              setIsSoundEnabled(newState);
+                              if (newState) {
+                                sounds.init();
+                              }
+                            }}
+                            className={`w-8 h-4 rounded-full relative transition-colors duration-300 ${isSoundEnabled ? 'bg-green-500' : 'bg-zinc-700'}`}
+                          >
+                            <motion.div 
+                              animate={{ x: isSoundEnabled ? 16 : 2 }}
+                              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm"
+                            />
+                          </button>
+                        </div>
+
+                        {/* Toggle Play Mode */}
+                        <div className="flex items-center justify-between group/row">
+                          <div className="flex items-center gap-2">
+                            {isPlayMode ? <EyeOff className="w-3.5 h-3.5 text-purple-400" /> : <Eye className="w-3.5 h-3.5 text-zinc-500" />}
+                            <span className={`text-[11px] font-bold uppercase tracking-wider ${isPlayMode ? 'text-white' : 'text-zinc-500'}`}>Play Mode</span>
+                          </div>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsPlayMode(!isPlayMode);
+                            }}
+                            className={`w-8 h-4 rounded-full relative transition-colors duration-300 ${isPlayMode ? 'bg-purple-500' : 'bg-zinc-700'}`}
+                          >
+                            <motion.div 
+                              animate={{ x: isPlayMode ? 16 : 2 }}
+                              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm"
+                            />
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            </motion.div>
+            </div>
           </div>
 
           <motion.a 
@@ -775,7 +918,7 @@ export default function App() {
         </div>
       </header>
 
-      <div className="flex-1 flex flex-col lg:grid lg:grid-cols-[320px_1fr] gap-6 lg:gap-8 overflow-hidden">
+      <div className={`flex-1 flex flex-col lg:grid lg:grid-cols-[320px_1fr] gap-6 lg:gap-8 overflow-hidden transition-all duration-700 ${isPlayMode ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}>
         {/* Sidebar */}
         <aside className="flex flex-col gap-6 overflow-y-auto lg:pr-2 scrollbar-none">
           <motion.div 
@@ -845,16 +988,24 @@ export default function App() {
       {/* Footer */}
       <footer className="footer-area sleek-glass rounded-2xl p-6 md:px-10 flex flex-col md:flex-row justify-between items-center gap-8 mb-4">
         <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
-          <SlotMachine onWin={() => {
-            setContactTrigger(prev => prev + 1);
-            achievementsRef.current?.unlock('slot_win');
-          }} />
+          <SlotMachine 
+            soundEnabled={isSoundEnabled}
+            onWin={() => {
+              setContactTrigger(prev => prev + 1);
+              achievementsRef.current?.unlock('slot_win');
+            }} 
+          />
           <div className="flex flex-col gap-2">
-            <div className="text-[var(--text-dim)] text-xs md:text-sm font-black tracking-widest uppercase copyright-badge shine-effect-hover">
+            <motion.div 
+              whileTap={{ scale: 0.95 }}
+              onClick={handleCopyrightClick}
+              className="text-[var(--text-dim)] text-xs md:text-sm font-black tracking-widest uppercase copyright-badge shine-effect-hover active:scale-95 transition-transform"
+            >
               © 2026 ALEKSANDR KOPANEV
-            </div>
+            </motion.div>
           </div>
         </div>
+        
         <div className="flex flex-wrap justify-center gap-4">
           {CONTACTS.map((contact, index) => (
             <a 
@@ -877,6 +1028,28 @@ export default function App() {
           ))}
         </div>
       </footer>
+
+      {/* Floating Reactions Portal (moved to root to fix positioning) */}
+      <AnimatePresence>
+        {copyrightReactions.map(reaction => (
+          <motion.div
+            key={reaction.id}
+            initial={{ opacity: 0, scale: 0.5, y: reaction.y, x: reaction.x }}
+            animate={{ 
+              opacity: [0, 1, 1, 0], 
+              scale: [0.5, 1.5, 1.8, 1.2], 
+              y: reaction.y - 120, 
+              x: reaction.x + (reaction as any).offset 
+            }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            transition={{ duration: 1.8, ease: "easeOut" }}
+            className="fixed pointer-events-none z-[9999] text-3xl select-none"
+            style={{ left: 0, top: 0 }}
+          >
+            {reaction.char}
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   </>
 );

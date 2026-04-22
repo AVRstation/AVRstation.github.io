@@ -160,9 +160,9 @@ export const TreasureChest: React.FC<TreasureChestProps> = ({ onOpen, onBackToTo
               <motion.span 
                 animate={{ y: [0, -4, 0] }} 
                 transition={{ repeat: Infinity, duration: 1.5 }}
-                className="text-lg"
+                className="text-lg flex items-center gap-0.5"
               >
-                🏰
+                🚀🌕
               </motion.span>
             </motion.button>
           )}

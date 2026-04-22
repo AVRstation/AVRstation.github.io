@@ -1,12 +1,19 @@
 import React, { useEffect, useRef } from 'react';
+import { sounds } from '../lib/sounds';
 
 interface SpaceInvadersProps {
   onScoreChange?: (score: number) => void;
   onAIScoreChange?: (score: number) => void;
+  soundEnabled?: boolean;
 }
 
-export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange, onAIScoreChange }) => {
+export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange, onAIScoreChange, soundEnabled }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const soundEnabledRef = useRef(soundEnabled);
+
+  useEffect(() => {
+    soundEnabledRef.current = soundEnabled;
+  }, [soundEnabled]);
   
   // Game state refs
   const playerY = useRef(0);
@@ -155,6 +162,8 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
       // 1. Update Player Bullets
       if (time - lastShotTime.current > 400) {
         bullets.current.push({ x: playerPos.current.x + 20, y: playerPos.current.y, side: 'player' });
+        // Shoot sounds disabled as per request
+        // if (soundEnabled) sounds.playSpaceShoot();
         lastShotTime.current = time;
       }
 
@@ -196,6 +205,7 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
               hit = true;
               score.current += 10;
               triggerExplosion(a.x, a.y, alienColor);
+              if (soundEnabledRef.current) sounds.playSpaceExplosion();
               if (onScoreChange) onScoreChange(score.current);
             }
           });
@@ -206,6 +216,7 @@ export const SpaceInvadersGame: React.FC<SpaceInvadersProps> = ({ onScoreChange,
           if (Math.abs(b.x - playerPos.current.x) < 30 && Math.abs(b.y - playerPos.current.y) < 40) {
             aiScore.current += 1;
             triggerExplosion(playerPos.current.x, playerPos.current.y, playerColor);
+            if (soundEnabledRef.current) sounds.playSpaceExplosion();
             if (onAIScoreChange) onAIScoreChange(aiScore.current);
             return false;
           }

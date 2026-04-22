@@ -1,13 +1,15 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { sounds } from '../lib/sounds';
 
 const EMOJIS = ['🎮', '🕹️', '👾', '🚀', '💻', '🕶️', '🛸', '🤖', '🌌', '⚡'];
 
 interface SlotMachineProps {
   onWin?: () => void;
+  soundEnabled?: boolean;
 }
 
-export const SlotMachine: React.FC<SlotMachineProps> = ({ onWin }) => {
+export const SlotMachine: React.FC<SlotMachineProps> = ({ onWin, soundEnabled }) => {
   const [slots, setSlots] = useState(['🎮', '🚀', '👾']);
   const [isSpinning, setIsSpinning] = useState(false);
   const [coins, setCoins] = useState<{ id: number; x: number; y: number }[]>([]);
@@ -50,6 +52,7 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({ onWin }) => {
           clickCount.current = 0;
           nextWinAt.current = Math.floor(Math.random() * 4) + 2; 
           spawnCoins(20);
+          if (soundEnabled) sounds.playSlotWin();
           if (onWin) onWin();
         } else {
           // RANDOM OR NEAR MISS: 2 same symbols for excitement

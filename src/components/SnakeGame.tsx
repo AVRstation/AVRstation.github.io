@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
+import { sounds } from '../lib/sounds';
+
 interface Point {
   x: number;
   y: number;
@@ -12,10 +14,16 @@ interface Apple extends Point {
 interface SnakeGameProps {
   onScoreChange?: (score: number) => void;
   onAIScoreChange?: (score: number) => void;
+  soundEnabled?: boolean;
 }
 
-export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreChange }) => {
+export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreChange, soundEnabled }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const soundEnabledRef = useRef(soundEnabled);
+
+  useEffect(() => {
+    soundEnabledRef.current = soundEnabled;
+  }, [soundEnabled]);
   const snakeRef = useRef<Point[]>([]);
   const aiSnakeRef = useRef<Point[]>([]);
   const aiAngleRef = useRef<number>(0);
@@ -47,7 +55,10 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
   const resetGame = () => {
     const theme = document.documentElement.getAttribute('data-theme') || 'dark';
     const color = theme === 'dark' ? '#00F0FF' : '#0088CC';
-    if (snakeRef.current.length > 0) triggerExplosion(snakeRef.current, color);
+    if (snakeRef.current.length > 0) {
+      triggerExplosion(snakeRef.current, color);
+      if (soundEnabledRef.current) sounds.playSnakeDeath();
+    }
 
     snakeRef.current = [
       { x: window.innerWidth / 2, y: window.innerHeight / 2 },
@@ -337,6 +348,7 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onScoreChange, onAIScoreCh
         if (head && Math.sqrt((head.x - apple.x)**2 + (head.y - apple.y)**2) < 20) {
           scoreRef.current += 1;
           if (onScoreChange) onScoreChange(scoreRef.current);
+          if (soundEnabledRef.current) sounds.playSnakeEat();
           for(let k=0; k<4; k++) snakeRef.current.push({ ...snakeRef.current[snakeRef.current.length-1] });
           applesRef.current.splice(index, 1);
           ensureApples();

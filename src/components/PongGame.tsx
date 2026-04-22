@@ -1,12 +1,19 @@
 import React, { useEffect, useRef } from 'react';
+import { sounds } from '../lib/sounds';
 
 interface PongGameProps {
   onScoreChange?: (score: number) => void;
   onAIScoreChange?: (score: number) => void;
+  soundEnabled?: boolean;
 }
 
-export const PongGame: React.FC<PongGameProps> = ({ onScoreChange, onAIScoreChange }) => {
+export const PongGame: React.FC<PongGameProps> = ({ onScoreChange, onAIScoreChange, soundEnabled }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const soundEnabledRef = useRef(soundEnabled);
+
+  useEffect(() => {
+    soundEnabledRef.current = soundEnabled;
+  }, [soundEnabled]);
   const ballRef = useRef<{ x: number, y: number, vx: number, vy: number, trail: { x: number, y: number }[] }>({ 
     x: 0, y: 0, vx: 5, vy: 5, trail: [] 
   });
@@ -65,7 +72,10 @@ export const PongGame: React.FC<PongGameProps> = ({ onScoreChange, onAIScoreChan
       // Wall bounce (top/bottom)
       if (ballRef.current.y < 0 || ballRef.current.y > height) {
         ballRef.current.vy *= -1;
-        triggerHitEffect(ballRef.current.x, ballRef.current.y < 0 ? 0 : height);
+        // Firm position correction to avoid sticking
+        ballRef.current.y = ballRef.current.y < 0 ? 0 : height;
+        if (soundEnabledRef.current) sounds.playPongHit();
+        triggerHitEffect(ballRef.current.x, ballRef.current.y);
       }
 
       // Player paddle bounce
@@ -79,6 +89,7 @@ export const PongGame: React.FC<PongGameProps> = ({ onScoreChange, onAIScoreChan
         const deltaY = ballRef.current.y - (playerRef.current.y + paddleHeight / 2);
         ballRef.current.vy = deltaY * 0.2;
         triggerHitEffect(paddleMargin + paddleWidth, ballRef.current.y);
+        if (soundEnabledRef.current) sounds.playPongHit();
       }
 
       // AI paddle bounce
@@ -92,6 +103,7 @@ export const PongGame: React.FC<PongGameProps> = ({ onScoreChange, onAIScoreChan
         const deltaY = ballRef.current.y - (aiRef.current.y + paddleHeight / 2);
         ballRef.current.vy = deltaY * 0.2;
         triggerHitEffect(width - paddleMargin - paddleWidth, ballRef.current.y);
+        if (soundEnabledRef.current) sounds.playPongHit();
       }
 
       // AI Movement
@@ -103,11 +115,13 @@ export const PongGame: React.FC<PongGameProps> = ({ onScoreChange, onAIScoreChan
         scoresRef.current.ai += 1;
         if (onAIScoreChange) onAIScoreChange(scoresRef.current.ai);
         triggerHitEffect(0, ballRef.current.y, '#FF0000');
+        if (soundEnabledRef.current) sounds.playPongScore();
         resetBall(width, height);
       } else if (ballRef.current.x > width) {
         scoresRef.current.player += 1;
         if (onScoreChange) onScoreChange(scoresRef.current.player);
         triggerHitEffect(width, ballRef.current.y, '#FF0000');
+        if (soundEnabledRef.current) sounds.playPongScore();
         resetBall(width, height);
       }
 
