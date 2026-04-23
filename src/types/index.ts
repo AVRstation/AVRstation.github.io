@@ -36,6 +36,8 @@ export interface Translation {
   settings_sounds: string;
   settings_play_mode: string;
   stats_change_game: string;
+  game_bullet: string;
+  bullet_rules: string;
 }
 
 export interface SkillCategory {

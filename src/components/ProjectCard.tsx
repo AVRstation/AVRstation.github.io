@@ -30,10 +30,16 @@ export function ProjectCard({ project, idx, contributionsLabel, onWatchVideo }: 
         duration: 0.3,
         ease: "easeOut"
       }}
-      className="project-card sleek-glass rounded-2xl overflow-hidden sleek-card-hover group flex flex-col will-change-transform"
+      className={`project-card sleek-glass rounded-2xl overflow-hidden sleek-card-hover group flex flex-col will-change-transform ${isPlaying ? 'video-active' : ''}`}
+      onMouseEnter={() => {
+        if (isPlaying) window.dispatchEvent(new Event('hideCustomCursor'));
+      }}
+      onMouseLeave={() => {
+        if (isPlaying) window.dispatchEvent(new Event('showCustomCursor'));
+      }}
     >
       <button 
-        className="aspect-video relative overflow-hidden bg-zinc-900 border-b border-[var(--glass-border)] cursor-pointer w-full text-left p-0 border-none block"
+        className={`aspect-video relative overflow-hidden bg-zinc-900 border-b border-[var(--glass-border)] cursor-pointer w-full text-left p-0 border-none block ${isPlaying ? 'cursor-auto' : ''}`}
         onClick={handlePlay}
         aria-label={isPlaying ? undefined : `Play video for ${project.title}`}
         disabled={isPlaying || !project.youtubeId}

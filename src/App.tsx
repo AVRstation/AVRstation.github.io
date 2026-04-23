@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
+import React, { useState, useEffect, Suspense, lazy, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { sounds } from './lib/sounds';
 import { ProjectCard } from './components/ProjectCard';
@@ -6,6 +6,9 @@ import { SlotMachine } from './components/SlotMachine';
 import { TreasureChest } from './components/TreasureChest';
 import { AchievementSystem, AchievementSystemHandle } from './components/AchievementSystem';
 import { CustomCursor } from './components/CustomCursor';
+import { RetroLoader } from './components/RetroLoader';
+import { BulletHellGame } from './components/BulletHellGame';
+import { RetroHUD } from './components/RetroHUD';
 import { 
   Briefcase, 
   Gamepad2, 
@@ -47,7 +50,7 @@ export default function App() {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isSoundEnabled, setIsSoundEnabled] = useState(false);
   const [isPlayMode, setIsPlayMode] = useState(false);
-  const [activeGame, setActiveGame] = useState<'snake' | 'pong' | 'space'>(() => {
+  const [activeGame, setActiveGame] = useState<'snake' | 'pong' | 'space' | 'bullet'>(() => {
     const r = Math.random();
     if (r < 0.33) return 'snake';
     if (r < 0.66) return 'pong';
@@ -57,6 +60,20 @@ export default function App() {
   const [snakeScore, setSnakeScore] = useState(0);
   const [aiScore, setAiScore] = useState(0);
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSecretUnlocked, setIsSecretUnlocked] = useState(() => {
+    const saved = localStorage.getItem('portfolio_achievements');
+    if (saved) {
+      try {
+        const achs = JSON.parse(saved);
+        return achs.includes('all_unlocked');
+      } catch (e) {
+        return false;
+      }
+    }
+    return false;
+  });
+
   const [pongScore, setPongScore] = useState(0);
   const [pongAiScore, setPongAiScore] = useState(0);
 
@@ -65,7 +82,15 @@ export default function App() {
 
   const [isMobile, setIsMobile] = useState(false);
   const [contactTrigger, setContactTrigger] = useState(0);
+  const [gameResetKey, setGameResetKey] = useState(0);
   const [copyrightReactions, setCopyrightReactions] = useState<{ id: number; x: number; y: number; char: string }[]>([]);
+
+  const handleExitPlayMode = useCallback(() => {
+    setIsPlayMode(false);
+    if (activeGame === 'bullet') {
+      setActiveGame('snake');
+    }
+  }, [activeGame]);
 
   const handleCopyrightClick = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -195,22 +220,40 @@ export default function App() {
   const skills = GET_SKILLS(lang);
   const projects = GET_PROJECTS(lang);
 
+  const handleLegendUnlocked = () => {
+    setIsSoundEnabled(true);
+    setGamesEnabled(true);
+    setIsPlayMode(true);
+    setIsSecretUnlocked(true);
+    setActiveGame('bullet');
+  };
+
   return (
     <>
       <CustomCursor />
-      {/* Background Glow */}
-      <div 
-        className="pointer-events-none fixed inset-0 z-0 opacity-20 transition-opacity duration-300 hidden lg:block"
-        style={{
-          background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, var(--accent), transparent 70%)`,
-        }}
-      />
+      <AnimatePresence mode="wait">
+        {isLoading ? (
+          <RetroLoader key="loader" onFinish={() => setIsLoading(false)} />
+        ) : (
+          <motion.div 
+            key="app-content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+          >
+            {/* Background Glow */}
+            <div 
+              className="pointer-events-none fixed inset-0 z-0 opacity-20 transition-opacity duration-300 hidden lg:block"
+              style={{
+                background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, var(--accent), transparent 70%)`,
+              }}
+            />
 
       {/* Interactive Games */}
       <AnimatePresence mode="wait">
         {gamesEnabled && activeGame === 'snake' && (
           <motion.div
-            key="snake-wrapper"
+            key={`snake-wrapper-${gameResetKey}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -220,7 +263,7 @@ export default function App() {
         )}
         {gamesEnabled && activeGame === 'pong' && (
           <motion.div
-            key="pong-wrapper"
+            key={`pong-wrapper-${gameResetKey}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -230,7 +273,7 @@ export default function App() {
         )}
         {gamesEnabled && activeGame === 'space' && (
           <motion.div
-            key="space-wrapper"
+            key={`space-wrapper-${gameResetKey}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -238,12 +281,47 @@ export default function App() {
             <SpaceInvadersGame onScoreChange={setSpaceScore} onAIScoreChange={setSpaceAiScore} soundEnabled={isSoundEnabled} />
           </motion.div>
         )}
+        {gamesEnabled && activeGame === 'bullet' && (
+          <motion.div
+            key={`bullet-wrapper-${gameResetKey}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <BulletHellGame 
+              onScoreChange={() => {}} 
+              onAIScoreChange={() => {}} 
+              soundEnabled={isSoundEnabled}
+              autoStart={isSecretUnlocked}
+              onClose={() => {
+                setActiveGame('snake');
+                setIsSoundEnabled(false);
+                setIsPlayMode(false);
+              }}
+            />
+          </motion.div>
+        )}
       </AnimatePresence>
       
       <div className="relative z-10 min-h-screen lg:h-screen lg:overflow-hidden flex flex-col p-4 md:p-6 lg:p-10 max-w-[1440px] mx-auto gap-6 lg:gap-8">
-        <AchievementSystem ref={achievementsRef} lang={lang} />
+        <AchievementSystem 
+          ref={achievementsRef} 
+          lang={lang} 
+          onLegendUnlocked={handleLegendUnlocked}
+          onReset={() => {
+            setSnakeScore(0);
+            setAiScore(0);
+            setPongScore(0);
+            setPongAiScore(0);
+            setSpaceScore(0);
+            setSpaceAiScore(0);
+            setGameResetKey(prev => prev + 1);
+          }}
+        />
+
+        <RetroHUD isActive={isPlayMode} onExit={handleExitPlayMode} />
         {/* Header */}
-      <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end pb-6 border-b border-[var(--glass-border)] gap-6 perspective-1000 relative z-[70]">
+      <header className={`flex flex-col lg:flex-row justify-between items-start lg:items-end pb-6 border-b border-[var(--glass-border)] gap-6 perspective-1000 relative z-[70] transition-all duration-700 ${isPlayMode ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}>
         <div className="name-brand w-full lg:w-auto">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tighter uppercase leading-tight">
             {t.first_name}<span className="text-[var(--accent)] font-black"> {t.last_name}</span>
@@ -456,6 +534,7 @@ export default function App() {
                 onClick={() => setActiveGame(prev => {
                   if (prev === 'snake') return 'pong';
                   if (prev === 'pong') return 'space';
+                  if (prev === 'space') return isSecretUnlocked ? 'bullet' : 'snake';
                   return 'snake';
                 })}
                 whileHover={{ scale: 1.02 }}
@@ -469,6 +548,7 @@ export default function App() {
                     setActiveGame(prev => {
                       if (prev === 'snake') return 'pong';
                       if (prev === 'pong') return 'space';
+                      if (prev === 'space') return isSecretUnlocked ? 'bullet' : 'snake';
                       return 'snake';
                     });
                   }
@@ -491,14 +571,20 @@ export default function App() {
                     {activeGame === 'space' && (
                       <>
                         <span className="text-xs">🚀</span>
+                        <span className="text-xs">👽</span>
+                      </>
+                    )}
+                    {activeGame === 'bullet' && (
+                      <>
                         <span className="text-xs">👾</span>
+                        <span className="text-xs">🔥</span>
                       </>
                     )}
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-black text-[var(--accent)] tracking-widest">
-                        {activeGame === 'snake' ? snakeScore : activeGame === 'pong' ? pongScore : spaceScore}
+                        {activeGame === 'snake' ? snakeScore : activeGame === 'pong' ? pongScore : activeGame === 'space' ? spaceScore : '999'}
                       </span>
                       <span className="text-[10px] opacity-70 uppercase font-bold">You</span>
                     </div>
@@ -518,10 +604,10 @@ export default function App() {
                   style={{ transform: 'translateX(-50%) translateZ(0)' }}
                 >
                   <div className="text-[10px] font-black uppercase text-[var(--accent)] mb-2 tracking-widest">
-                    {activeGame === 'snake' ? t.game_snake : activeGame === 'pong' ? t.game_pong : t.game_space}
+                    {activeGame === 'snake' ? t.game_snake : activeGame === 'pong' ? t.game_pong : activeGame === 'space' ? t.game_space : t.game_bullet}
                   </div>
                   <div className="text-xs text-white/90 leading-relaxed font-medium mb-3">
-                    {activeGame === 'snake' ? t.snake_rules : activeGame === 'pong' ? t.pong_rules : t.space_rules}
+                    {activeGame === 'snake' ? t.snake_rules : activeGame === 'pong' ? t.pong_rules : activeGame === 'space' ? t.space_rules : t.bullet_rules}
                   </div>
                   <div className="pt-3 border-t border-[var(--glass-border)] flex items-center justify-between">
                     <span className="text-[10px] font-bold opacity-60 uppercase whitespace-nowrap">{t.stats_change_game}</span>
@@ -558,7 +644,7 @@ export default function App() {
 
       <div className={`flex-1 flex flex-col lg:grid lg:grid-cols-[320px_1fr] gap-6 lg:gap-8 overflow-hidden transition-all duration-700 ${isPlayMode ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}>
         {/* Sidebar */}
-        <aside className="flex flex-col gap-6 overflow-y-auto lg:pr-2 scrollbar-none">
+        <aside className="flex flex-col gap-6 overflow-y-auto lg:pr-2">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -626,7 +712,7 @@ export default function App() {
       </div>
 
       {/* Footer */}
-      <footer className="footer-area sleek-glass rounded-2xl p-6 md:px-10 flex flex-col md:flex-row justify-between items-center gap-8 mb-4">
+      <footer className="footer-area relative z-[70] sleek-glass rounded-2xl p-6 md:px-10 flex flex-col md:flex-row justify-between items-center gap-8 mb-4 transition-all duration-700">
         <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
           <SlotMachine 
             soundEnabled={isSoundEnabled}
@@ -646,6 +732,21 @@ export default function App() {
           </div>
         </div>
         
+        {isPlayMode && (
+          <div className="order-first md:order-none md:absolute md:left-1/2 md:-translate-x-1/2 z-10 w-full md:w-auto flex justify-center">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                handleExitPlayMode();
+              }}
+              className="bg-black/60 hover:bg-black/80 border border-[#00FF00]/50 hover:border-[#00FF00] text-[#00FF00] px-6 py-2.5 rounded-xl text-[9px] md:text-[10px] uppercase font-black tracking-[0.3em] transition-all duration-300 flex items-center gap-3 group shadow-[0_0_20px_rgba(0,255,0,0.2)] cursor-pointer"
+            >
+              <div className="w-2.5 h-2.5 bg-red-500 rounded-sm group-hover:animate-pulse shadow-[0_0_10px_#ff0000]" />
+              Terminate Play Mode
+            </button>
+          </div>
+        )}
+
         <div className="flex flex-wrap justify-center gap-4">
           {CONTACTS.map((contact, index) => (
             <a 
@@ -692,6 +793,9 @@ export default function App() {
         ))}
       </AnimatePresence>
     </div>
-  </>
-);
+  </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
 }

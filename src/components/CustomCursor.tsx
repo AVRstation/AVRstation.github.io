@@ -13,7 +13,13 @@ export function CustomCursor() {
     const moveCursor = (e: MouseEvent) => {
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
-      if (!isVisible) setIsVisible(true);
+      
+      const target = e.target as HTMLElement;
+      if (target.closest('.video-active') || target.tagName === 'IFRAME') {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
     };
 
     const handleMouseDown = () => setIsClicking(true);
@@ -34,11 +40,19 @@ export function CustomCursor() {
 
     const handleMouseLeave = () => setIsVisible(false);
     const handleMouseEnter = () => setIsVisible(true);
+    const handleBlur = () => setIsVisible(false);
+    const handleFocus = () => setIsVisible(true);
+    const forceHide = () => setIsVisible(false);
+    const forceShow = () => setIsVisible(true);
 
     window.addEventListener('mousemove', moveCursor);
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('mouseover', handleMouseOver);
+    window.addEventListener('blur', handleBlur);
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('hideCustomCursor', forceHide);
+    window.addEventListener('showCustomCursor', forceShow);
     document.addEventListener('mouseleave', handleMouseLeave);
     document.addEventListener('mouseenter', handleMouseEnter);
 
@@ -47,6 +61,10 @@ export function CustomCursor() {
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
       window.removeEventListener('mouseover', handleMouseOver);
+      window.removeEventListener('blur', handleBlur);
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('hideCustomCursor', forceHide);
+      window.removeEventListener('showCustomCursor', forceShow);
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseenter', handleMouseEnter);
     };
@@ -56,7 +74,7 @@ export function CustomCursor() {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 pointer-events-none z-[9999] hidden lg:block"
+      className="fixed top-0 left-0 pointer-events-none z-[2147483647] hidden xl:block"
       style={{
         x: cursorX,
         y: cursorY,

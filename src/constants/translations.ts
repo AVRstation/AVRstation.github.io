@@ -41,7 +41,9 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     settings_games: "Фоновые игры",
     settings_sounds: "Звуки игры",
     settings_play_mode: "Режим игры",
-    stats_change_game: "Нажмите, чтобы сменить игру"
+    stats_change_game: "Нажмите, чтобы сменить игру",
+    game_bullet: "Boss Battle",
+    bullet_rules: "Уклоняйся от пуль и уничтожай ядро матрицы! Используй Ракеты (ЛКМ) для мощного удара."
   },
   en: {
     first_name: "Aleksandr",
@@ -83,7 +85,9 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     settings_games: "Background Games",
     settings_sounds: "Game Sounds",
     settings_play_mode: "Play Mode",
-    stats_change_game: "Click to change game"
+    stats_change_game: "Click to change game",
+    game_bullet: "Boss Battle",
+    bullet_rules: "Dodge bullets and destroy the Matrix Core! Use Rockets (LMB) for massive damage."
   },
   cn: {
     first_name: "亚历山大",
@@ -125,7 +129,9 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     settings_games: "背景游戏",
     settings_sounds: "游戏声音",
     settings_play_mode: "游玩模式",
-    stats_change_game: "点击更换游戏"
+    stats_change_game: "点击更换游戏",
+    game_bullet: "Boss Battle",
+    bullet_rules: "躲避子弹并摧毁矩阵核心！使用火箭 (鼠标左键) 进行大范围伤害。"
   },
   hi: {
     first_name: "अलेक्सांद्र",
@@ -167,7 +173,9 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     settings_games: "बैकग्राउंड गेम्स",
     settings_sounds: "गेम ध्वनियाँ",
     settings_play_mode: "प्ले मोड",
-    stats_change_game: "गेम बदलने के लिए क्लिक करें"
+    stats_change_game: "गेम बदलने के लिए क्लिक करें",
+    game_bullet: "Boss Battle",
+    bullet_rules: "गोलियों से बचें और मैट्रिक्स कोर को नष्ट करें! बड़े नुकसान के लिए रॉकेट (LMB) का उपयोग करें।"
   },
   es: {
     first_name: "Aleksandr",
@@ -209,7 +217,9 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     settings_games: "Juegos de fondo",
     settings_sounds: "Sonidos del juego",
     settings_play_mode: "Modo de juego",
-    stats_change_game: "Haz clic para cambiar de juego"
+    stats_change_game: "Haz clic para cambiar de juego",
+    game_bullet: "Boss Battle",
+    bullet_rules: "¡Esquiva las balas и destruye el Núcleo de la Matrix! Usa Cohetes (LMB) para un daño masivo."
   },
   ar: {
     first_name: "ألكسندر",
@@ -251,7 +261,9 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     settings_games: "ألعاب الخلفية",
     settings_sounds: "أصوات اللعبة",
     settings_play_mode: "وضع اللعب",
-    stats_change_game: "انقر لتغيير اللعبة"
+    stats_change_game: "انقر لتغيير اللعبة",
+    game_bullet: "Boss Battle",
+    bullet_rules: "تفادى الرصاص ودمر نواة المصفوفة! استخدم الصواريخ (LMB) لإحداث ضرر هائل."
   },
   fr: {
     first_name: "Aleksandr",
@@ -293,6 +305,8 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     settings_games: "Jeux en arrière-plan",
     settings_sounds: "Sons du jeu",
     settings_play_mode: "Mode de jeu",
-    stats_change_game: "Cliquez pour changer de jeu"
+    stats_change_game: "Cliquez pour changer de jeu",
+    game_bullet: "Boss Battle",
+    bullet_rules: "Esquivez les balles et détruisez le Cœur de la Matrix ! Utilisez des roquettes (LMB) pour des dégâts massifs."
   }
 };

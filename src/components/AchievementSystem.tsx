@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, useCallback, forwardRef, useImperativeHandle, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Trophy, Star } from 'lucide-react';
+import { Trophy, Star, RotateCcw } from 'lucide-react';
 
 export interface Achievement {
   id: string;
@@ -29,7 +29,7 @@ export const ACHIEVEMENTS_LIST: Record<Language, Achievement[]> = {
     { id: 'toggle_power_on', title: 'Power Up', description: 'Re-enabled background games', icon: '⚡' },
     { id: 'f_key_click', title: 'Keyboard Warrior', description: 'Used the F-series keys', icon: '⌨️' },
     { id: 'long_session', title: 'Dedicated', description: 'Spent some time exploring', icon: '🧠' },
-    { id: 'all_unlocked', title: 'Legend', description: 'Collected all achievements', icon: '🏆' },
+    { id: 'all_unlocked', title: 'SECRET LEVEL', description: '???', icon: '🏆' },
   ],
   ru: [
     { id: 'first_load', title: 'Hello World', description: 'Добро пожаловать в Матрицу', icon: '🌐' },
@@ -48,7 +48,7 @@ export const ACHIEVEMENTS_LIST: Record<Language, Achievement[]> = {
     { id: 'toggle_power_on', title: 'Энергия', description: 'Фоновые игры снова включены', icon: '⚡' },
     { id: 'f_key_click', title: 'Воин Клавиатуры', description: 'Использование клавиш F-серии', icon: '⌨️' },
     { id: 'long_session', title: 'Преданный', description: 'Проведено время за изучением', icon: '🧠' },
-    { id: 'all_unlocked', title: 'Легенда', description: 'Все достижения разблокированы', icon: '🏆' },
+    { id: 'all_unlocked', title: 'СЕКРЕТНЫЙ УРОВЕНЬ - сразись с БОССОМ', description: '???', icon: '🏆' },
   ],
   cn: [
     { id: 'first_load', title: '你好世界', description: '体验黑客帝国', icon: '🌐' },
@@ -67,7 +67,7 @@ export const ACHIEVEMENTS_LIST: Record<Language, Achievement[]> = {
     { id: 'toggle_power_on', title: '能量提升', description: '重新启用背景游戏', icon: '⚡' },
     { id: 'f_key_click', title: '键盘战士', description: '使用 F 系列键', icon: '⌨️' },
     { id: 'long_session', title: '专注', description: '花费时间探索', icon: '🧠' },
-    { id: 'all_unlocked', title: '传奇', description: '收集所有成就', icon: '🏆' },
+    { id: 'all_unlocked', title: '秘密关卡', description: '???', icon: '🏆' },
   ],
   hi: [
     { id: 'first_load', title: 'नमस्ते दुनिया', description: 'मैट्रिक्स का अनुभव करें', icon: '🌐' },
@@ -77,16 +77,16 @@ export const ACHIEVEMENTS_LIST: Record<Language, Achievement[]> = {
     { id: 'change_lang', title: 'वैश्विक नागरिक', description: 'प्रोफ़ाइल भाषा बदलें', icon: '🌍' },
     { id: 'slot_win', title: 'लकी स्ट्राइक', description: 'स्लॉट मशीन पर जीतें', icon: '🎰' },
     { id: 'chest_open', title: 'डंगऑन क्रॉलर', description: 'प्राचीन खजाना मिला', icon: '👑' },
-    { id: 'watch_video', title: 'सिनेमैटोग्राफर', description: 'प्रोजेक्ट वीडियो देखा', icon: '🎬' },
+    { id: 'watch_video', title: 'सिनेमैटोग्राफर', description: 'प्रोजект वीडियो देखा', icon: '🎬' },
     { id: 'click_contact', title: 'नेटवर्किंग', description: 'सोशल लिंक देखें', icon: '📡' },
     { id: 'snake_point', title: 'भूखा सांप', description: 'स्नेक में एक अंक प्राप्त किया', icon: '🍎' },
     { id: 'pong_point', title: 'पिंग पोंग प्रो', description: 'पोंग में एक अंक प्राप्त किया', icon: '🏓' },
-    { id: 'space_point', title: 'अंतरिक्ष रक्षक', description: 'इनवेडर्स में एक अंक प्राप्त किया', icon: '👾' },
+    { id: 'space_point', title: 'अंतरिक्ष रक्षक', description: 'इनवेдर्स में एक अंक प्राप्त किया', icon: '👾' },
     { id: 'back_to_top', title: 'टाइम ट्रैवलर', description: 'शॉर्टकट का उपयोग किया', icon: '⏳' },
-    { id: 'toggle_power_on', title: 'पावर अप', description: 'गेम फिर से चालू किए', icon: '⚡' },
+    { id: 'toggle_power_on', title: 'पाвер अप', description: 'गेम फिर से चालू किए', icon: '⚡' },
     { id: 'f_key_click', title: 'कीबोर्ड वारियर', description: 'F-सीरीज कीज़ का उपयोग किया', icon: '⌨️' },
     { id: 'long_session', title: 'समर्पित', description: 'खोज में समय बिताया', icon: '🧠' },
-    { id: 'all_unlocked', title: 'लीजेंड', description: 'सभी उपलब्धियां प्राप्त कीं', icon: '🏆' },
+    { id: 'all_unlocked', title: 'SECRET LEVEL', description: '???', icon: '🏆' },
   ],
   es: [
     { id: 'first_load', title: 'Hola Mundo', description: 'Experimenta la Matrix', icon: '🌐' },
@@ -105,7 +105,7 @@ export const ACHIEVEMENTS_LIST: Record<Language, Achievement[]> = {
     { id: 'toggle_power_on', title: 'Energía', description: 'Reactivaste los juegos', icon: '⚡' },
     { id: 'f_key_click', title: 'Guerrero del Teclado', description: 'Usaste las teclas F', icon: '⌨️' },
     { id: 'long_session', title: 'Dedicado', description: 'Pasaste tiempo explorando', icon: '🧠' },
-    { id: 'all_unlocked', title: 'Leyenda', description: 'Coleccionaste todos los logros', icon: '🏆' },
+    { id: 'all_unlocked', title: 'SECRET LEVEL', description: '???', icon: '🏆' },
   ],
   ar: [
     { id: 'first_load', title: 'مرحباً بالعالم', description: 'تجربة الماتريكس', icon: '🌐' },
@@ -124,7 +124,7 @@ export const ACHIEVEMENTS_LIST: Record<Language, Achievement[]> = {
     { id: 'toggle_power_on', title: 'طاقة إضافية', description: 'أعدت تفعيل الألعاب', icon: '⚡' },
     { id: 'f_key_click', title: 'محارب لوحة المفاتيح', description: 'استخدمت مفاتيح F', icon: '⌨️' },
     { id: 'long_session', title: 'مخلص', description: 'قضيت وقتاً في الاستكشاف', icon: '🧠' },
-    { id: 'all_unlocked', title: 'أسطورة', description: 'جمعت كل الإنجازات', icon: '🏆' },
+    { id: 'all_unlocked', title: 'SECRET LEVEL', description: '???', icon: '🏆' },
   ],
   fr: [
     { id: 'first_load', title: 'Bonjour le Monde', description: 'Découvrez la Matrix', icon: '🌐' },
@@ -143,7 +143,7 @@ export const ACHIEVEMENTS_LIST: Record<Language, Achievement[]> = {
     { id: 'toggle_power_on', title: 'Power Up', description: 'Jeux réactivés', icon: '⚡' },
     { id: 'f_key_click', title: 'Guerrier du Clavier', description: 'Touches F utilisées', icon: '⌨️' },
     { id: 'long_session', title: 'Dévoué', description: 'Temps passé à explorer', icon: '🧠' },
-    { id: 'all_unlocked', title: 'Légende', description: 'Tous les succès débloqués', icon: '🏆' },
+    { id: 'all_unlocked', title: 'SECRET LEVEL', description: '???', icon: '🏆' },
   ],
 };
 
@@ -153,11 +153,17 @@ export interface AchievementSystemHandle {
 
 interface AchievementSystemProps {
   lang: Language;
+  onLegendUnlocked?: () => void;
+  onReset?: () => void;
 }
 
-const SECRET_ACHIEVEMENTS = ['slot_win', 'chest_open', 'f_key_click', 'long_session', 'all_unlocked'];
+const SECRET_ACHIEVEMENTS = [
+  'slot_win', 
+  'chest_open', 
+  'all_unlocked'
+];
 
-export const AchievementSystem = forwardRef<AchievementSystemHandle, AchievementSystemProps>(({ lang }, ref) => {
+export const AchievementSystem = forwardRef<AchievementSystemHandle, AchievementSystemProps>(({ lang, onLegendUnlocked, onReset }, ref) => {
   const currentAchievements = ACHIEVEMENTS_LIST[lang];
   
   const [unlocked, setUnlocked] = useState<string[]>(() => {
@@ -190,26 +196,58 @@ export const AchievementSystem = forwardRef<AchievementSystemHandle, Achievement
       }
 
       const next = [...prev, id];
-      
-      // Auto-unlock the final one if all others are done
-      if (next.length === currentAchievements.length - 1 && !next.includes('all_unlocked')) {
-        setTimeout(() => unlock('all_unlocked'), 2000);
-      }
-
       localStorage.setItem('portfolio_achievements', JSON.stringify(next));
       return next;
     });
   }, [currentAchievements]);
 
+  // Handle side effects of unlocking (auto-unlock final and trigger external callback)
+  const lastUnlockedCount = useRef(unlocked.length);
+  useEffect(() => {
+    // Auto-unlock the final one if all others are done
+    if (unlocked.length === currentAchievements.length - 1 && !unlocked.includes('all_unlocked') && unlocked.length > 0) {
+      const timer = setTimeout(() => unlock('all_unlocked'), 2000);
+      return () => clearTimeout(timer);
+    }
+
+    // Only trigger legend callback if it was JUST unlocked in this session
+    if (unlocked.includes('all_unlocked') && onLegendUnlocked) {
+      if (unlocked.length > lastUnlockedCount.current) {
+        onLegendUnlocked();
+      }
+    }
+    lastUnlockedCount.current = unlocked.length;
+  }, [unlocked, currentAchievements.length, onLegendUnlocked, unlock]);
+
+  const sessionStart = useRef(Date.now());
+  
+  const resetAchievements = useCallback(() => {
+    setUnlocked([]);
+    localStorage.removeItem('portfolio_achievements');
+    localStorage.removeItem('ach_theme_init');
+    localStorage.removeItem('ach_game_init');
+    localStorage.removeItem('ach_games_disabled');
+    sessionStart.current = Date.now(); // Reset session start time!
+    if (onReset) onReset();
+  }, [onReset]);
+
   useImperativeHandle(ref, () => ({
     unlock
   }));
 
-  // Session timer
+  // Session timer (Robust version)
   useEffect(() => {
-    const timer = setTimeout(() => unlock('long_session'), 120000); // 2 mins
-    return () => clearTimeout(timer);
-  }, [unlock]);
+    if (unlocked.includes('long_session')) return;
+    
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - sessionStart.current;
+      if (elapsed > 45000) { // 45 seconds for testing
+        unlock('long_session');
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [unlock, unlocked]);
 
   // First load
   useEffect(() => {
@@ -283,8 +321,20 @@ export const AchievementSystem = forwardRef<AchievementSystemHandle, Achievement
                       fr: 'Succès'
                     }[lang]}
                   </h3>
-                  <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[10px] font-black text-[var(--accent)]">
-                    {unlocked.length}/{currentAchievements.length}
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[10px] font-black text-[var(--accent)]">
+                      {unlocked.length}/{currentAchievements.length}
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        resetAchievements();
+                      }}
+                      className="p-1 rounded-md hover:bg-white/10 text-[var(--text-dim)] hover:text-red-400 transition-all active:scale-95"
+                      title="Reset Achievements"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                    </button>
                   </div>
                 </div>
                 
@@ -296,25 +346,25 @@ export const AchievementSystem = forwardRef<AchievementSystemHandle, Achievement
                       
                       const displayTitle = isSecret 
                         ? ({
-                            ru: 'Секретное достижение',
-                            cn: '秘密成就',
-                            en: 'Secret Achievement',
-                            hi: 'गुप्त उपलब्धि',
-                            es: 'Logro Secreto',
-                            ar: 'إنجاز سري',
-                            fr: 'Succès Secret'
+                            ru: '???',
+                            cn: '???',
+                            en: '???',
+                            hi: '???',
+                            es: '???',
+                            ar: '???',
+                            fr: '???'
                           }[lang]) 
                         : ach.title;
                       
                       const displayDesc = isSecret 
                         ? ({
-                            ru: 'Выполните скрытое условие',
-                            cn: '完成隐藏条件以解锁',
-                            en: 'Unlock to reveal details',
-                            hi: 'विवरण प्रकट करने के लिए अनलॉक करें',
-                            es: 'Desbloquea para revelar detalles',
-                            ar: 'افتح للكشف عن التفاصيل',
-                            fr: 'Débloquez pour révéler les détails'
+                            ru: '—',
+                            cn: '—',
+                            en: '—',
+                            hi: '—',
+                            es: '—',
+                            ar: '—',
+                            fr: '—'
                           }[lang]) 
                         : ach.description;
 
