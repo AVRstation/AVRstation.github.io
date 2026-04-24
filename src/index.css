@@ -384,3 +384,8 @@ body {
   border-color: var(--accent);
   color: var(--accent);
 }
+
+.scroll-mask {
+  mask-image: linear-gradient(to bottom, black calc(100% - 60px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 60px), transparent 100%);
+}

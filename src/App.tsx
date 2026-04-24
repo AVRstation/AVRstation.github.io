@@ -151,15 +151,19 @@ export default function App() {
     if (!gamesEnabled) {
       achievementsRef.current?.unlock('disable_games');
       setShowAbduction(true);
+      localStorage.setItem('ach_games_disabled', 'true');
       const timer = setTimeout(() => {
         setShowAbduction(false);
       }, 12000);
       return () => clearTimeout(timer);
     } else {
+      setShowAbduction(false); // Make sure the cow overlay is removed immediately if they turn games back on
       const wasDisabled = localStorage.getItem('ach_games_disabled');
-      if (wasDisabled === 'true') achievementsRef.current?.unlock('toggle_power_on');
+      if (wasDisabled === 'true') {
+        achievementsRef.current?.unlock('toggle_power_on');
+      }
+      localStorage.setItem('ach_games_disabled', 'false');
     }
-    localStorage.setItem('ach_games_disabled', (!gamesEnabled).toString());
   }, [gamesEnabled]);
 
   useEffect(() => {
@@ -263,8 +267,8 @@ export default function App() {
             />
 
       {/* Interactive Games */}
+      {showAbduction && <CowAbduction key="cow-abduction" />}
       <AnimatePresence mode="wait">
-        {showAbduction && <CowAbduction key="cow-abduction" />}
         {gamesEnabled && activeGame === 'snake' && (
           <motion.div
             key={`snake-wrapper-${gameResetKey}`}
@@ -658,7 +662,7 @@ export default function App() {
 
       <div className={`flex-1 flex flex-col lg:grid lg:grid-cols-[320px_1fr] gap-6 lg:gap-8 overflow-hidden transition-all duration-700 ${isPlayMode ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}>
         {/* Sidebar */}
-        <aside className="flex flex-col gap-6 overflow-y-auto lg:pr-2">
+        <aside className="flex flex-col gap-6 overflow-y-auto lg:pr-2 pb-24 scroll-mask">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -699,7 +703,7 @@ export default function App() {
         </aside>
 
         {/* Main Feed - Projects */}
-        <main className="flex-1 overflow-y-auto pr-0 lg:pr-4">
+        <main className="flex-1 overflow-y-auto pr-0 lg:pr-4 pb-24 scroll-mask">
           <h2 className="text-sm uppercase font-black tracking-[0.3em] text-[var(--accent)] mb-8 opacity-80 flex items-center gap-4">
             <Briefcase className="w-4 h-4" /> {t.projects_title}
             <div className="h-[1px] flex-1 bg-gradient-to-r from-[var(--glass-border)] to-transparent" />

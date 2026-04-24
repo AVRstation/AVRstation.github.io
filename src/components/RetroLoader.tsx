@@ -35,32 +35,38 @@ const FUNNY_MESSAGES = [
   "Whispering sweet nothings to the CPU..."
 ];
 
-const CubeFace = ({ isOuter, bgColor, emoji, transform }: { isOuter: boolean, bgColor: string, emoji: string, transform: string }) => {
+const CubeFace = ({ isOuter, faceData, transform }: { isOuter: boolean, faceData: any, transform: string }) => {
   if (!isOuter) {
     return (
       <div 
-        className="absolute w-[30px] h-[30px] bg-black/40 border border-white/10"
-        style={{ transform }}
+        className="absolute w-[30px] h-[30px] bg-black/40 border border-white/5"
+        style={{ transform, borderRadius: '10px' }}
       />
     );
   }
   return (
     <div 
-      className="absolute w-[30px] h-[30px] border border-white/40 flex items-center justify-center rounded-sm shadow-[inset_0_0_10px_rgba(255,255,255,0.3)] backdrop-blur-[2px]"
-      style={{ transform, backgroundColor: bgColor }}
+      className="absolute w-[30px] h-[30px] flex items-center justify-center backdrop-blur-[8px]"
+      style={{ 
+        transform, 
+        background: `linear-gradient(135deg, ${faceData.bg1} 0%, ${faceData.bg2} 100%)`,
+        border: `1px solid ${faceData.borderColor}`,
+        boxShadow: `0 3px 0 0 ${faceData.shadowColor}, 0 6px 10px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.4)`,
+        borderRadius: '10px'
+      }}
     >
-      <span className="text-[14px] leading-none select-none drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]">{emoji}</span>
+      <span className="text-[14px] leading-none select-none drop-shadow-md" style={{ transform: 'translateY(-1px)' }}>{faceData.emoji}</span>
     </div>
   );
 };
 
 const CUBE_COLORS = [
-  { bgColor: "rgba(239, 68, 68, 0.4)", emoji: "🕹️" },
-  { bgColor: "rgba(249, 115, 22, 0.4)", emoji: "🚀" },
-  { bgColor: "rgba(59, 130, 246, 0.4)", emoji: "👾" },
-  { bgColor: "rgba(34, 197, 94, 0.4)", emoji: "🤖" },
-  { bgColor: "rgba(255, 255, 255, 0.3)", emoji: "😎" },
-  { bgColor: "rgba(234, 179, 8, 0.4)", emoji: "🛸" }
+  { bg1: "rgba(239, 68, 68, 0.2)", bg2: "rgba(220, 38, 38, 0.4)", borderColor: "rgba(239, 68, 68, 0.5)", shadowColor: "rgba(185, 28, 28, 0.8)", emoji: "🕹️" },
+  { bg1: "rgba(249, 115, 22, 0.2)", bg2: "rgba(234, 88, 12, 0.4)", borderColor: "rgba(249, 115, 22, 0.5)", shadowColor: "rgba(194, 65, 12, 0.8)", emoji: "🚀" },
+  { bg1: "rgba(59, 130, 246, 0.2)", bg2: "rgba(37, 99, 235, 0.4)", borderColor: "rgba(59, 130, 246, 0.5)", shadowColor: "rgba(29, 78, 216, 0.8)", emoji: "👾" },
+  { bg1: "rgba(16, 185, 129, 0.2)", bg2: "rgba(5, 150, 105, 0.4)", borderColor: "rgba(16, 185, 129, 0.5)", shadowColor: "rgba(4, 120, 87, 0.8)", emoji: "🤖" },
+  { bg1: "rgba(168, 85, 247, 0.2)", bg2: "rgba(147, 51, 234, 0.4)", borderColor: "rgba(168, 85, 247, 0.5)", shadowColor: "rgba(126, 34, 206, 0.8)", emoji: "😎" },
+  { bg1: "rgba(234, 179, 8, 0.2)", bg2: "rgba(202, 138, 4, 0.4)", borderColor: "rgba(234, 179, 8, 0.5)", shadowColor: "rgba(161, 98, 7, 0.8)", emoji: "🛸" } 
 ];
 
 const MiniCube = ({ x, y, z }: { x: number, y: number, z: number, key?: string }) => {
@@ -81,12 +87,12 @@ const MiniCube = ({ x, y, z }: { x: number, y: number, z: number, key?: string }
         transform: `translate3d(${x * 32}px, ${y * 32}px, ${z * 32}px)`
       }}
     >
-      <CubeFace isOuter={z === 1} bgColor={faces.front.bgColor} emoji={faces.front.emoji} transform="translateZ(15px)" />
-      <CubeFace isOuter={z === -1} bgColor={faces.back.bgColor} emoji={faces.back.emoji} transform="translateZ(-15px) rotateY(180deg)" />
-      <CubeFace isOuter={x === 1} bgColor={faces.right.bgColor} emoji={faces.right.emoji} transform="translateX(15px) rotateY(90deg)" />
-      <CubeFace isOuter={x === -1} bgColor={faces.left.bgColor} emoji={faces.left.emoji} transform="translateX(-15px) rotateY(-90deg)" />
-      <CubeFace isOuter={y === -1} bgColor={faces.top.bgColor} emoji={faces.top.emoji} transform="translateY(-15px) rotateX(90deg)" />
-      <CubeFace isOuter={y === 1} bgColor={faces.bottom.bgColor} emoji={faces.bottom.emoji} transform="translateY(15px) rotateX(-90deg)" />
+      <CubeFace isOuter={z === 1} faceData={faces.front} transform="translateZ(15px)" />
+      <CubeFace isOuter={z === -1} faceData={faces.back} transform="translateZ(-15px) rotateY(180deg)" />
+      <CubeFace isOuter={x === 1} faceData={faces.right} transform="translateX(15px) rotateY(90deg)" />
+      <CubeFace isOuter={x === -1} faceData={faces.left} transform="translateX(-15px) rotateY(-90deg)" />
+      <CubeFace isOuter={y === -1} faceData={faces.top} transform="translateY(-15px) rotateX(90deg)" />
+      <CubeFace isOuter={y === 1} faceData={faces.bottom} transform="translateY(15px) rotateX(-90deg)" />
     </div>
   );
 };
@@ -189,7 +195,7 @@ export function RetroLoader({ onFinish }: RetroLoaderProps) {
     });
 
     // Make the loading a bit longer to show off the cube
-    const duration = 5000; 
+    const duration = 3000; 
     const intervalTime = 50;
     const steps = duration / intervalTime;
     const increment = 100 / steps;
@@ -273,6 +279,18 @@ export function RetroLoader({ onFinish }: RetroLoaderProps) {
             </motion.div>
           </AnimatePresence>
         </div>
+
+        {/* Signature Badge */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-8 flex justify-center"
+        >
+          <div className="text-white/20 text-[9px] md:text-[10px] font-black tracking-[0.3em] uppercase copyright-badge shine-effect-hover px-4 py-2 rounded-lg border border-white/5 bg-white/5 select-none transition-all hover:text-white/40 hover:bg-white/10">
+            © 2026 ALEKSANDR KOPANEV
+          </div>
+        </motion.div>
       </div>
     </div>
   );
