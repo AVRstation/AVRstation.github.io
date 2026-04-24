@@ -7,41 +7,9 @@ interface TreasureChestProps {
   t: any;
 }
 
-const Block = ({ w, h, d, x, y, z, color, topColor, leftColor, frontColor }: any) => {
-  const c = color;
-  const tc = topColor || c;
-  const lc = leftColor || c;
-  const fc = frontColor || c;
-
-  return (
-    <div 
-      className="absolute"
-      style={{
-        width: w,
-        height: h,
-        transformStyle: 'preserve-3d',
-        transform: `translate3d(${x}px, ${y}px, ${z}px)`,
-      }}
-    >
-      {/* Front */}
-      <div className="absolute inset-0" style={{ transform: `translateZ(${d/2}px)`, backgroundColor: fc, border: '2px solid rgba(0,0,0,0.3)' }} />
-      {/* Back */}
-      <div className="absolute inset-0" style={{ transform: `rotateY(180deg) translateZ(${d/2}px)`, backgroundColor: c, border: '2px solid rgba(0,0,0,0.3)' }} />
-      {/* Right */}
-      <div className="absolute" style={{ width: d, height: h, transform: `rotateY(90deg) translateZ(${w/2}px)`, left: w/2 - d/2, backgroundColor: lc, border: '2px solid rgba(0,0,0,0.3)' }} />
-      {/* Left */}
-      <div className="absolute" style={{ width: d, height: h, transform: `rotateY(-90deg) translateZ(${w/2}px)`, left: w/2 - d/2, backgroundColor: lc, border: '2px solid rgba(0,0,0,0.3)' }} />
-      {/* Top */}
-      <div className="absolute" style={{ width: w, height: d, transform: `rotateX(90deg) translateZ(${h/2}px)`, top: h/2 - d/2, backgroundColor: tc, border: '2px solid rgba(0,0,0,0.3)' }} />
-      {/* Bottom */}
-      <div className="absolute" style={{ width: w, height: d, transform: `rotateX(-90deg) translateZ(${h/2}px)`, top: h/2 - d/2, backgroundColor: c, border: '2px solid rgba(0,0,0,0.3)' }} />
-    </div>
-  );
-};
-
 export const TreasureChest: React.FC<TreasureChestProps> = ({ onOpen, onBackToTop, t }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [items, setItems] = useState<{ id: number; char: string; x: number; y: number; z: number; delay: number }[]>([]);
+  const [items, setItems] = useState<{ id: number; char: string; x: number; y: number; delay: number }[]>([]);
 
   const openChest = () => {
     if (isOpen) return;
@@ -52,26 +20,28 @@ export const TreasureChest: React.FC<TreasureChestProps> = ({ onOpen, onBackToTo
     const newItems = Array.from({ length: 18 }).map((_, i) => ({
       id: Date.now() + i,
       char: rewards[Math.floor(Math.random() * rewards.length)],
-      x: (Math.random() - 0.5) * 300,
-      y: -Math.random() * 250 - 100,
-      z: (Math.random() - 0.5) * 200, // add a bit of Z scatter since it's 3D now
+      x: (Math.random() - 0.5) * 440,
+      y: -Math.random() * 350 - 150,
       delay: Math.random() * 0.3,
     }));
     setItems(newItems);
   };
 
   const scrollToTop = () => {
+    // Try scrolling both the window and the main container for maximum compatibility
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     const mainContainer = document.querySelector('main');
     if (mainContainer) {
       mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
     }
+    
     if (onBackToTop) onBackToTop();
   };
 
   return (
-    <div className="relative mt-20 mb-32 flex flex-col items-center" style={{ perspective: '1200px' }}>
-      <div className="absolute -top-16 left-1/2 -translate-x-1/2 whitespace-nowrap z-30">
+    <div className="relative mt-20 mb-32 flex flex-col items-center perspective-1000">
+      <div className="absolute -top-20 left-1/2 -translate-x-1/2 whitespace-nowrap z-30">
         <motion.div
            initial={{ opacity: 0, y: 10 }}
            whileInView={{ opacity: 1, y: 0 }}
@@ -83,115 +53,93 @@ export const TreasureChest: React.FC<TreasureChestProps> = ({ onOpen, onBackToTo
 
       <div 
         onClick={openChest}
-        className="relative group cursor-pointer transition-transform duration-500 hover:scale-110 active:scale-95"
-        style={{ width: 160, height: 120 }}
+        className="relative group cursor-pointer w-48 h-32 flex items-center justify-center transition-transform hover:scale-110 active:scale-95 duration-500"
+        style={{ transformStyle: 'preserve-3d' }}
       >
-        {/* Glow Magic (outside 3D container to avoid preserve-3d flattening) */}
-        <AnimatePresence>
+        {/* Ground Shadow */}
+        <div className="absolute bottom-[-10px] left-1/2 -translate-x-1/2 w-40 h-8 bg-black/50 blur-2xl rounded-[100%] z-0" />
+
+        {/* 3D Chest Body */}
+        <div className="relative w-40 h-24 preserve-3d">
+          
+          {/* Base of Chest */}
+          <div className="absolute inset-0 bg-[#5d4037] border-2 border-[#3e2723] rounded-sm shadow-[inset_0_0_20px_rgba(0,0,0,0.4)]">
+            {/* Wooden Planks Effect */}
+            <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(90deg, transparent 95%, #000 95%), linear-gradient(0deg, transparent 95%, #000 95%)', backgroundSize: '10px 10px' }} />
+            {/* Gold Bands */}
+            <div className="absolute left-4 top-0 bottom-0 w-3 bg-yellow-600 border-x border-yellow-800" />
+            <div className="absolute right-4 top-0 bottom-0 w-3 bg-yellow-600 border-x border-yellow-800" />
+            
+            {/* Lock */}
+            <div className="absolute left-1/2 top-1 -translate-x-1/2 w-6 h-8 bg-yellow-500 border-2 border-yellow-700 rounded-b-lg shadow-lg z-20">
+               <div className="absolute left-1/2 top-4 -translate-x-1/2 w-2 h-3 bg-black/40 rounded-full" />
+            </div>
+          </div>
+
+          {/* Lid of Chest */}
+          <motion.div 
+            animate={isOpen ? { rotateX: -110, y: -5 } : { rotateX: 0, y: 0 }}
+            transition={{ type: "spring", stiffness: 100, damping: 10 }}
+            className="absolute top-0 left-0 w-40 h-16 origin-bottom z-10 preserve-3d"
+            style={{ transformStyle: 'preserve-3d' }}
+          >
+            {/* Top Side */}
+            <div className="absolute inset-0 bg-[#5d4037] border-2 border-[#3e2723] rounded-t-xl shadow-[inset_0_10px_20px_rgba(255,255,255,0.1)]">
+              <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(90deg, transparent 95%, #000 95%)', backgroundSize: '15px 10px' }} />
+              {/* Gold Bands Top */}
+              <div className="absolute left-4 top-0 bottom-0 w-3 bg-yellow-600 border-x border-yellow-800" />
+              <div className="absolute right-4 top-0 bottom-0 w-3 bg-yellow-600 border-x border-yellow-800" />
+            </div>
+          </motion.div>
+
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1.1 }}
+                className="absolute inset-0 bg-yellow-400/60 rounded-full blur-[25px] -z-10 mix-blend-screen overflow-visible will-change-transform"
+              />
+            )}
+          </AnimatePresence>
+
+          {/* Loot Spawning */}
+          <div className="absolute inset-0 pointer-events-none z-40">
+            {items.map((item) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, scale: 0, x: "0px", y: "0px" }}
+                animate={{ 
+                  opacity: [0, 1, 1, 0], 
+                  scale: [0, 1.5, 1, 0.4],
+                  x: item.x,
+                  y: item.y,
+                  rotate: 720
+                }}
+                transition={{ 
+                  duration: 2.5, 
+                  delay: item.delay,
+                  ease: "easeOut"
+                }}
+                className="absolute left-1/2 top-4 -translate-x-1/2 text-3xl will-change-transform"
+              >
+                {item.char}
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Magic Glow Rays */}
           {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1.1 }}
-              className="absolute inset-0 bg-yellow-400/60 rounded-full blur-[25px] mix-blend-screen pointer-events-none z-0"
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0.15, 0.35, 0.15] }}
+              transition={{ repeat: Infinity, duration: 4 }}
+              className="absolute -top-32 left-[-60px] right-[-60px] bottom-0 bg-gradient-to-t from-yellow-500/30 to-transparent blur-[40px] pointer-events-none -z-20 will-change-opacity"
             />
           )}
-        </AnimatePresence>
-
-        {/* Magic Glow Rays */}
-        {isOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0.15, 0.35, 0.15] }}
-            transition={{ repeat: Infinity, duration: 4 }}
-            className="absolute -top-32 left-[-60px] right-[-60px] bottom-[40px] bg-gradient-to-t from-yellow-500/40 to-transparent blur-[40px] pointer-events-none z-0"
-          />
-        )}
-
-        {/* 3D Rotating Chest Body */}
-        <motion.div 
-          className="absolute inset-0 z-10"
-          style={{ transformStyle: 'preserve-3d' }}
-          whileHover={{ rotateY: 15, rotateX: -10 }}
-          animate={{ rotateX: -20, rotateY: -25 }}
-        >
-          {/* Ground Shadow */}
-          <div className="absolute bottom-[-40px] left-1/2 -translate-x-1/2 w-48 h-12 bg-black/60 blur-2xl rounded-[100%] z-[-1]" style={{ transform: 'translateZ(-50px)' }} />
-
-          {/* --- BASE --- */}
-        <div className="absolute left-0 top-[40px]" style={{ width: 160, height: 80, transformStyle: 'preserve-3d' }}>
-          {/* Base Wood */}
-          <Block w={160} h={80} d={100} x={0} y={0} z={0} color="#5d4037" topColor="#4e342e" leftColor="#3e2723" />
-          {/* Base gold bands */}
-          <Block w={16} h={82} d={102} x={16} y={-1} z={0} color="#ca8a04" topColor="#eab308" leftColor="#a16207" />
-          <Block w={16} h={82} d={102} x={128} y={-1} z={0} color="#ca8a04" topColor="#eab308" leftColor="#a16207" />
-          
-          {/* Lock Bottom Half */}
-          <Block w={24} h={16} d={8} x={68} y={0} z={50} color="#eab308" topColor="#fde047" leftColor="#ca8a04" />
         </div>
-
-        {/* --- LID --- */}
-        <motion.div 
-          className="absolute left-0 top-0"
-          style={{ 
-            width: 160, 
-            height: 40, 
-            transformStyle: 'preserve-3d',
-            transformOrigin: '50% 100% -50px' 
-          }}
-          animate={isOpen ? { rotateX: -120 } : { rotateX: 0 }}
-          transition={{ type: "spring", stiffness: 100, damping: 12, mass: 1.5 }}
-        >
-          {/* Lid Wood */}
-          <Block w={160} h={40} d={100} x={0} y={0} z={0} color="#5d4037" topColor="#795548" leftColor="#3e2723" />
-          
-          {/* Lid Bevel Top (to give it that curved chest look) */}
-          <Block w={160} h={16} d={70} x={0} y={-16} z={0} color="#6d4c41" topColor="#8d6e63" leftColor="#4e342e" />
-          
-          {/* Lid gold bands Main */}
-          <Block w={16} h={42} d={102} x={16} y={-2} z={0} color="#ca8a04" topColor="#eab308" leftColor="#a16207" />
-          <Block w={16} h={42} d={102} x={128} y={-2} z={0} color="#ca8a04" topColor="#eab308" leftColor="#a16207" />
-
-          {/* Lid gold bands Top Bevel */}
-          <Block w={16} h={18} d={72} x={16} y={-18} z={0} color="#ca8a04" topColor="#eab308" leftColor="#a16207" />
-          <Block w={16} h={18} d={72} x={128} y={-18} z={0} color="#ca8a04" topColor="#eab308" leftColor="#a16207" />
-
-          {/* Lock Top Half */}
-          <Block w={24} h={24} d={8} x={68} y={24} z={50} color="#eab308" topColor="#fde047" leftColor="#ca8a04" />
-          <Block w={6} h={8} d={10} x={77} y={30} z={50} color="#000" topColor="#000" leftColor="#000" />
-        </motion.div>
-
-        {/* Loot Spawning */}
-        <div className="absolute inset-0 pointer-events-none" style={{ transformStyle: 'preserve-3d' }}>
-          {items.map((item) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, scale: 0, x: 0, y: 0, z: 0 }}
-              animate={{ 
-                opacity: [0, 1, 1, 0], 
-                scale: [0, 1.5, 1, 0.4],
-                x: item.x,
-                y: item.y,
-                z: item.z,
-                rotateX: Math.random() * 720,
-                rotateY: Math.random() * 720,
-              }}
-              transition={{ 
-                duration: 2.5, 
-                delay: item.delay,
-                ease: "easeOut"
-              }}
-              className="absolute left-1/2 top-4 -translate-x-1/2 text-3xl will-change-transform"
-              style={{ transformStyle: 'preserve-3d' }}
-            >
-              {item.char}
-            </motion.div>
-          ))}
-        </div>
-
-        </motion.div>
       </div>
 
-      <div className="mt-20 flex flex-col items-center gap-8 z-30">
+      <div className="mt-16 flex flex-col items-center gap-8 z-30">
         <div className="text-[10px] uppercase font-black tracking-[0.3em] text-yellow-500/60 text-center max-w-[200px] leading-relaxed">
           {!isOpen ? t.chest_desc_locked : t.chest_desc_open}
         </div>
@@ -224,4 +172,3 @@ export const TreasureChest: React.FC<TreasureChestProps> = ({ onOpen, onBackToTo
     </div>
   );
 };
-
