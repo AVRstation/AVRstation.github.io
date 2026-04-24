@@ -151,15 +151,19 @@ export default function App() {
     if (!gamesEnabled) {
       achievementsRef.current?.unlock('disable_games');
       setShowAbduction(true);
+      localStorage.setItem('ach_games_disabled', 'true');
       const timer = setTimeout(() => {
         setShowAbduction(false);
       }, 12000);
       return () => clearTimeout(timer);
     } else {
+      setShowAbduction(false); // Make sure the cow overlay is removed immediately if they turn games back on
       const wasDisabled = localStorage.getItem('ach_games_disabled');
-      if (wasDisabled === 'true') achievementsRef.current?.unlock('toggle_power_on');
+      if (wasDisabled === 'true') {
+        achievementsRef.current?.unlock('toggle_power_on');
+      }
+      localStorage.setItem('ach_games_disabled', 'false');
     }
-    localStorage.setItem('ach_games_disabled', (!gamesEnabled).toString());
   }, [gamesEnabled]);
 
   useEffect(() => {
@@ -263,8 +267,8 @@ export default function App() {
             />
 
       {/* Interactive Games */}
+      {showAbduction && <CowAbduction key="cow-abduction" />}
       <AnimatePresence mode="wait">
-        {showAbduction && <CowAbduction key="cow-abduction" />}
         {gamesEnabled && activeGame === 'snake' && (
           <motion.div
             key={`snake-wrapper-${gameResetKey}`}
