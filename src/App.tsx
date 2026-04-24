@@ -528,7 +528,11 @@ export default function App() {
                           <button 
                             onClick={(e) => {
                               e.stopPropagation();
-                              setIsPlayMode(!isPlayMode);
+                              const nextState = !isPlayMode;
+                              setIsPlayMode(nextState);
+                              if (nextState) {
+                                achievementsRef.current?.unlock('f_key_click');
+                              }
                             }}
                             role="switch"
                             aria-checked={isPlayMode}
@@ -779,7 +783,6 @@ export default function App() {
               aria-label={contact.label}
               onClick={() => {
                 achievementsRef.current?.unlock('click_contact');
-                achievementsRef.current?.unlock('f_key_click');
               }}
               className={`kb-key w-14 h-14 group transition-all duration-300 ${contact.hoverBg} ${contact.shadow} border-white/5 hover:border-transparent shadow-lg`}
             >
