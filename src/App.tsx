@@ -9,6 +9,7 @@ import { CustomCursor } from './components/CustomCursor';
 import { RetroLoader } from './components/RetroLoader';
 import { BulletHellGame } from './components/BulletHellGame';
 import { RetroHUD } from './components/RetroHUD';
+import { CowAbduction } from './components/CowAbduction';
 import { 
   Briefcase, 
   Gamepad2, 
@@ -84,13 +85,11 @@ export default function App() {
   const [contactTrigger, setContactTrigger] = useState(0);
   const [gameResetKey, setGameResetKey] = useState(0);
   const [copyrightReactions, setCopyrightReactions] = useState<{ id: number; x: number; y: number; char: string }[]>([]);
+  const [showAbduction, setShowAbduction] = useState(false);
 
   const handleExitPlayMode = useCallback(() => {
     setIsPlayMode(false);
-    if (activeGame === 'bullet') {
-      setActiveGame('snake');
-    }
-  }, [activeGame]);
+  }, []);
 
   const handleCopyrightClick = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -140,9 +139,23 @@ export default function App() {
     localStorage.setItem('ach_game_init', 'true');
   }, [activeGame]);
 
+  // Track initial render to avoid abducting cow on mount
+  const isFirstRender = React.useRef(true);
+
   useEffect(() => {
-    if (!gamesEnabled) achievementsRef.current?.unlock('disable_games');
-    else {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (!gamesEnabled) {
+      achievementsRef.current?.unlock('disable_games');
+      setShowAbduction(true);
+      const timer = setTimeout(() => {
+        setShowAbduction(false);
+      }, 12000);
+      return () => clearTimeout(timer);
+    } else {
       const wasDisabled = localStorage.getItem('ach_games_disabled');
       if (wasDisabled === 'true') achievementsRef.current?.unlock('toggle_power_on');
     }
@@ -251,6 +264,7 @@ export default function App() {
 
       {/* Interactive Games */}
       <AnimatePresence mode="wait">
+        {showAbduction && <CowAbduction key="cow-abduction" />}
         {gamesEnabled && activeGame === 'snake' && (
           <motion.div
             key={`snake-wrapper-${gameResetKey}`}
@@ -321,7 +335,7 @@ export default function App() {
 
         <RetroHUD isActive={isPlayMode} onExit={handleExitPlayMode} />
         {/* Header */}
-      <header className={`flex flex-col lg:flex-row justify-between items-start lg:items-end pb-6 border-b border-[var(--glass-border)] gap-6 perspective-1000 relative z-[70] transition-all duration-700 ${isPlayMode ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}>
+      <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end pb-6 border-b border-[var(--glass-border)] gap-6 perspective-1000 relative z-[70] transition-all duration-700">
         <div className="name-brand w-full lg:w-auto">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tighter uppercase leading-tight">
             {t.first_name}<span className="text-[var(--accent)] font-black"> {t.last_name}</span>
@@ -713,7 +727,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="footer-area relative z-[70] sleek-glass rounded-2xl p-6 md:px-10 flex flex-col md:flex-row justify-between items-center gap-8 mb-4 transition-all duration-700">
-        <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
+        <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10 shrink-0">
           <SlotMachine 
             soundEnabled={isSoundEnabled}
             onWin={() => {
@@ -733,21 +747,24 @@ export default function App() {
         </div>
         
         {isPlayMode && (
-          <div className="order-first md:order-none md:absolute md:left-1/2 md:-translate-x-1/2 z-10 w-full md:w-auto flex justify-center">
+          <div className="order-first md:order-none z-10 w-full md:w-auto flex justify-center">
             <button 
               onClick={(e) => {
                 e.stopPropagation();
                 handleExitPlayMode();
               }}
-              className="bg-black/60 hover:bg-black/80 border border-[#00FF00]/50 hover:border-[#00FF00] text-[#00FF00] px-6 py-2.5 rounded-xl text-[9px] md:text-[10px] uppercase font-black tracking-[0.3em] transition-all duration-300 flex items-center gap-3 group shadow-[0_0_20px_rgba(0,255,0,0.2)] cursor-pointer"
+              className="slot-3d shine-effect flex items-center gap-3 px-6 py-2 rounded-xl uppercase font-extrabold tracking-[0.2em] text-[#00FF00] hover:border-[#00FF00] transition-all cursor-pointer group shadow-[0_0_15px_rgba(0,255,0,0.1)] active:scale-95"
             >
-              <div className="w-2.5 h-2.5 bg-red-500 rounded-sm group-hover:animate-pulse shadow-[0_0_10px_#ff0000]" />
-              Terminate Play Mode
+              <div className="w-2.5 h-2.5 bg-red-500 rounded-sm group-hover:animate-pulse shadow-[0_0_10px_#ff0000] shrink-0" />
+              <div className="flex flex-col items-start leading-[1.1] text-[9px] md:text-[10px]">
+                <span>Terminate</span>
+                <span>Play Mode</span>
+              </div>
             </button>
           </div>
         )}
 
-        <div className="flex flex-wrap justify-center gap-4">
+        <div className="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-4">
           {CONTACTS.map((contact, index) => (
             <a 
               key={contact.label} 

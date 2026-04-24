@@ -76,7 +76,7 @@ export const BulletHellGame = ({ onScoreChange, onAIScoreChange, soundEnabled, o
             w: blockSize - 2,
             h: blockSize - 2,
             hp: 2,
-            color: x % 2 === 0 ? '#00f0ff' : '#00b8ff'
+            color: x % 2 === 0 ? '#A855F7' : '#D946EF'
           });
         }
       });
@@ -131,9 +131,9 @@ export const BulletHellGame = ({ onScoreChange, onAIScoreChange, soundEnabled, o
     if (rockets > 0 && gameState === 'playing' && (blocksRef.current.length > 0 || minionsRef.current.length > 0)) {
       setRockets(prev => prev - 1);
       
-      // Auto-aim rocket at a random target (block or minion)
-      const targets = [...blocksRef.current, ...minionsRef.current];
-      const target = targets[Math.floor(Math.random() * targets.length)];
+      // Auto-aim rocket at a target (prefer boss blocks)
+      const targetList = blocksRef.current.length > 0 ? blocksRef.current : minionsRef.current;
+      const target = targetList[Math.floor(Math.random() * targetList.length)];
       const targetX = target.x + (target.w || 0) / 2;
       const targetY = target.y + (target.h || 0) / 2;
       const angle = Math.atan2(targetY - playerRef.current.y, targetX - playerRef.current.x);
@@ -194,9 +194,17 @@ export const BulletHellGame = ({ onScoreChange, onAIScoreChange, soundEnabled, o
       bossRef.current = { 
         vx: (Math.random() - 0.5) * 2, 
         vy: (Math.random() - 0.5) * 2,
-        lastInvulToggle: Date.now()
+        lastInvulToggle: Date.now(),
+        tiltX: 0,
+        tiltY: 0
       };
     }
+
+    // Update tilt (two axis)
+    const targetTiltX = bossRef.current.vx * 0.12;
+    const targetTiltY = bossRef.current.vy * 0.12;
+    bossRef.current.tiltX += (targetTiltX - bossRef.current.tiltX) * 0.1;
+    bossRef.current.tiltY += (targetTiltY - bossRef.current.tiltY) * 0.1;
 
     // Random Boss Invulnerability toggle
     if (Date.now() - bossRef.current.lastInvulToggle > 8000) {
@@ -358,23 +366,62 @@ export const BulletHellGame = ({ onScoreChange, onAIScoreChange, soundEnabled, o
 
     // Logic: Bullets
     bulletsRef.current.forEach((b, bi) => {
-      b.x += b.vx;
-      b.y += b.vy;
-
       if (b.isRocket) {
+        // Homing logic: find target (prefer boss blocks)
+        const targetList = blocksRef.current.length > 0 ? blocksRef.current : minionsRef.current;
+        if (targetList.length > 0) {
+          // Find nearest target to the rocket
+          let nearestTarget = targetList[0];
+          let minDist = Infinity;
+          targetList.forEach(t => {
+            const dx = (t.x + (t.w || 0) / 2) - b.x;
+            const dy = (t.y + (t.h || 0) / 2) - b.y;
+            const d = dx * dx + dy * dy;
+            if (d < minDist) {
+              minDist = d;
+              nearestTarget = t;
+            }
+          });
+
+          const tx = nearestTarget.x + (nearestTarget.w || 0) / 2;
+          const ty = nearestTarget.y + (nearestTarget.h || 0) / 2;
+          const angle = Math.atan2(ty - b.y, tx - b.x);
+          
+          // Smooth rotation towards target
+          const currentAngle = Math.atan2(b.vy, b.vx);
+          let diff = angle - currentAngle;
+          while (diff < -Math.PI) diff += Math.PI * 2;
+          while (diff > Math.PI) diff -= Math.PI * 2;
+          
+          const nextAngle = currentAngle + diff * 0.08;
+          const speed = Math.hypot(b.vx, b.vy);
+          b.vx = Math.cos(nextAngle) * speed;
+          b.vy = Math.sin(nextAngle) * speed;
+        }
+
         b.trail = b.trail || [];
         b.trail.push({ x: b.x, y: b.y });
         if (b.trail.length > 12) b.trail.shift();
       }
 
+      b.x += b.vx;
+      b.y += b.vy;
+
       // Collision with Blocks
       blocksRef.current.forEach((block, bli) => {
         if (b.x > block.x && b.x < block.x + block.w && b.y > block.y && b.y < block.y + block.h) {
           if (bossInvulnerable) {
-            // Deflect effect
-            createExplosion(b.x, b.y, "#ffffff");
-            b.vx *= -1;
-            b.vy *= -1;
+            if (b.isRocket) {
+              // Rocket hits but no damage
+              createExplosion(b.x, b.y, "#ffaa00", true);
+              if (soundEnabled) sounds.playRocketExplosion();
+              bulletsRef.current.splice(bi, 1);
+            } else {
+              // Deflect effect for regular bullets
+              createExplosion(b.x, b.y, "#ffffff");
+              b.vx *= -1;
+              b.vy *= -1;
+            }
             return;
           }
           if (b.isRocket) {
@@ -529,33 +576,79 @@ export const BulletHellGame = ({ onScoreChange, onAIScoreChange, soundEnabled, o
     ctx.restore();
     ctx.shadowBlur = 0;
 
-    // Draw Blocks (3D Style)
-    blocksRef.current.forEach(block => {
-      const displayColor = bossInvulnerable ? '#1a1a2e' : block.color;
+    // Draw Blocks (Voxel Style)
+    if (blocksRef.current.length > 0) {
+      // Calculate group center for rotation
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      blocksRef.current.forEach(b => {
+        minX = Math.min(minX, b.x);
+        maxX = Math.max(maxX, b.x + b.w);
+        minY = Math.min(minY, b.y);
+        maxY = Math.max(maxY, b.y + b.h);
+      });
+      const centerX = (minX + maxX) / 2;
+      const centerY = (minY + maxY) / 2;
+
+      ctx.save();
+      ctx.translate(centerX, centerY);
       
-      // Side shadow
-      ctx.fillStyle = 'rgba(0,0,0,0.3)';
-      ctx.fillRect(block.x + 3, block.y + 3, block.w, block.h);
+      // 2-axis tilt simulation
+      ctx.rotate(bossRef.current?.tiltX || 0);
+      const verticalScale = 1 - Math.abs(bossRef.current?.tiltY || 0) * 0.5;
+      ctx.scale(1, verticalScale);
       
-      // Face
-      ctx.fillStyle = displayColor;
-      ctx.fillRect(block.x, block.y, block.w, block.h);
-      
-      // Shimmer during invulnerability
-      if (bossInvulnerable) {
-        const shimmer = (Math.sin(Date.now() / 100) + 1) / 2;
-        ctx.fillStyle = `rgba(255, 255, 255, ${shimmer * 0.15})`;
-        ctx.fillRect(block.x, block.y, block.w, block.h);
+      // Large glow effect when not invulnerable
+      if (!bossInvulnerable) {
+        ctx.shadowBlur = 40;
+        ctx.shadowColor = '#D946EF';
+      } else {
+        ctx.shadowBlur = 0;
       }
 
-      // Highlighting edges
-      ctx.fillStyle = bossInvulnerable ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.2)';
-      ctx.fillRect(block.x, block.y, block.w, 2);
-      ctx.fillRect(block.x, block.y, 2, block.h);
-      ctx.fillStyle = 'rgba(0,0,0,0.2)';
-      ctx.fillRect(block.x, block.y + block.h - 2, block.w, 2);
-      ctx.fillRect(block.x + block.w - 2, block.y, 2, block.h);
-    });
+      ctx.translate(-centerX, -centerY);
+
+      blocksRef.current.forEach(block => {
+        const displayColor = bossInvulnerable ? '#1a1a2e' : block.color;
+        const shadowColor = bossInvulnerable ? '#0a0a1a' : 'rgba(0,0,0,0.4)';
+        const lightColor = bossInvulnerable ? '#2d2d4d' : 'rgba(255,255,255,0.3)';
+        
+        const voxelDepth = 6;
+        
+        // Side (depth effect)
+        ctx.fillStyle = shadowColor;
+        ctx.beginPath();
+        ctx.moveTo(block.x, block.y);
+        ctx.lineTo(block.x + voxelDepth, block.y - voxelDepth);
+        ctx.lineTo(block.x + block.w + voxelDepth, block.y - voxelDepth);
+        ctx.lineTo(block.x + block.w, block.y);
+        ctx.fill();
+
+        // Right side
+        ctx.beginPath();
+        ctx.moveTo(block.x + block.w, block.y);
+        ctx.lineTo(block.x + block.w + voxelDepth, block.y - voxelDepth);
+        ctx.lineTo(block.x + block.w + voxelDepth, block.y + block.h - voxelDepth);
+        ctx.lineTo(block.x + block.w, block.h + block.y);
+        ctx.fill();
+        
+        // Main Face
+        ctx.fillStyle = displayColor;
+        ctx.fillRect(block.x, block.y, block.w, block.h);
+        
+        // Top Highlight
+        ctx.fillStyle = lightColor;
+        ctx.fillRect(block.x, block.y, block.w, 2);
+        ctx.fillRect(block.x, block.y, 2, block.h);
+
+        // Shimmer during invulnerability
+        if (bossInvulnerable) {
+          const shimmer = (Math.sin(Date.now() / 150) + 1) / 2;
+          ctx.fillStyle = `rgba(255, 255, 255, ${shimmer * 0.2})`;
+          ctx.fillRect(block.x, block.y, block.w, block.h);
+        }
+      });
+      ctx.restore();
+    }
 
     // Draw Bullets (with curves and glow)
     bulletsRef.current.forEach(b => {

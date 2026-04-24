@@ -35,6 +35,133 @@ const FUNNY_MESSAGES = [
   "Whispering sweet nothings to the CPU..."
 ];
 
+const CubeFace = ({ isOuter, bgColor, emoji, transform }: { isOuter: boolean, bgColor: string, emoji: string, transform: string }) => {
+  if (!isOuter) {
+    return (
+      <div 
+        className="absolute w-[30px] h-[30px] bg-black/40 border border-white/10"
+        style={{ transform }}
+      />
+    );
+  }
+  return (
+    <div 
+      className="absolute w-[30px] h-[30px] border border-white/40 flex items-center justify-center rounded-sm shadow-[inset_0_0_10px_rgba(255,255,255,0.3)] backdrop-blur-[2px]"
+      style={{ transform, backgroundColor: bgColor }}
+    >
+      <span className="text-[14px] leading-none select-none drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]">{emoji}</span>
+    </div>
+  );
+};
+
+const CUBE_COLORS = [
+  { bgColor: "rgba(239, 68, 68, 0.4)", emoji: "🕹️" },
+  { bgColor: "rgba(249, 115, 22, 0.4)", emoji: "🚀" },
+  { bgColor: "rgba(59, 130, 246, 0.4)", emoji: "👾" },
+  { bgColor: "rgba(34, 197, 94, 0.4)", emoji: "🤖" },
+  { bgColor: "rgba(255, 255, 255, 0.3)", emoji: "😎" },
+  { bgColor: "rgba(234, 179, 8, 0.4)", emoji: "🛸" }
+];
+
+const MiniCube = ({ x, y, z }: { x: number, y: number, z: number, key?: string }) => {
+  const faces = React.useMemo(() => ({
+    front: CUBE_COLORS[Math.floor(Math.random() * 6)],
+    back: CUBE_COLORS[Math.floor(Math.random() * 6)],
+    right: CUBE_COLORS[Math.floor(Math.random() * 6)],
+    left: CUBE_COLORS[Math.floor(Math.random() * 6)],
+    top: CUBE_COLORS[Math.floor(Math.random() * 6)],
+    bottom: CUBE_COLORS[Math.floor(Math.random() * 6)],
+  }), []);
+
+  return (
+    <div 
+      className="absolute w-[30px] h-[30px] ml-[-15px] mt-[-15px]" 
+      style={{ 
+        transformStyle: 'preserve-3d', 
+        transform: `translate3d(${x * 32}px, ${y * 32}px, ${z * 32}px)`
+      }}
+    >
+      <CubeFace isOuter={z === 1} bgColor={faces.front.bgColor} emoji={faces.front.emoji} transform="translateZ(15px)" />
+      <CubeFace isOuter={z === -1} bgColor={faces.back.bgColor} emoji={faces.back.emoji} transform="translateZ(-15px) rotateY(180deg)" />
+      <CubeFace isOuter={x === 1} bgColor={faces.right.bgColor} emoji={faces.right.emoji} transform="translateX(15px) rotateY(90deg)" />
+      <CubeFace isOuter={x === -1} bgColor={faces.left.bgColor} emoji={faces.left.emoji} transform="translateX(-15px) rotateY(-90deg)" />
+      <CubeFace isOuter={y === -1} bgColor={faces.top.bgColor} emoji={faces.top.emoji} transform="translateY(-15px) rotateX(90deg)" />
+      <CubeFace isOuter={y === 1} bgColor={faces.bottom.bgColor} emoji={faces.bottom.emoji} transform="translateY(15px) rotateX(-90deg)" />
+    </div>
+  );
+};
+
+const cubeSequence = [
+  { axis: 'y', index: -1, dir: 1 },
+  { axis: 'x', index: -1, dir: 1 },
+  { axis: 'y', index: 1, dir: -1 },
+  { axis: 'x', index: 1, dir: -1 },
+  { axis: 'y', index: 0, dir: 1 },
+  { axis: 'x', index: 0, dir: 1 },
+  { axis: 'z', index: -1, dir: 1 },
+  { axis: 'z', index: 1, dir: -1 },
+];
+
+const MiniCubeAnimator = ({ x, y, z }: { x: number, y: number, z: number, key?: string }) => {
+   const rotateX = [0];
+   const rotateY = [0];
+   const rotateZ = [0];
+
+   let currX = 0, currY = 0, currZ = 0;
+
+   cubeSequence.forEach(step => {
+      if (step.axis === 'x' && step.index === x) currX += 360 * step.dir;
+      if (step.axis === 'y' && step.index === y) currY += 360 * step.dir;
+      if (step.axis === 'z' && step.index === z) currZ += 360 * step.dir;
+      
+      rotateX.push(currX);
+      rotateY.push(currY);
+      rotateZ.push(currZ);
+   });
+
+   return (
+      <motion.div
+         className="absolute inset-0"
+         style={{ transformStyle: 'preserve-3d' }}
+         animate={{ rotateX, rotateY, rotateZ }}
+         transition={{
+            duration: cubeSequence.length * 0.6,
+            repeat: Infinity,
+            ease: "easeInOut",
+            times: [0, ...cubeSequence.map((_, i) => (i + 1) / cubeSequence.length)]
+         }}
+      >
+         <MiniCube x={x} y={y} z={z} />
+      </motion.div>
+   );
+};
+
+const RubiksCube = () => {
+  return (
+    <div className="flex justify-center items-center mb-24 h-[100px]" style={{ perspective: 800 }}>
+      {/* Container providing a 3D view angle */}
+      <div className="relative" style={{ transformStyle: 'preserve-3d', transform: 'scale(1.3) rotateX(-25deg) rotateY(-35deg)' }}>
+        {/* Global slow rotation */}
+        <motion.div
+          className="absolute inset-0"
+          style={{ transformStyle: 'preserve-3d' }}
+          animate={{ rotateY: [0, 360], rotateX: [0, 10, 0, -10, 0] }}
+          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+        >
+          {[-1, 0, 1].map(x => (
+            [-1, 0, 1].map(y => (
+              [-1, 0, 1].map(z => {
+                if (x === 0 && y === 0 && z === 0) return null;
+                return <MiniCubeAnimator key={`${x}-${y}-${z}`} x={x} y={y} z={z} />;
+              })
+            ))
+          ))}
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
 interface RetroLoaderProps {
   onFinish: () => void;
   key?: string;
@@ -61,8 +188,9 @@ export function RetroLoader({ onFinish }: RetroLoaderProps) {
       img.src = src;
     });
 
-    const duration = 2000; // Faster loading
-    const intervalTime = 20;
+    // Make the loading a bit longer to show off the cube
+    const duration = 5000; 
+    const intervalTime = 50;
     const steps = duration / intervalTime;
     const increment = 100 / steps;
 
@@ -95,12 +223,14 @@ export function RetroLoader({ onFinish }: RetroLoaderProps) {
 
   return (
     <div 
-      className="fixed inset-0 z-[10000] flex items-center justify-center font-retro text-white px-8"
+      className="fixed inset-0 z-[10000] flex flex-col items-center justify-center font-retro text-white px-8"
       style={{
         background: 'radial-gradient(circle at 50% -20%, var(--bg-grad) 0%, var(--bg) 70%)',
         backgroundColor: 'var(--bg)'
       }}
     >
+      <RubiksCube />
+
       <div className="w-full max-w-2xl">
         {/* Loading and Percentage Row */}
         <div className="flex justify-between items-end mb-6 text-sm sm:text-lg tracking-widest">
