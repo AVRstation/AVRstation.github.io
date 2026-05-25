@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { X, Send, Bot, User, CornerDownLeft, Sparkles, AlertCircle, RefreshCw } from "lucide-react";
 import { Language } from "../types";
 import { sounds } from "../lib/sounds";
+import { SYSTEM_INSTRUCTION } from "../constants/systemInstruction";
 
 interface AIAgentChatProps {
   isOpen: boolean;
@@ -219,6 +220,7 @@ export function AIAgentChat({ isOpen, onClose, soundEnabled, lang }: AIAgentChat
     setIsLoading(true);
     setErrorStatus(false);
 
+    let reply = "";
     try {
       const response = await fetch("/api/gemini/chat", {
         method: "POST",
@@ -232,14 +234,68 @@ export function AIAgentChat({ isOpen, onClose, soundEnabled, lang }: AIAgentChat
       });
 
       if (!response.ok) {
-        throw new Error("Failed to communicate with API server");
+        throw new Error(`Server returned status ${response.status}`);
       }
 
       const data = await response.json();
       if (data.error) {
         throw new Error(data.error);
       }
+      reply = data.reply;
+    } catch (err) {
+      console.warn("Express backend endpoint failed or not found, attempting direct client fallback...", err);
+      
+      const clientApiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
+      if (!clientApiKey) {
+        throw new Error("Could not connect to AI. Please ensure VITE_GEMINI_API_KEY is configured in Vercel.");
+      }
 
+      // Map history to client-side REST format
+      const contentsArray: any[] = [];
+      messages.forEach((msg) => {
+        contentsArray.push({
+          role: msg.role === "assistant" ? "model" : "user",
+          parts: [{ text: msg.content }]
+        });
+      });
+      // Add current message
+      contentsArray.push({
+        role: "user",
+        parts: [{ text: trimmed }]
+      });
+
+      // Standard REST request directly to Google's Gemini endpoint
+      const directUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${clientApiKey}`;
+      const directResponse = await fetch(directUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          contents: contentsArray,
+          systemInstruction: {
+            parts: [{ text: SYSTEM_INSTRUCTION }]
+          },
+          generationConfig: {
+            temperature: 0.7
+          }
+        })
+      });
+
+      if (!directResponse.ok) {
+        const errJson = await directResponse.json().catch(() => ({}));
+        throw new Error(errJson?.error?.message || `Direct Gemini call failed: Status ${directResponse.status}`);
+      }
+
+      const directData = await directResponse.json();
+      const directText = directData.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!directText) {
+        throw new Error("Empty text response from direct Gemini API");
+      }
+      reply = directText;
+    }
+
+    try {
       if (soundEnabled) {
         // High soft double-pulse on receiving
         setTimeout(() => {
@@ -248,7 +304,7 @@ export function AIAgentChat({ isOpen, onClose, soundEnabled, lang }: AIAgentChat
         }, 100);
       }
 
-      saveMessages([...updatedMessages, { role: "assistant", content: data.reply }]);
+      saveMessages([...updatedMessages, { role: "assistant", content: reply }]);
     } catch (err) {
       console.error("AI agent message error", err);
       setErrorStatus(true);
