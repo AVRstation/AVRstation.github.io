@@ -28,12 +28,14 @@ import {
   VolumeX,
   Eye, 
   EyeOff,
-  Languages
+  Languages,
+  Bot
 } from 'lucide-react';
 
 import { Language } from './types';
 import { TRANSLATIONS } from './constants/translations';
 import { CONTACTS, detectInitialLanguage, GET_SKILLS, GET_PROJECTS } from './constants/data';
+import { AIAgentChat } from './components/AIAgentChat';
 
 // Lazy load games for performance
 const SnakeGame = lazy(() => import('./components/SnakeGame').then(m => ({ default: m.SnakeGame })));
@@ -82,6 +84,7 @@ export default function App() {
   const [spaceAiScore, setSpaceAiScore] = useState(0);
 
   const [isMobile, setIsMobile] = useState(false);
+  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const [contactTrigger, setContactTrigger] = useState(0);
   const [gameResetKey, setGameResetKey] = useState(0);
   const [copyrightReactions, setCopyrightReactions] = useState<{ id: number; x: number; y: number; char: string }[]>([]);
@@ -338,6 +341,12 @@ export default function App() {
         />
 
         <RetroHUD isActive={isPlayMode} onExit={handleExitPlayMode} />
+        <AIAgentChat 
+          isOpen={isAIChatOpen} 
+          onClose={() => setIsAIChatOpen(false)} 
+          soundEnabled={isSoundEnabled} 
+          lang={lang} 
+        />
         {/* Header */}
       <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end pb-6 border-b border-[var(--glass-border)] gap-6 perspective-1000 relative z-[70] transition-all duration-700">
         <div className="name-brand w-full lg:w-auto">
@@ -393,7 +402,7 @@ export default function App() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.15, ease: "easeOut" }}
-                    className="absolute top-full right-0 mt-3 w-40 panel-glass rounded-2xl p-2 z-[10001] flex flex-col gap-1"
+                    className="absolute top-full left-1/2 -translate-x-1/2 md:left-auto md:right-0 md:translate-x-0 mt-3 w-40 panel-glass rounded-2xl p-2 z-[10001] flex flex-col gap-1"
                     style={{ transform: 'translateZ(0)' }}
                   >
                     {[
@@ -426,6 +435,26 @@ export default function App() {
                 )}
               </AnimatePresence>
             </div>
+
+            {/* AI Assistant Chat Trigger */}
+            <button
+              onClick={() => {
+                setIsAIChatOpen(!isAIChatOpen);
+                sounds.init();
+                if (isSoundEnabled) {
+                  sounds.playNote(523.25, 'sine', 0.1, 0.05);
+                }
+              }}
+              className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 header-3d-wrapper relative z-[90] ${
+                isAIChatOpen 
+                  ? 'bg-[var(--accent)] text-black shadow-[0_0_20px_var(--accent)]' 
+                  : 'text-[var(--accent)] hover:bg-white/5 opacity-80 hover:opacity-100'
+              }`}
+              aria-label={lang === 'ru' ? 'Задать вопрос ИИ' : (lang === 'cn' ? '咨询 AI 助手' : (lang === 'es' ? 'Preguntar al Agente de IA' : 'Ask AI Agent'))}
+              title={lang === 'ru' ? 'Задать вопрос ИИ' : (lang === 'cn' ? '咨询 AI 助手' : (lang === 'es' ? 'Preguntar al Agente de IA' : 'Ask AI Agent'))}
+            >
+              <Bot className={`w-4 h-4 ${isAIChatOpen ? 'animate-pulse' : ''}`} />
+            </button>
             
             {/* Action Buttons Container */}
             <div className="flex items-center gap-3 relative z-[80]">
@@ -459,7 +488,7 @@ export default function App() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.15, ease: "easeOut" }}
-                      className="absolute top-full left-0 mt-3 w-64 panel-glass rounded-2xl p-4 z-[10001]"
+                      className="absolute top-full left-1/2 -translate-x-1/2 md:left-auto md:right-0 md:translate-x-0 mt-3 w-64 panel-glass rounded-2xl p-4 z-[10001]"
                       style={{ transform: 'translateZ(0)' }}
                       onClick={(e) => e.stopPropagation()}
                     >
@@ -772,7 +801,7 @@ export default function App() {
           </div>
         )}
 
-        <div className="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-4">
+        <div className="grid grid-cols-2 md:flex md:flex-wrap justify-items-center justify-center md:justify-end gap-x-6 gap-y-4 max-w-[280px] md:max-w-none mx-auto md:mx-0">
           {CONTACTS.map((contact, index) => (
             <a 
               key={contact.label} 

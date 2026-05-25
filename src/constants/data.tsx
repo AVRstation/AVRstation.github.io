@@ -5,7 +5,7 @@ import { TRANSLATIONS } from './translations';
 
 export const CONTACTS = [
   { label: "Telegram", value: "@xrman", url: "https://t.me/xrman", icon: <Send />, color: "text-[#0088cc]", hoverBg: "hover:bg-[#0088cc]", shadow: "hover:shadow-[#0088cc]/30" },
-  { label: "Email", value: "hello@xrman.dev", url: "mailto:avkopanev@gmail.com", icon: <Mail />, color: "text-[#EA4335]", hoverBg: "hover:bg-[#EA4335]", shadow: "hover:shadow-[#EA4335]/30" },
+  { label: "Email", value: "avkopanev@gmail.com", url: "mailto:avkopanev@gmail.com", icon: <Mail />, color: "text-[#EA4335]", hoverBg: "hover:bg-[#EA4335]", shadow: "hover:shadow-[#EA4335]/30" },
   { label: "LinkedIn", value: "Kopanev Alexandr", url: "https://linkedin.com/in/aleksandr-kopanev-18787b104", icon: <Linkedin />, color: "text-[#0077b5]", hoverBg: "hover:bg-[#0077b5]", shadow: "hover:shadow-[#0077b5]/30" },
   { label: "Discord", value: "xrman", url: "https://discordapp.com/users/258354536287043588/", icon: <Disc />, color: "text-[#5865F2]", hoverBg: "hover:bg-[#5865F2]", shadow: "hover:shadow-[#5865F2]/30" }
 ];

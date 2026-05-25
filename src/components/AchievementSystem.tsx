@@ -29,7 +29,7 @@ export const ACHIEVEMENTS_LIST: Record<Language, Achievement[]> = {
     { id: 'toggle_power_on', title: 'Power Up', description: 'Re-enabled background games', icon: '⚡' },
     { id: 'f_key_click', title: 'Game On', description: 'Enable Play Mode in settings', icon: '🕹️' },
     { id: 'long_session', title: 'Dedicated', description: 'Spent some time exploring', icon: '🧠' },
-    { id: 'all_unlocked', title: 'SECRET LEVEL', description: '???', icon: '🏆' },
+    { id: 'all_unlocked', title: 'SECRET LEVEL', description: 'FIGHT THE BOSS!!!', icon: '🏆' },
   ],
   ru: [
     { id: 'first_load', title: 'Hello World', description: 'Добро пожаловать в Матрицу', icon: '🌐' },
@@ -48,7 +48,7 @@ export const ACHIEVEMENTS_LIST: Record<Language, Achievement[]> = {
     { id: 'toggle_power_on', title: 'Энергия', description: 'Фоновые игры снова включены', icon: '⚡' },
     { id: 'f_key_click', title: 'Режим Игры', description: 'Включен игровой режим в настройках', icon: '🕹️' },
     { id: 'long_session', title: 'Преданный', description: 'Проведено время за изучением', icon: '🧠' },
-    { id: 'all_unlocked', title: 'СЕКРЕТНЫЙ УРОВЕНЬ - сразись с БОССОМ', description: '???', icon: '🏆' },
+    { id: 'all_unlocked', title: 'СЕКРЕТНЫЙ УРОВЕНЬ - сразись с БОССОМ', description: 'СРАЗИСЬ С БОССОМ!!!', icon: '🏆' },
   ],
   cn: [
     { id: 'first_load', title: '你好世界', description: '体验黑客帝国', icon: '🌐' },
@@ -67,7 +67,7 @@ export const ACHIEVEMENTS_LIST: Record<Language, Achievement[]> = {
     { id: 'toggle_power_on', title: '能量提升', description: '重新启用背景游戏', icon: '⚡' },
     { id: 'f_key_click', title: '游戏开始', description: '在设置中启用游戏模式', icon: '🕹️' },
     { id: 'long_session', title: '专注', description: '花费时间探索', icon: '🧠' },
-    { id: 'all_unlocked', title: '秘密关卡', description: '???', icon: '🏆' },
+    { id: 'all_unlocked', title: '秘密关卡', description: '决战BOSS!!!', icon: '🏆' },
   ],
   hi: [
     { id: 'first_load', title: 'नमस्ते दुनिया', description: 'मैट्रिक्स का अनुभव करें', icon: '🌐' },
@@ -86,7 +86,7 @@ export const ACHIEVEMENTS_LIST: Record<Language, Achievement[]> = {
     { id: 'toggle_power_on', title: 'पाвер अप', description: 'गेम फिर से चालू किए', icon: '⚡' },
     { id: 'f_key_click', title: 'गेम ऑन', description: 'सेटिंग्स में प्ले मोड सक्षम करें', icon: '🕹️' },
     { id: 'long_session', title: 'समर्पित', description: 'खोज में समय बिताया', icon: '🧠' },
-    { id: 'all_unlocked', title: 'SECRET LEVEL', description: '???', icon: '🏆' },
+    { id: 'all_unlocked', title: 'SECRET LEVEL', description: 'बॉस से लड़ो!!!', icon: '🏆' },
   ],
   es: [
     { id: 'first_load', title: 'Hola Mundo', description: 'Experimenta la Matrix', icon: '🌐' },
@@ -105,7 +105,7 @@ export const ACHIEVEMENTS_LIST: Record<Language, Achievement[]> = {
     { id: 'toggle_power_on', title: 'Energía', description: 'Reactivaste los juegos', icon: '⚡' },
     { id: 'f_key_click', title: '¡A Jugar!', description: 'Activa el Modo Juego en ajustes', icon: '🕹️' },
     { id: 'long_session', title: 'Dedicado', description: 'Pasaste tiempo explorando', icon: '🧠' },
-    { id: 'all_unlocked', title: 'SECRET LEVEL', description: '???', icon: '🏆' },
+    { id: 'all_unlocked', title: 'SECRET LEVEL', description: '¡LUCHA CONTRA EL JEFE!', icon: '🏆' },
   ],
   ar: [
     { id: 'first_load', title: 'مرحباً بالعالم', description: 'تجربة الماتريكس', icon: '🌐' },
@@ -124,7 +124,7 @@ export const ACHIEVEMENTS_LIST: Record<Language, Achievement[]> = {
     { id: 'toggle_power_on', title: 'طاقة إضافية', description: 'أعدت تفعيل الألعاب', icon: '⚡' },
     { id: 'f_key_click', title: 'بدء اللعبة', description: 'تفعيل وضع اللعب في الإعدادات', icon: '🕹️' },
     { id: 'long_session', title: 'مخلص', description: 'قضيت وقتاً في الاستكشاف', icon: '🧠' },
-    { id: 'all_unlocked', title: 'SECRET LEVEL', description: '???', icon: '🏆' },
+    { id: 'all_unlocked', title: 'SECRET LEVEL', description: 'قاتل الزعيم!!!', icon: '🏆' },
   ],
   fr: [
     { id: 'first_load', title: 'Bonjour le Monde', description: 'Découvrez la Matrix', icon: '🌐' },
@@ -143,7 +143,7 @@ export const ACHIEVEMENTS_LIST: Record<Language, Achievement[]> = {
     { id: 'toggle_power_on', title: 'Power Up', description: 'Jeux réactivés', icon: '⚡' },
     { id: 'f_key_click', title: 'Game On', description: 'Activer le mode jeu dans les paramètres', icon: '🕹️' },
     { id: 'long_session', title: 'Dévoué', description: 'Temps passé à explorer', icon: '🧠' },
-    { id: 'all_unlocked', title: 'SECRET LEVEL', description: '???', icon: '🏆' },
+    { id: 'all_unlocked', title: 'SECRET LEVEL', description: 'COMBATS LE BOSS !!!', icon: '🏆' },
   ],
 };
 
