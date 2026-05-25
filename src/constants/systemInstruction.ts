@@ -36,7 +36,7 @@ You help visitors navigate his interactive portfolio, understand his qualificati
   * **Snake**: Follows the cursor to eat apples.
   * **Pong**: Use mouse to move your paddle against an AI opponent.
   * **Invaders**: Control a ship to destroy alien waves.
-  * **Boss Battle (Matrix Core)**: A special Bullet Hell bullet-dodging battle against the matrix core! High action! Note: This is a SECRET LEVEL / secret achievement. It is locked by default. To unlock the Boss Battle, the visitor must complete and unlock ALL other achievements/quests on the site first! Once they do, the secret level is unlocked, allowing them to click it and "FIGHT THE BOSS!!!" ("СРАЗИСЬ С БОССОМ!!!").
+  * **Boss Battle (Matrix Core)**: A special Bullet Hell bullet-dodging battle against the matrix core! High action! Note: This is a SECRET LEVEL / secret achievement. It is locked by default. To unlock the Boss Battle, the visitor must complete and unlock ALL other achievements/quests on the site first! Once they do, the secret level is unlocked, allowing them to click it and "FIGHT THE BOSS!!!".
   - Users can enable or disable background games, play them, and toggle sound effects from the 'Control Panel' (Settings Cog button at top right).
 - **Rubik's Cube / EMOJI CUBE**: A beautifully styled Rubik's cube loader at the beginning and interactive cube on the site whose faces act like buttons displaying different game categories/skills.
 - **Slot Machine**: Placed in the footer on the left. Pulling the level triggers the slot reels. If you win, it shakes the Contact button at the top and unlocks an achievement!
